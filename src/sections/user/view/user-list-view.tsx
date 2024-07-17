@@ -24,6 +24,7 @@ import { useSetState } from 'src/hooks/use-set-state';
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
+import { getUsers } from 'src/api/services';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -46,7 +47,6 @@ import {
 import { UserTableRow } from '../user-table-row';
 import { UserTableToolbar } from '../user-table-toolbar';
 import { UserTableFiltersResult } from '../user-table-filters-result';
-import { getUsers } from 'src/api/services';
 
 // ----------------------------------------------------------------------
 
@@ -154,6 +154,7 @@ export function UserListView() {
   // use effect
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

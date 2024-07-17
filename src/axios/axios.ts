@@ -39,7 +39,7 @@ export const endpoints = {
   auth: {
     me: '/api/user/me',
     signIn: '/api/auth/signin',
-    signUp: '/api/auth/sign-up',
+    signUp: '/api/auth/signup',
     adminAddUser: '/api/auth/signup',
   },
   region: {

@@ -14,7 +14,7 @@ type Props = {
 export default function Page({ params }: Props) {
   const { id } = params;
 
-  const currentUser = _userList.find((user) => user.id === id);
+  const currentUser: any = {};
 
   return <UserEditView user={currentUser} />;
 }

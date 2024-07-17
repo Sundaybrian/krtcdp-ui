@@ -2,6 +2,8 @@
 
 import axios, { endpoints } from 'src/axios/axios';
 
+import { NewUserSchemaType } from 'src/sections/user/user-new-edit-form';
+
 import { setSession } from './utils';
 import { STORAGE_KEY } from './constant';
 
@@ -44,29 +46,17 @@ export const signInWithPassword = async ({ email, password }: SignInParams): Pro
 /** **************************************
  * Sign up
  *************************************** */
-export const signUp = async ({
-  email,
-  password,
-  firstName,
-  lastName,
-}: SignUpParams): Promise<void> => {
-  const params = {
-    email,
-    password,
-    firstName,
-    lastName,
-  };
-
+export const signUp = async (data: NewUserSchemaType): Promise<void> => {
   try {
-    const res = await axios.post(endpoints.auth.signUp, params);
+    const res = await axios.post(endpoints.auth.signUp, data);
 
-    const { accessToken } = res.data;
+    const { access_token } = res.data;
 
-    if (!accessToken) {
+    if (!access_token) {
       throw new Error('Access token not found in response');
     }
 
-    sessionStorage.setItem(STORAGE_KEY, accessToken);
+    sessionStorage.setItem(STORAGE_KEY, access_token);
   } catch (error) {
     console.error('Error during sign up:', error);
     throw error;

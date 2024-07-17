@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-import { paths } from 'src/routes/paths';
+// import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { fData } from 'src/utils/format-number';
@@ -28,12 +28,12 @@ import { Divider, InputAdornment, MenuItem } from '@mui/material';
 import { Iconify } from 'src/components/iconify';
 import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
+
 import { addUser, getCounties } from 'src/api/services';
 import { County, SubCounty } from 'src/api/data.inteface';
+import { MARITAL_STATUS_OPTIONS } from 'src/utils/default';
 
 // ----------------------------------------------------------------------
-const MARITAL_STATUS_OPTIONS = ['single', 'married', 'divorced', 'widowed'];
-const SUB_COUNTY_OPTIONS = ['Kasarani', 'Kibra', 'Langata', 'Embakasi', 'Starehe', 'Westlands'];
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 
 export const NewUserSchema = zod.object({

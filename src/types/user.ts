@@ -74,6 +74,28 @@ export type IUserCard = {
   totalFollowing: number;
 };
 
+export type CreateUser = {
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  email: string;
+  password: string;
+  mobilePhone: string;
+  birthDate: string;
+  ward: string;
+  residence: string;
+  county: string;
+  maritalStatus: string;
+  subCounty: string;
+  kraPin: string;
+  // Not required
+  acceptTerms: boolean;
+  isAdministrator: boolean;
+  userState: string;
+  isSupport: boolean;
+  userType: string;
+};
+
 export type IUserItem = {
   id: string;
   firstName: string;

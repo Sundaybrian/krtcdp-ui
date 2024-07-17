@@ -1,6 +1,5 @@
 import axios, { endpoints } from 'src/axios/axios';
-import { NewUserSchemaType } from 'src/sections/user/user-new-edit-form';
-import { IUserAccount, IUserItem } from 'src/types/user';
+import { CreateUser, IUserItem } from 'src/types/user';
 import { Page } from './data.inteface';
 
 // Function to fetch users
@@ -21,7 +20,7 @@ export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
 };
 
 // Function to add a user
-export const addUser = async (user: NewUserSchemaType) => {
+export const addUser = async (user: CreateUser) => {
   try {
     const response = await axios.post(endpoints.auth.adminAddUser, user);
     return response.data;

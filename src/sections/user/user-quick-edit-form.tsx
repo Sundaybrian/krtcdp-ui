@@ -56,17 +56,17 @@ type Props = {
 export function UserQuickEditForm({ currentUser, open, onClose }: Props) {
   const defaultValues = useMemo(
     () => ({
-      name: currentUser?.name || '',
+      name: currentUser?.firstName || '',
       email: currentUser?.email || '',
-      phoneNumber: currentUser?.phoneNumber || '',
-      address: currentUser?.address || '',
-      country: currentUser?.country || '',
-      state: currentUser?.state || '',
-      city: currentUser?.city || '',
-      zipCode: currentUser?.zipCode || '',
-      status: currentUser?.status,
-      company: currentUser?.company || '',
-      role: currentUser?.role || '',
+      phoneNumber: currentUser?.mobilePhone || '',
+      address: currentUser?.residence || '',
+      country: currentUser?.county || '',
+      state: currentUser?.subCounty || '',
+      city: currentUser?.ward || '',
+      zipCode: currentUser?.birthDate || '',
+      status: currentUser?.userState,
+      company: currentUser?.middleName || '',
+      role: currentUser?.userType || '',
     }),
     [currentUser]
   );
