@@ -43,7 +43,7 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
               borderBottomLeftRadius: 2,
             }}
           >
-            Free
+            Online
           </Label>
         </Box>
 
@@ -66,7 +66,7 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
         </Stack>
 
         <Button variant="contained" href={paths.minimalStore} target="_blank" rel="noopener">
-          Upgrade to Pro
+          Logout
         </Button>
       </Stack>
     </Stack>
