@@ -5,7 +5,7 @@ export interface SubCounty {
 }
 
 export interface County {
-  id: number;
+  id: any;
   name: string;
   code: number;
   capital: string;

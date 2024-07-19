@@ -122,6 +122,12 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,
       },
     },
+    county: {
+      root: `${ROOTS.DASHBOARD}/county`,
+      new: `${ROOTS.DASHBOARD}/county/new`,
+      list: `${ROOTS.DASHBOARD}/county/list`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/county/${id}/edit`,
+    },
     product: {
       root: `${ROOTS.DASHBOARD}/product`,
       new: `${ROOTS.DASHBOARD}/product/new`,

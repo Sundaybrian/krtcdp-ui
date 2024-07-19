@@ -39,6 +39,7 @@ const ICONS = {
   analytics: icon('ic-analytics'),
   dashboard: icon('ic-dashboard'),
   parameter: icon('ic-parameter'),
+  region: icon('ic-map'),
 };
 
 // ----------------------------------------------------------------------
@@ -72,10 +73,20 @@ export const navData = [
         children: [
           // { title: 'Profile', path: paths.dashboard.user.root },
           // { title: 'Cards', path: paths.dashboard.user.cards },
-          { title: 'List', path: paths.dashboard.user.list },
+          { title: 'Users', path: paths.dashboard.user.list },
           { title: 'Create', path: paths.dashboard.user.new },
           { title: 'Edit', path: paths.dashboard.user.demo.edit },
           { title: 'Account', path: paths.dashboard.user.account },
+        ],
+      },
+
+      {
+        title: 'County',
+        path: paths.dashboard.user.root,
+        icon: ICONS.job,
+        children: [
+          { title: 'Counties', path: paths.dashboard.county.list },
+          { title: 'Create', path: paths.dashboard.county.new },
         ],
       },
       // {
