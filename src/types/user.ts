@@ -96,6 +96,35 @@ export type CreateUser = {
   userType: string;
 };
 
+export type CoopFarmer = {
+  user: {
+    firstName: string;
+    lastName: string;
+    middleName: string;
+    email: string;
+    password: string;
+    mobilePhone: string;
+    birthDate: string;
+    ward: string;
+    residence: string;
+    county: string;
+    subCounty: string;
+    kraPin: string;
+    // Not required
+    acceptTerms: boolean;
+    isAdministrator: boolean;
+    userState: string;
+    isSupport: boolean;
+    userType: string;
+  };
+  farmer: {
+    maritalStatus: string;
+    hasInsurance: boolean;
+    insuranceProvider: string;
+    insuranceType: string;
+  };
+};
+
 export type NewFarmer = {
   maritalStatus: string;
   hasInsurance: boolean;

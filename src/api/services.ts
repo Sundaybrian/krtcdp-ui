@@ -1,5 +1,6 @@
 import axios, { endpoints } from 'src/axios/axios';
 import {
+  CoopFarmer,
   Cooperative,
   CreateUser,
   IUserItem,
@@ -10,6 +11,7 @@ import {
 import { CreateCooperative } from 'src/types/cooperative';
 
 import { County, Page } from './data.inteface';
+import { NewValueChain } from 'src/types/value-chain';
 
 // Function to fetch users
 export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
@@ -183,6 +185,50 @@ export const assignAdminToCoop = async (id: number, data: { admins: number[] }) 
     return response.data;
   } catch (error) {
     console.error('Error adding cooperative:', error);
+    throw error;
+  }
+};
+
+export const addCoopFarmer = async (coopId: number, user: CoopFarmer) => {
+  try {
+    const response = await axios.post(
+      `${endpoints.cooperative.addCoopFarmer}/${coopId}/create-farmer`,
+      user
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error adding coop farmer:', error);
+    throw error;
+  }
+};
+
+export const searchCoopFarmers = async (query = {}): Promise<Page<IUserItem[]>> => {
+  try {
+    const response = await axios.post(
+      endpoints.cooperative.searchCoopFarmer,
+      {},
+      {
+        params: {
+          page: 1,
+          limit: 20,
+          ...query,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
+};
+
+// create value chain
+export const createValueChain = async (data: NewValueChain) => {
+  try {
+    const response = await axios.post(endpoints.valuechain.new, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding value chain:', error);
     throw error;
   }
 };

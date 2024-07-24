@@ -3,9 +3,10 @@ import type { IProductItem } from 'src/types/product';
 import useSWR from 'swr';
 import { useMemo } from 'react';
 
-import { fetcher, endpoints } from 'src/axios/axios';
+import { fetcher, endpoints, creator } from 'src/axios/axios';
 import { Page } from 'src/api/data.inteface';
 import { ICooperative } from 'src/types/cooperative';
+import { ValueChain } from 'src/types/value-chain';
 
 // ----------------------------------------------------------------------
 
@@ -71,6 +72,58 @@ export function useSearchCooperative(query: any = {}) {
     : '';
 
   const { data, isLoading, error, isValidating } = useSWR<Page<ICooperative[]>>(url, fetcher, {
+    ...swrOptions,
+    keepPreviousData: true,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      searchResults: data?.results || [],
+      searchLoading: isLoading,
+      searchError: error,
+      searchValidating: isValidating,
+      searchEmpty: !isLoading && !data?.results.length,
+    }),
+    [data?.results, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+export function useSearchCooperativeFarmers(query: any = {}) {
+  const url = query
+    ? [
+        endpoints.cooperative.searchCoopFarmer,
+        { params: { limit: 20, page: 1, cooperativeId: 1, ...query } },
+      ]
+    : '';
+
+  const { data, isLoading, error, isValidating } = useSWR<Page<ICooperative[]>>(url, creator, {
+    ...swrOptions,
+    keepPreviousData: true,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      searchResults: data?.results || [],
+      searchLoading: isLoading,
+      searchError: error,
+      searchValidating: isValidating,
+      searchEmpty: !isLoading && !data?.results.length,
+    }),
+    [data?.results, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+export function useSearchValueChain(query: any = {}) {
+  const url = query
+    ? [endpoints.valuechain.search, { params: { limit: 20, page: 1, ...query } }]
+    : '';
+
+  const { data, isLoading, error, isValidating } = useSWR<Page<ValueChain[]>>(url, fetcher, {
     ...swrOptions,
     keepPreviousData: true,
   });

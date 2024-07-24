@@ -89,8 +89,8 @@ export const navData = [
           { title: 'List', path: paths.dashboard.cooperative.root },
           { title: 'Create', path: paths.dashboard.cooperative.new },
           { title: 'Assign Admin', path: paths.dashboard.cooperative.assignAdmin },
-          { title: 'Coop-Farmers', path: paths.dashboard.user.farmer },
-          // { title: 'Stakeholders', path: paths.dashboard.user.stakeholder },
+          { title: 'New coop-farmer', path: paths.dashboard.cooperative.newCoopFarmer },
+          { title: 'Coop-Farmers', path: paths.dashboard.cooperative.coopFarmers },
         ],
       },
 
@@ -101,6 +101,16 @@ export const navData = [
         children: [
           { title: 'Counties', path: paths.dashboard.county.list },
           { title: 'Create', path: paths.dashboard.county.new },
+        ],
+      },
+
+      {
+        title: 'Value Chain',
+        path: paths.dashboard.valuechain.root,
+        icon: ICONS.kanban,
+        children: [
+          { title: 'Value chain list', path: paths.dashboard.valuechain.root },
+          { title: 'Create', path: paths.dashboard.valuechain.new },
         ],
       },
       // {

@@ -30,6 +30,19 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
   }
 };
 
+export const creator = async (args: string | [string, AxiosRequestConfig]) => {
+  try {
+    const [url, config] = Array.isArray(args) ? args : [args];
+
+    const res = await axiosInstance.post(url, { ...config });
+
+    return res.data;
+  } catch (error) {
+    console.error('Failed to fetch:', error);
+    throw error;
+  }
+};
+
 // ----------------------------------------------------------------------
 
 export const endpoints = {
@@ -63,6 +76,12 @@ export const endpoints = {
     new: '/api/cooperative',
     search: '/api/cooperative/search',
     assignAdmin: 'api/cooperative',
+    addCoopFarmer: '/api/cooperative',
+    searchCoopFarmer: '/api/cooperative/search-coop-farmers',
+  },
+  valuechain: {
+    new: '/api/valuechain',
+    search: '/api/valuechain/search',
   },
   mail: {
     list: '/api/mail/list',

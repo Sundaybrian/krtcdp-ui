@@ -113,7 +113,9 @@ export const paths = {
     cooperative: {
       root: `${ROOTS.DASHBOARD}/cooperative`,
       new: `${ROOTS.DASHBOARD}/cooperative/new`,
+      newCoopFarmer: `${ROOTS.DASHBOARD}/cooperative/new-farmer`,
       assignAdmin: `${ROOTS.DASHBOARD}/cooperative/assign-admin`,
+      coopFarmers: `${ROOTS.DASHBOARD}/cooperative/coop-farmers`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/product/${id}/edit`,
     },
     user: {
@@ -132,6 +134,17 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/county`,
       new: `${ROOTS.DASHBOARD}/county/new`,
       list: `${ROOTS.DASHBOARD}/county/list`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/county/${id}/edit`,
+    },
+    valuechain: {
+      root: `${ROOTS.DASHBOARD}/valuechain`,
+      new: `${ROOTS.DASHBOARD}/valuechain/new`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/valuechain/${id}/edit`,
+    },
+    supplychain: {
+      root: `${ROOTS.DASHBOARD}/supplychain`,
+      new: `${ROOTS.DASHBOARD}/supplychain/new`,
+      list: `${ROOTS.DASHBOARD}/supplychain/list`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/county/${id}/edit`,
     },
     product: {
