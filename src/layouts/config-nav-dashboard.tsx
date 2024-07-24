@@ -75,14 +75,28 @@ export const navData = [
           // { title: 'Cards', path: paths.dashboard.user.cards },
           { title: 'Users', path: paths.dashboard.user.list },
           { title: 'Create', path: paths.dashboard.user.new },
-          { title: 'Edit', path: paths.dashboard.user.demo.edit },
-          { title: 'Account', path: paths.dashboard.user.account },
+          // { title: 'Edit', path: paths.dashboard.user.demo.edit },
+          { title: 'Farmers', path: paths.dashboard.user.farmer },
+          { title: 'Stakeholders', path: paths.dashboard.user.stakeholder },
+        ],
+      },
+
+      {
+        title: 'Cooperative',
+        path: paths.dashboard.cooperative.root,
+        icon: ICONS.banking,
+        children: [
+          { title: 'List', path: paths.dashboard.cooperative.root },
+          { title: 'Create', path: paths.dashboard.cooperative.new },
+          { title: 'Assign Admin', path: paths.dashboard.cooperative.assignAdmin },
+          { title: 'Coop-Farmers', path: paths.dashboard.user.farmer },
+          // { title: 'Stakeholders', path: paths.dashboard.user.stakeholder },
         ],
       },
 
       {
         title: 'County',
-        path: paths.dashboard.user.root,
+        path: paths.dashboard.county.root,
         icon: ICONS.job,
         children: [
           { title: 'Counties', path: paths.dashboard.county.list },

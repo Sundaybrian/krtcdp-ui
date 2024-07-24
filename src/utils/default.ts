@@ -16,3 +16,4 @@ export const USER_TYPES: IUserTypes[] = [
 ];
 
 export const MARITAL_STATUS_OPTIONS = ['single', 'married', 'divorced', 'widowed'];
+export const INSURANCE_TYPE_OPTIONS = ['weather index', 'individual indemnity', 'area yield index'];

@@ -96,8 +96,56 @@ export type CreateUser = {
   userType: string;
 };
 
+export type NewFarmer = {
+  maritalStatus: string;
+  hasInsurance: boolean;
+  insuranceProvider: string;
+  insuranceType: string;
+};
+
+export type NewStakeholder = {
+  type: string;
+  businessName: string;
+  mobilePhone: string;
+  yearOfRegistration: any;
+  kraPin: string;
+  residence: string;
+  county: string;
+  subCounty: string;
+  ward: string;
+  supplyChainId?: 0;
+};
+
+export type Stakeholder = {
+  id: any;
+  type: string;
+  businessName: string;
+  mobilePhone: string;
+  yearOfRegistration: any;
+  kraPin: string;
+  residence: string;
+  county: string;
+  subCounty: string;
+  ward: string;
+  supplyChainId?: 0;
+};
+
+export type Cooperative = {
+  id: number;
+  type: string;
+  businessName: string;
+  mobilePhone: string;
+  yearOfRegistration: any;
+  kraPin: string;
+  residence: string;
+  county: string;
+  subCounty: string;
+  ward: string;
+  supplyChainId?: 0;
+};
+
 export type IUserItem = {
-  id: string;
+  id: any;
   firstName: string;
   lastName: string;
   middleName: string;

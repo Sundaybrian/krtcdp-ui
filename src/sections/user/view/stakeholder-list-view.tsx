@@ -1,8 +1,8 @@
 'use client';
 
-import type { IUserItem, IUserTableFilters } from 'src/types/user';
+import type { Stakeholder, IUserTableFilters } from 'src/types/user';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, use, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -24,7 +24,7 @@ import { useSetState } from 'src/hooks/use-set-state';
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
-import { getCounties } from 'src/api/services';
+import { getFarmers, getStakeholders, getUsers } from 'src/api/services';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -43,38 +43,42 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import { County } from 'src/api/data.inteface';
 
-import { CountyTableRow } from '../county-table-row';
-import { CountyTableToolbar } from '../county-table-toolbar';
-import { CountyTableFiltersResult } from '../county-table-filters-result';
+import { UserTableRow } from '../user-table-row';
+import { UserTableToolbar } from '../user-table-toolbar';
+import { UserTableFiltersResult } from '../user-table-filters-result';
+import { StakeholderTableRow } from '../stakeholder-table-row';
 
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name' },
-  { id: 'code', label: 'Code', width: 180 },
-  { id: 'capital', label: 'Capital', width: 220 },
+  { id: 'businessName', label: 'Business Name' },
+  // { id: 'lastName', label: 'Last Name' },
+  { id: 'mobilePhone', label: 'Phone number', width: 180 },
+  { id: 'yearOfRegistration', label: 'Year of registration', width: 100 },
+  { id: 'county', label: 'County', width: 220 },
+  { id: 'subCounty', label: 'Sub County', width: 180 },
+  { id: 'ward', label: 'Ward', width: 180 },
   { id: '', width: 88 },
 ];
 
 // ----------------------------------------------------------------------
 
-export function CountyListView() {
+export function StakeholderListView() {
   const table = useTable();
 
   const router = useRouter();
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState<County[]>([]);
-  const [dataFiltered, setDataFiltered] = useState<County[]>([]);
+  const [tableData, setTableData] = useState<Stakeholder[]>([]);
+  const [dataFiltered, setDataFiltered] = useState<Stakeholder[]>([]);
 
   const filters = useSetState<IUserTableFilters>({ name: '', role: [], status: 'all' });
 
-  const applyNewFilter = (data: County[]) => {
+  const applyNewFilter = (data: Stakeholder[]) => {
     const filteredData = applyFilter({
       inputData: data,
       comparator: getComparator(table.order, table.orderBy),
@@ -134,23 +138,23 @@ export function CountyListView() {
 
   // fetch users
 
-  const fetchCounties = () => {
-    getCounties()
+  const fetchStakeHolders = () => {
+    getStakeholders()
       .then((data) => {
-        setTableData(data);
-        console.log('Counties:', data);
+        setTableData(data.results);
+        console.log('Users:', data);
 
-        applyNewFilter(data);
+        applyNewFilter(data.results);
       })
       .catch((error) => {
-        toast.error('Failed to fetch counties!');
-        console.error('Error fetching counties:', error);
+        toast.error('Failed to fetch users!');
+        console.error('Error fetching farmers:', error);
       });
   };
 
   // use effect
   useEffect(() => {
-    fetchCounties();
+    fetchStakeHolders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -158,20 +162,20 @@ export function CountyListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="Counties"
+          heading="Stakeholders"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'County', href: paths.dashboard.user.root },
+            { name: 'Stakeholder', href: paths.dashboard.user.root },
             { name: 'List' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.county.new}
+              href={paths.dashboard.user.new}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              County
+              New user
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -207,7 +211,7 @@ export function CountyListView() {
                     }
                   >
                     {['active', 'pending', 'banned', 'rejected'].includes(tab.value)
-                      ? tableData.filter((user) => user.capital === tab.value).length
+                      ? tableData.filter((user) => user.type === tab.value).length
                       : tableData.length}
                   </Label>
                 }
@@ -215,14 +219,14 @@ export function CountyListView() {
             ))}
           </Tabs>
 
-          <CountyTableToolbar
+          <UserTableToolbar
             filters={filters}
             onResetPage={table.onResetPage}
             options={{ roles: _roles }}
           />
 
           {canReset && (
-            <CountyTableFiltersResult
+            <UserTableFiltersResult
               filters={filters}
               totalResults={dataFiltered.length}
               onResetPage={table.onResetPage}
@@ -274,7 +278,7 @@ export function CountyListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <CountyTableRow
+                      <StakeholderTableRow
                         key={row.id}
                         row={row}
                         selected={table.selected.includes(row.id)}
@@ -336,7 +340,7 @@ export function CountyListView() {
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: County[];
+  inputData: Stakeholder[];
   filters: IUserTableFilters;
   comparator: (a: any, b: any) => number;
 };
@@ -356,16 +360,16 @@ function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
 
   if (name) {
     inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (user) => user.businessName.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
   if (status !== 'all') {
-    inputData = inputData.filter((user) => user.name === status);
+    inputData = inputData.filter((user) => user.businessName === status);
   }
 
   if (role.length) {
-    inputData = inputData.filter((user) => role.includes(user.name));
+    inputData = inputData.filter((user) => role.includes(user.businessName));
   }
 
   return inputData;

@@ -1,10 +1,9 @@
-import type { IUserItem } from 'src/types/user';
+import type { IUserItem, Stakeholder } from 'src/types/user';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
@@ -15,32 +14,28 @@ import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
-import { UserQuickEditForm } from './user-quick-edit-form';
 import { UserManageProfileForm } from './user-manage-profile-form';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: IUserItem;
+  row: Stakeholder;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
   onDeleteRow: () => void;
 };
 
-export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function StakeholderTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
 
   const popover = usePopover();
 
   const quickEdit = useBoolean();
-
-  const manageProfile = useBoolean();
 
   return (
     <>
@@ -51,39 +46,21 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
 
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar alt={row.firstName} src={row.avatarUrl} />
-
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row.firstName} {row.lastName}
+                {row.businessName}
               </Link>
-              <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row.email}
-              </Box>
             </Stack>
           </Stack>
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.mobilePhone}</TableCell>
 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.yearOfRegistration}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.county}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.subCounty}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.userType}</TableCell>
-
-        <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (row.accountState === 'active' && 'success') ||
-              (row.accountState === 'pending' && 'warning') ||
-              (row.accountState === 'banned' && 'error') ||
-              'default'
-            }
-          >
-            {row.accountState}
-          </Label>
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.ward}</TableCell>
 
         <TableCell>
           <Stack direction="row" alignItems="center">
@@ -103,12 +80,7 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
         </TableCell>
       </TableRow>
 
-      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
-      <UserManageProfileForm
-        currentUser={row}
-        open={manageProfile.value}
-        onClose={manageProfile.onFalse}
-      />
+      <UserManageProfileForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
 
       <CustomPopover
         open={popover.open}
@@ -119,16 +91,6 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
         <MenuList>
           <MenuItem
             onClick={() => {
-              manageProfile.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'success.main' }}
-          >
-            <Iconify icon="solar:case-round-bold-duotone" />
-            Manage Profile
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
               confirm.onTrue();
               popover.onClose();
             }}
@@ -136,16 +98,6 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
             Delete
-          </MenuItem>
-
-          <MenuItem
-            onClick={() => {
-              onEditRow();
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="solar:pen-bold" />
-            Edit
           </MenuItem>
         </MenuList>
       </CustomPopover>

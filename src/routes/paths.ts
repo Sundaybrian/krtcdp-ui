@@ -110,13 +110,19 @@ export const paths = {
       file: `${ROOTS.DASHBOARD}/file`,
       course: `${ROOTS.DASHBOARD}/course`,
     },
+    cooperative: {
+      root: `${ROOTS.DASHBOARD}/cooperative`,
+      new: `${ROOTS.DASHBOARD}/cooperative/new`,
+      assignAdmin: `${ROOTS.DASHBOARD}/cooperative/assign-admin`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/product/${id}/edit`,
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,
       list: `${ROOTS.DASHBOARD}/user/list`,
       cards: `${ROOTS.DASHBOARD}/user/cards`,
-      profile: `${ROOTS.DASHBOARD}/user/profile`,
-      account: `${ROOTS.DASHBOARD}/user/account`,
+      farmer: `${ROOTS.DASHBOARD}/user/farmer`,
+      stakeholder: `${ROOTS.DASHBOARD}/user/stakeholder`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/user/${id}/edit`,
       demo: {
         edit: `${ROOTS.DASHBOARD}/user/${MOCK_ID}/edit`,

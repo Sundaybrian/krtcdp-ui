@@ -1,5 +1,14 @@
 import axios, { endpoints } from 'src/axios/axios';
-import { CreateUser, IUserItem } from 'src/types/user';
+import {
+  Cooperative,
+  CreateUser,
+  IUserItem,
+  NewFarmer,
+  NewStakeholder,
+  Stakeholder,
+} from 'src/types/user';
+import { CreateCooperative } from 'src/types/cooperative';
+
 import { County, Page } from './data.inteface';
 
 // Function to fetch users
@@ -30,6 +39,26 @@ export const addUser = async (user: CreateUser) => {
   }
 };
 
+export const updateUser = async (id: number, data: any) => {
+  try {
+    const response = await axios.patch(`${endpoints.users.update}/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
+  }
+};
+
+export const chnageUserStatus = async (id: number, data: any) => {
+  try {
+    const response = await axios.patch(`${endpoints.users.changeStatus}/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error changing user status:', error);
+    throw error;
+  }
+};
+
 // Function to fetch counties
 export const getCounties = async (): Promise<Array<County>> => {
   try {
@@ -49,6 +78,111 @@ export const addCounty = async (county: any) => {
     return response.data;
   } catch (error) {
     console.error('Error adding county:', error);
+    throw error;
+  }
+};
+
+// farmers
+export const getFarmers = async (query = {}): Promise<Page<IUserItem[]>> => {
+  try {
+    const response = await axios.get(endpoints.farmer.search, {
+      params: {
+        page: 1,
+        limit: 20,
+        ...query,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching farmers:', error);
+    throw error;
+  }
+};
+
+// create farmer
+export const createFarmer = async (id: number, farmer: NewFarmer) => {
+  try {
+    const response = await axios.post(`${endpoints.farmer.new}/${id}`, farmer);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding farmer:', error);
+    throw error;
+  }
+};
+
+// stakeholders
+export const getStakeholders = async (query = {}): Promise<Page<Stakeholder[]>> => {
+  try {
+    const response = await axios.get(endpoints.stakeholder.search, {
+      params: {
+        page: 1,
+        limit: 20,
+        ...query,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching stakeholders:', error);
+    throw error;
+  }
+};
+
+export const createStakeholder = async (id: number, stakeholder: NewStakeholder) => {
+  try {
+    const response = await axios.post(`${endpoints.stakeholder.new}/${id}`, stakeholder);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding stakeholders:', error);
+    throw error;
+  }
+};
+
+/**
+ * Creates a new cooperative entity
+ * @param data of type NewCooperative
+ * @returns A promise that resolves to a newly created cooperative
+ */
+
+export const createCooperative = async (data: CreateCooperative) => {
+  try {
+    const response = await axios.post(`${endpoints.cooperative.new}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding cooperative:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetches all cooperatives
+ * @param query any eg limit:10
+ * @returns A promise that resolves to an array of cooperatives
+ */
+export const getCooperatives = async (query = {}): Promise<Page<Cooperative[]>> => {
+  try {
+    const response = await axios.get(endpoints.cooperative.search, {
+      params: {
+        page: 1,
+        limit: 20,
+        ...query,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching cooperatives:', error);
+    throw error;
+  }
+};
+
+export const assignAdminToCoop = async (id: number, data: { admins: number[] }) => {
+  try {
+    const response = await axios.patch(
+      `${endpoints.cooperative.assignAdmin}/${id}/assign-admin`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error adding cooperative:', error);
     throw error;
   }
 };

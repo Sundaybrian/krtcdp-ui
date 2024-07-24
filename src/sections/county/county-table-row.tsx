@@ -53,6 +53,14 @@ export function CountyTableRow({ row, selected, onEditRow, onSelectRow, onDelete
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 {row.subCounties.length} Sub Counties
+                <Tooltip title="Add sub county" placement="top" arrow>
+                  <IconButton
+                    color={quickEdit.value ? 'inherit' : 'default'}
+                    onClick={quickEdit.onTrue}
+                  >
+                    <Iconify icon="mingcute:add-line" />
+                  </IconButton>
+                </Tooltip>
               </Box>
             </Stack>
           </Stack>

@@ -41,4 +41,4 @@ jobs:
             cd /var/www/krtcdp-frontend/
             # npm install
             npm run build
-            pm2 restart 1
+            pm2 restart kenyaruralFrontend

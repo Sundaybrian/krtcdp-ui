@@ -62,7 +62,7 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
-export function CountyListView() {
+export function SubCountyListView() {
   const table = useTable();
 
   const router = useRouter();

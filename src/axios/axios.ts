@@ -48,6 +48,21 @@ export const endpoints = {
   users: {
     details: '/api/users/details',
     search: '/api/user/search',
+    update: '/api/user',
+    changeStatus: '/api/user/changeStatus',
+  },
+  farmer: {
+    new: '/api/farmer',
+    search: '/api/farmer/search',
+  },
+  stakeholder: {
+    new: '/api/stakeholder',
+    search: '/api/stakeholder/search',
+  },
+  cooperative: {
+    new: '/api/cooperative',
+    search: '/api/cooperative/search',
+    assignAdmin: 'api/cooperative',
   },
   mail: {
     list: '/api/mail/list',
