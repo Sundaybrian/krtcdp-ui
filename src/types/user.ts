@@ -125,6 +125,35 @@ export type CoopFarmer = {
   };
 };
 
+export type CoopFarmerList = {
+  id: any;
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  email: string;
+  password: string;
+  mobilePhone: string;
+  birthDate: string;
+  ward: string;
+  residence: string;
+  county: string;
+  subCounty: string;
+  kraPin: string;
+  // Not required
+  acceptTerms: boolean;
+  isAdministrator: boolean;
+  userState: string;
+  isSupport: boolean;
+  userType: string;
+  Farmer: {
+    maritalStatus: string;
+    hasInsurance: boolean;
+    insuranceProvider: string;
+    insuranceType: string;
+    cooperativeId?: number;
+  };
+};
+
 export type NewFarmer = {
   maritalStatus: string;
   hasInsurance: boolean;
@@ -175,6 +204,7 @@ export type Cooperative = {
 
 export type IUserItem = {
   id: any;
+  coopId?: number;
   firstName: string;
   lastName: string;
   middleName: string;

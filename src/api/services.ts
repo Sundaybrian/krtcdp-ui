@@ -1,6 +1,7 @@
 import axios, { endpoints } from 'src/axios/axios';
 import {
   CoopFarmer,
+  CoopFarmerList,
   Cooperative,
   CreateUser,
   IUserItem,
@@ -9,9 +10,9 @@ import {
   Stakeholder,
 } from 'src/types/user';
 import { CreateCooperative } from 'src/types/cooperative';
+import { NewValueChain } from 'src/types/value-chain';
 
 import { County, Page } from './data.inteface';
-import { NewValueChain } from 'src/types/value-chain';
 
 // Function to fetch users
 export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
@@ -202,7 +203,7 @@ export const addCoopFarmer = async (coopId: number, user: CoopFarmer) => {
   }
 };
 
-export const searchCoopFarmers = async (query = {}): Promise<Page<IUserItem[]>> => {
+export const searchCoopFarmers = async (query = {}): Promise<Page<CoopFarmerList[]>> => {
   try {
     const response = await axios.post(
       endpoints.cooperative.searchCoopFarmer,
@@ -218,6 +219,32 @@ export const searchCoopFarmers = async (query = {}): Promise<Page<IUserItem[]>> 
     return response.data;
   } catch (error) {
     console.error('Error fetching users:', error);
+    throw error;
+  }
+};
+
+// unlick coop admins
+export const unlinkCoopAdmin = async (coopId: number, userId: number) => {
+  try {
+    const response = await axios.delete(
+      `${endpoints.cooperative.unlinkAdmin}/${coopId}/unlink-admin-cooperative/${userId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error unlinking coop admin:', error);
+    throw error;
+  }
+};
+
+// aprove coop farmer
+export const approveCoopFarmer = async (coopId: number, userId: number) => {
+  try {
+    const response = await axios.patch(
+      `${endpoints.cooperative.approveFarmer}/${userId}/approve-join-cooperative/${coopId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error approving coop farmer:', error);
     throw error;
   }
 };

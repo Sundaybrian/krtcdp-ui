@@ -89,6 +89,7 @@ export const navData = [
           { title: 'List', path: paths.dashboard.cooperative.root },
           { title: 'Create', path: paths.dashboard.cooperative.new },
           { title: 'Assign Admin', path: paths.dashboard.cooperative.assignAdmin },
+          { title: 'Coop Admins', path: paths.dashboard.cooperative.admin },
           { title: 'New coop-farmer', path: paths.dashboard.cooperative.newCoopFarmer },
           { title: 'Coop-Farmers', path: paths.dashboard.cooperative.coopFarmers },
         ],

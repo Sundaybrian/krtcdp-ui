@@ -42,13 +42,13 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { useSearchCooperative, useSearchCooperativeFarmers } from 'src/actions/cooperative';
 import { INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
-import { approveCoopFarmer, searchCoopFarmers } from 'src/api/services';
-import { CoopFarmerList } from 'src/types/user';
+import { searchCoopFarmers, unlinkCoopAdmin } from 'src/api/services';
+import { IUserItem } from 'src/types/user';
+import { useSearchAdmins } from 'src/actions/user';
 
 import { CooperativeTableToolbar } from '../cooperative-table-toolbar';
 import { CooperativeTableFiltersResult } from '../cooperative-table-filters-result';
 import {
-  RenderCellStock,
   RenderCellPrice,
   RenderCellPublish,
   RenderCellProduct,
@@ -56,7 +56,9 @@ import {
   RenderGeneric,
   RenderHasInsurance,
   RenderInsuranceProvidere,
-} from '../coop-farmer-table-row';
+  RenderCellDate,
+} from '../coop-admin-table-row';
+
 // ----------------------------------------------------------------------
 
 const PUBLISH_OPTIONS = [
@@ -73,14 +75,15 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-export function CooperativeFarmerListView() {
+export function CooperativeAdminListView() {
   const confirmRows = useBoolean();
 
   const router = useRouter();
+  const { userResults, useerLoading } = useSearchAdmins({ userType: 'COOPERATIVE_ADMIN' });
 
   const filters = useSetState<IProductTableFilters>({ publish: [], stock: [] });
 
-  const [tableData, setTableData] = useState<CoopFarmerList[]>([]);
+  const [tableData, setTableData] = useState<IUserItem[]>([]);
 
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>([]);
 
@@ -90,68 +93,28 @@ export function CooperativeFarmerListView() {
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
   useEffect(() => {
-    searchCoopFarmers().then((data) => {
-      if (data.results.length) {
-        console.log(data.results);
-
-        setTableData(data.results);
-      }
-    });
-  }, []);
+    if (userResults.length) {
+      setTableData(userResults.filter((user) => user.coopId));
+    }
+  }, [userResults]);
 
   const canReset = filters.state.publish.length > 0 || filters.state.stock.length > 0;
 
   const dataFiltered = applyFilter({ inputData: tableData, filters: filters.state });
 
-  const handleApproval = useCallback(
+  const handleDeleteRow = useCallback(
     async (id: string) => {
+      const deleteRow = tableData.filter((row) => row.id !== id);
+      const data = tableData.find((row) => row.id === id)!;
+
       try {
-        const data = tableData.find((row) => row.id === id)!;
-        if (!data.Farmer?.cooperativeId) {
-          toast.error('Farmer does not belong to a cooperative!');
-          return;
-        }
-        await approveCoopFarmer(data.Farmer?.cooperativeId!, data.id);
+        toast.success('Admin unlink success!');
+        await unlinkCoopAdmin(data.coopId!, data.id);
 
-        toast.success('Farmer approved successfully!');
+        setTableData(deleteRow);
       } catch (error) {
-        toast.error('Approval failed!');
-      }
-    },
-    [tableData]
-  );
-
-  const handleApprovalLeave = useCallback(
-    async (id: string) => {
-      try {
-        const data = tableData.find((row) => row.id === id)!;
-        if (!data.Farmer?.cooperativeId) {
-          toast.error('Farmer does not belong to a cooperative!');
-          return;
-        }
-        await approveCoopFarmer(data.Farmer?.cooperativeId!, data.id);
-
-        toast.success('Farmer approved successfully!');
-      } catch (error) {
-        toast.error('Approval failed!');
-      }
-    },
-    [tableData]
-  );
-
-  const rejectFarmerJoin = useCallback(
-    async (id: string) => {
-      try {
-        const data = tableData.find((row) => row.id === id)!;
-        if (!data.Farmer?.cooperativeId) {
-          toast.error('Farmer does not belong to a cooperative!');
-          return;
-        }
-        await approveCoopFarmer(data.Farmer?.cooperativeId!, data.id);
-
-        toast.success('Farmer approved successfully!');
-      } catch (error) {
-        toast.error('Approval failed!');
+        toast.error('Unlinking admin failed!');
+        console.error('Error deleting row:', error);
       }
     },
     [tableData]
@@ -165,12 +128,12 @@ export function CooperativeFarmerListView() {
     setTableData(deleteRows);
   }, [selectedRowIds, tableData]);
 
-  const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.product.edit(id));
-    },
-    [router]
-  );
+  // const handleEditRow = useCallback(
+  //   (id: string) => {
+  //     router.push(paths.dashboard.product.edit(id));
+  //   },
+  //   [router]
+  // );
 
   const handleViewRow = useCallback(
     (id: string) => {
@@ -212,16 +175,16 @@ export function CooperativeFarmerListView() {
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
     {
-      field: 'insuranceType',
-      headerName: 'Insuarance Type',
+      field: 'userType',
+      headerName: 'User Type',
       width: 160,
       type: 'singleSelect',
       valueOptions: INSURANCE_TYPE_OPTIONS,
-      renderCell: (params) => <RenderCellStock params={params} />,
+      renderCell: (params) => <RenderGeneric params={params} />,
     },
     {
-      field: 'maritalStatus',
-      headerName: 'Marital Status',
+      field: '"userState"',
+      headerName: 'User State',
       width: 140,
       editable: true,
       renderCell: (params) => <RenderCellPrice params={params} />,
@@ -252,29 +215,24 @@ export function CooperativeFarmerListView() {
     },
 
     {
-      field: 'hasInsurance',
-      headerName: 'Insured',
-      width: 110,
-      editable: false,
-      renderCell: (params) => <RenderHasInsurance params={params} />,
-    },
-
-    {
-      field: 'insuranceProvider',
-      headerName: 'Insurance Provider',
-      width: 110,
-      editable: false,
-      hideable: true,
-      renderCell: (params) => <RenderInsuranceProvidere params={params} />,
-    },
-
-    {
       field: 'krapin',
       headerName: 'KRA PIN',
       width: 110,
       editable: false,
       hideable: true,
       renderCell: (params) => <RenderGeneric params={params} key="krapin" />,
+    },
+    {
+      field: 'creationDate',
+      headerName: 'Date Created',
+      width: 160,
+      renderCell: (params) => <RenderCellDate params={params} />,
+    },
+    {
+      field: 'lastModifiedDate',
+      headerName: 'Date Updated',
+      width: 120,
+      renderCell: (params) => <RenderCellDate params={params} />,
     },
 
     {
@@ -288,46 +246,26 @@ export function CooperativeFarmerListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:eye-bold" />}
+        //   label="View"
+        //   onClick={() => handleViewRow(params.row.id)}
+        // />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:pen-bold" />}
+        //   label="Edit"
+        //   onClick={() => handleEditRow(params.row.id)}
+        // />,
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          onClick={() => handleViewRow(params.row.id)}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          onClick={() => handleEditRow(params.row.id)}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:check-circle-outine" />}
-          label="Approve Join"
+          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+          label="Unlink Admin"
           onClick={() => {
-            handleApproval(params.row.id);
+            handleDeleteRow(params.row.id);
           }}
-          sx={{ color: 'error.success' }}
-        />,
-
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:user-cross-bold-duotone" />}
-          label="Reject Join"
-          onClick={() => {
-            rejectFarmerJoin(params.row.id);
-          }}
-          sx={{ color: 'error.error' }}
-        />,
-
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:check-circle-outin" />}
-          label="Approve Leave"
-          onClick={() => {
-            handleApprovalLeave(params.row.id);
-          }}
-          sx={{ color: 'error.info' }}
+          sx={{ color: 'error.main' }}
         />,
       ],
     },
@@ -346,7 +284,7 @@ export function CooperativeFarmerListView() {
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Cooperative', href: paths.dashboard.product.root },
-            { name: 'Coop Farmers' },
+            { name: 'Coop Admins' },
           ]}
           action={
             <Button
@@ -374,7 +312,7 @@ export function CooperativeFarmerListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={false}
+            loading={useerLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 25]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
@@ -489,7 +427,7 @@ function CustomToolbar({
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: CoopFarmerList[];
+  inputData: IUserItem[];
   filters: IProductTableFilters;
 };
 

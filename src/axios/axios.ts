@@ -76,7 +76,9 @@ export const endpoints = {
     new: '/api/cooperative',
     search: '/api/cooperative/search',
     assignAdmin: 'api/cooperative',
+    unlinkAdmin: 'api/cooperative',
     addCoopFarmer: '/api/cooperative',
+    approveFarmer: '/api/cooperative',
     searchCoopFarmer: '/api/cooperative/search-coop-farmers',
   },
   valuechain: {

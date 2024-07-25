@@ -19,7 +19,19 @@ type ParamsProps = {
 };
 
 export function RenderCellPrice({ params }: ParamsProps) {
-  return params.row.maritalStatus;
+  return (
+    <Label
+      variant="soft"
+      color={
+        (params.row.userState === 'Active' && 'success') ||
+        (params.row.userState === 'Pending' && 'warning') ||
+        (params.row.userState === 'Banned' && 'error') ||
+        'default'
+      }
+    >
+      {params.row.userState}
+    </Label>
+  );
 }
 
 export function RenderCellPublish({ params }: ParamsProps) {
@@ -34,14 +46,21 @@ export function RenderInsuranceProvidere({ params }: ParamsProps) {
   return <Label>{params.row?.Farmer?.insuranceProvider}</Label>;
 }
 
-export function RenderCellUpdatedAt({ params }: ParamsProps) {
-  return <Label>{fDate(params.row.lastModifiedDate)}</Label>;
+export function RenderHasInsurance({ params }: ParamsProps) {
+  return <Label>{params.row?.Farmer?.hasInsurance ? 'YES' : 'NO'}</Label>;
+}
+
+export function RenderCellDate({ params }: ParamsProps) {
+  return <Label>{fDate(params.row[params.field])}</Label>;
 }
 
 export function RenderCellCreatedAt({ params }: ParamsProps) {
   return (
     <Stack spacing={0.5}>
-      <Box component="span">{fDate(params.row.creationDate)}</Box>
+      <Box component="span">{params.row.mobilePhone}</Box>
+      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.createdAt)}
+      </Box> */}
     </Stack>
   );
 }
@@ -64,10 +83,14 @@ export function RenderCellProduct({
             onClick={onViewRow}
             sx={{ cursor: 'pointer' }}
           >
-            {params.row.name}
+            {params.row.firstName} {params.row.lastName}
           </Link>
         }
-        secondary={<Box component="div" sx={{ typography: 'body2', color: 'text.disabled' }} />}
+        secondary={
+          <Box component="div" sx={{ typography: 'body2', color: 'text.disabled' }}>
+            {params.row.email}
+          </Box>
+        }
         sx={{ display: 'flex', flexDirection: 'column' }}
       />
     </Stack>

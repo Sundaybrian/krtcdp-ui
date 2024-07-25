@@ -53,7 +53,7 @@ type Props = {
 export function AssignAdminNewEditForm({ selectedAdmin }: Props) {
   const router = useRouter();
   const { searchResults } = useSearchCooperative();
-  const { userResults } = useSearchAdmins({ userType: 'SYSTEM_ADMIN' });
+  const { userResults } = useSearchAdmins({ userType: 'COOPERATIVE_ADMIN' });
 
   const defaultValues = useMemo(
     () => ({
@@ -89,6 +89,7 @@ export function AssignAdminNewEditForm({ selectedAdmin }: Props) {
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
+      toast.error(error.message || 'Failed to assign admin');
     }
   });
 

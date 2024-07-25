@@ -42,6 +42,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { useSearchCooperative, useSearchValueChain } from 'src/actions/cooperative';
 import { INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
+import { ValueChain } from 'src/types/value-chain';
 
 import { ValueChainTableToolbar } from '../valuechain-table-toolbar';
 import { ValueChainTableFiltersResult } from '../valuechain-table-filters-result';
@@ -53,7 +54,6 @@ import {
   RenderGeneric,
   RenderCellUpdatedAt,
 } from '../valuechain-table-row';
-import { ValueChain } from 'src/types/value-chain';
 
 // ----------------------------------------------------------------------
 
