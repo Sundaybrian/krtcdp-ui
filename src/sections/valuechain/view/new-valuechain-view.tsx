@@ -17,7 +17,7 @@ export function ValueChainCreateView() {
         heading="Value Chain"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Value Chain', href: paths.dashboard.cooperative.root },
+          { name: 'Value Chain', href: paths.dashboard.valuechain.new },
           { name: 'New Value Chain' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
