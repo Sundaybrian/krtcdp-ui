@@ -57,12 +57,15 @@ export const endpoints = {
   },
   region: {
     county: '/api/county',
+    subcounty: '/api/county/subcounty',
   },
   users: {
     details: '/api/users/details',
     search: '/api/user/search',
     update: '/api/user',
     changeStatus: '/api/user/changeStatus',
+    changeState: '/api/user/changeState',
+    types: '/api/user/types',
   },
   farmer: {
     new: '/api/farmer',
@@ -71,6 +74,7 @@ export const endpoints = {
   stakeholder: {
     new: '/api/stakeholder',
     search: '/api/stakeholder/search',
+    types: '/api/stakeholder/types',
   },
   cooperative: {
     new: '/api/cooperative',

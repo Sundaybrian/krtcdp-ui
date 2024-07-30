@@ -24,7 +24,7 @@ import { useSetState } from 'src/hooks/use-set-state';
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
-import { getUsers } from 'src/api/services';
+import { getUsers, getUserTypes } from 'src/api/services';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -74,6 +74,7 @@ export function UserListView() {
 
   const [tableData, setTableData] = useState<IUserItem[]>([]);
   const [dataFiltered, setDataFiltered] = useState<IUserItem[]>([]);
+  const [userTypes, setUserTypes] = useState<string[]>([]);
 
   const filters = useSetState<IUserTableFilters>({ name: '', role: [], status: 'all' });
 
@@ -129,6 +130,8 @@ export function UserListView() {
 
   const handleFilterStatus = useCallback(
     (event: React.SyntheticEvent, newValue: string) => {
+      console.log('here', newValue);
+
       table.onResetPage();
       filters.setState({ status: newValue });
     },
@@ -151,9 +154,21 @@ export function UserListView() {
       });
   };
 
+  const fetchUserTypes = () => {
+    getUserTypes()
+      .then((data) => {
+        setUserTypes(data);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error('Failed to fetch user types');
+      });
+  };
+
   // use effect
   useEffect(() => {
     fetchUsers();
+    fetchUserTypes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -204,13 +219,17 @@ export function UserListView() {
                     }
                     color={
                       (tab.value === 'active' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'banned' && 'error') ||
+                      (tab.value === 'pendingApproval' && 'warning') ||
+                      (tab.value === 'blacklisted' && 'error') ||
+                      (tab.value === 'rejected' && 'error') ||
+                      (tab.value === 'inactive' && 'primary') ||
                       'default'
                     }
                   >
-                    {['active', 'pending', 'banned', 'rejected'].includes(tab.value)
-                      ? tableData.filter((user) => user.userState === tab.value).length
+                    {['active', 'pendingApproval', 'blacklisted', 'rejected', 'inactive'].includes(
+                      tab.value
+                    )
+                      ? tableData.filter((user) => user.accountState === tab.value).length
                       : tableData.length}
                   </Label>
                 }
@@ -221,7 +240,7 @@ export function UserListView() {
           <UserTableToolbar
             filters={filters}
             onResetPage={table.onResetPage}
-            options={{ roles: _roles }}
+            options={{ roles: userTypes }}
           />
 
           {canReset && (
@@ -346,6 +365,9 @@ type ApplyFilterProps = {
 
 function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
   const { name, status, role } = filters;
+  console.log('Role:', role);
+
+  console.log('Input data:', inputData);
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -364,7 +386,7 @@ function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
   }
 
   if (status !== 'all') {
-    inputData = inputData.filter((user) => user.userState === status);
+    inputData = inputData.filter((user) => user.accountState === status);
   }
 
   if (role.length) {

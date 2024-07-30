@@ -22,6 +22,7 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 import { UserQuickEditForm } from './user-quick-edit-form';
 import { UserManageProfileForm } from './user-manage-profile-form';
+import { UserManageStateForm } from './user-manage-state-form';
 
 // ----------------------------------------------------------------------
 
@@ -41,6 +42,8 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
   const quickEdit = useBoolean();
 
   const manageProfile = useBoolean();
+
+  const manageUserState = useBoolean();
 
   return (
     <>
@@ -109,6 +112,11 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
         open={manageProfile.value}
         onClose={manageProfile.onFalse}
       />
+      <UserManageStateForm
+        currentUser={row}
+        open={manageUserState.value}
+        onClose={manageUserState.onFalse}
+      />
 
       <CustomPopover
         open={popover.open}
@@ -125,8 +133,20 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
             sx={{ color: 'success.main' }}
           >
             <Iconify icon="solar:case-round-bold-duotone" />
-            Manage Profile
+            Manage profile
           </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              manageUserState.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'success.primary' }}
+          >
+            <Iconify icon="solar:case-round-bold-duotone" />
+            Manage user state
+          </MenuItem>
+
           <MenuItem
             onClick={() => {
               confirm.onTrue();

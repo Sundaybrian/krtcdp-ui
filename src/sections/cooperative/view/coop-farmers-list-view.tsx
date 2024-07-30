@@ -92,8 +92,6 @@ export function CooperativeFarmerListView() {
   useEffect(() => {
     searchCoopFarmers().then((data) => {
       if (data.results.length) {
-        console.log(data.results);
-
         setTableData(data.results);
       }
     });
@@ -204,6 +202,12 @@ export function CooperativeFarmerListView() {
       renderCell: (params) => (
         <RenderCellProduct params={params} onViewRow={() => handleViewRow(params.row.id)} />
       ),
+    },
+    {
+      field: 'accountState',
+      headerName: 'Status',
+      width: 160,
+      renderCell: (params) => <RenderGeneric params={params} />,
     },
     {
       field: 'mobilePhone',

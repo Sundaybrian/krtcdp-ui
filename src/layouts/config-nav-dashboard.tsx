@@ -51,7 +51,12 @@ export const navData = [
   {
     subheader: 'Overview',
     items: [
-      { title: 'App', path: paths.dashboard.root, icon: ICONS.dashboard },
+      {
+        title: 'App',
+        permission: 'view:dashboard',
+        path: paths.dashboard.root,
+        icon: ICONS.dashboard,
+      },
       // { title: 'Ecommerce', path: paths.dashboard.general.ecommerce, icon: ICONS.ecommerce },
       // { title: 'Analytics', path: paths.dashboard.general.analytics, icon: ICONS.analytics },
       // { title: 'Banking', path: paths.dashboard.general.banking, icon: ICONS.banking },
@@ -68,6 +73,7 @@ export const navData = [
     items: [
       {
         title: 'User',
+        permission: 'view:user',
         path: paths.dashboard.user.root,
         icon: ICONS.user,
         children: [
@@ -83,6 +89,7 @@ export const navData = [
 
       {
         title: 'Cooperative',
+        permission: 'view:cooperative',
         path: paths.dashboard.cooperative.root,
         icon: ICONS.banking,
         children: [
@@ -97,6 +104,7 @@ export const navData = [
 
       {
         title: 'County',
+        permission: 'view:county',
         path: paths.dashboard.county.root,
         icon: ICONS.job,
         children: [
@@ -107,6 +115,7 @@ export const navData = [
 
       {
         title: 'Value Chain',
+        permission: 'view:valuechain',
         path: paths.dashboard.valuechain.root,
         icon: ICONS.kanban,
         children: [
@@ -207,10 +216,12 @@ export const navData = [
         // roles: ['admin', 'manager'] Only admin/manager can see this item.
         // Reference from 'src/guards/RoleBasedGuard'.
         title: 'Permission',
+        permission: 'view:permission',
         path: paths.dashboard.permission,
         icon: ICONS.lock,
         roles: ['admin', 'manager'],
         caption: 'Only admin can see this item',
+        children: [],
       },
       // {
       //   title: 'Level',

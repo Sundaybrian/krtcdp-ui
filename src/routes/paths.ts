@@ -134,6 +134,7 @@ export const paths = {
     county: {
       root: `${ROOTS.DASHBOARD}/county`,
       new: `${ROOTS.DASHBOARD}/county/new`,
+      newSubcounty: `${ROOTS.DASHBOARD}/county/new-subcounty`,
       list: `${ROOTS.DASHBOARD}/county/list`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/county/${id}/edit`,
     },

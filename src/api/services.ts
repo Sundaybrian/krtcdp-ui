@@ -8,6 +8,7 @@ import {
   NewFarmer,
   NewStakeholder,
   Stakeholder,
+  UserAccount,
 } from 'src/types/user';
 import { CreateCooperative } from 'src/types/cooperative';
 import { NewValueChain } from 'src/types/value-chain';
@@ -52,9 +53,52 @@ export const updateUser = async (id: number, data: any) => {
   }
 };
 
+// get user types
+export const getUserTypes = async (): Promise<string[]> => {
+  try {
+    const response = await axios.get(endpoints.users.types);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user types:', error);
+    throw error;
+  }
+};
+
+// get stakeholder types
+export const getStakeholderTypes = async (): Promise<string[]> => {
+  try {
+    const response = await axios.get(endpoints.stakeholder.types);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching stakeholder types:', error);
+    throw error;
+  }
+};
+
+// get current user
+export const getCurrentUser = async (): Promise<UserAccount> => {
+  try {
+    const response = await axios.get(endpoints.auth.me);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching current user:', error);
+    throw error;
+  }
+};
+
 export const chnageUserStatus = async (id: number, data: any) => {
   try {
     const response = await axios.patch(`${endpoints.users.changeStatus}/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error changing user status:', error);
+    throw error;
+  }
+};
+
+export const chnageUserState = async (id: number, data: any) => {
+  try {
+    const response = await axios.patch(`${endpoints.users.changeState}/${id}`, data);
     return response.data;
   } catch (error) {
     console.error('Error changing user status:', error);
@@ -81,6 +125,17 @@ export const addCounty = async (county: any) => {
     return response.data;
   } catch (error) {
     console.error('Error adding county:', error);
+    throw error;
+  }
+};
+
+// new subcounty
+export const addSubCounty = async (subcounty: any) => {
+  try {
+    const response = await axios.post(endpoints.region.subcounty, subcounty);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding subcounty:', error);
     throw error;
   }
 };

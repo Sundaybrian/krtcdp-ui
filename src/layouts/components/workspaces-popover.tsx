@@ -18,10 +18,12 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 export type WorkspacesPopoverProps = ButtonBaseProps & {
   data?: {
-    id: string;
-    name: string;
-    logo: string;
-    plan: string;
+    id?: string;
+    name?: string;
+    logo?: string;
+    plan?: string;
+    groupName?: string;
+    county?: string;
   }[];
 };
 
@@ -52,12 +54,12 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
         }}
         {...other}
       >
-        <Box
+        {/* <Box
           component="img"
-          alt={workspace?.name}
-          src={workspace?.logo}
+          alt={'workspace'}
+          src={workspace?.groupName}
           sx={{ width: 24, height: 24, borderRadius: '50%' }}
-        />
+        /> */}
 
         <Box
           component="span"
@@ -66,7 +68,7 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
             display: { xs: 'none', [mediaQuery]: 'inline-flex' },
           }}
         >
-          {workspace?.name}
+          Select
         </Box>
 
         <Label
@@ -76,7 +78,7 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
             display: { xs: 'none', [mediaQuery]: 'inline-flex' },
           }}
         >
-          {workspace?.plan}
+          Cooperative
         </Label>
 
         <Iconify width={16} icon="carbon:chevron-sort" sx={{ color: 'text.disabled' }} />
@@ -96,13 +98,17 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
               onClick={() => handleChangeWorkspace(option)}
               sx={{ height: 48 }}
             >
-              <Avatar alt={option.name} src={option.logo} sx={{ width: 24, height: 24 }} />
+              <Avatar
+                alt={option.groupName}
+                src={option.groupName}
+                sx={{ width: 24, height: 24 }}
+              />
 
               <Box component="span" sx={{ flexGrow: 1 }}>
-                {option.name}
+                {option.groupName}
               </Box>
 
-              <Label color={option.plan === 'Free' ? 'default' : 'info'}>{option.plan}</Label>
+              <Label color={'default'}>{option.county}</Label>
             </MenuItem>
           ))}
         </MenuList>

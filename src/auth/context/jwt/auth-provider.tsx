@@ -41,8 +41,6 @@ export function AuthProvider({ children }: Props) {
 
         const user = res.data;
 
-        console.log(user);
-
         setState({ user: { ...user, accessToken }, loading: false });
       } else {
         setState({ user: null, loading: false });

@@ -20,6 +20,8 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import { County } from 'src/api/data.inteface';
 
 import { CountyQuickEditForm } from './county-edit-form';
+import { SubCountyNewEditForm } from './sub-county-new-form';
+import { SubcountyList } from './sub-county-list';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +40,10 @@ export function CountyTableRow({ row, selected, onEditRow, onSelectRow, onDelete
 
   const quickEdit = useBoolean();
 
+  const newSubcounty = useBoolean();
+
+  const subcountyView = useBoolean();
+
   return (
     <>
       <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
@@ -52,11 +58,14 @@ export function CountyTableRow({ row, selected, onEditRow, onSelectRow, onDelete
                 {row.name}
               </Link>
               <Box component="span" sx={{ color: 'text.disabled' }}>
-                {row.subCounties.length} Sub Counties
+                <Link color="inherit" onClick={subcountyView.onTrue} sx={{ cursor: 'pointer' }}>
+                  {row.subCounties.length} Sub Counties
+                </Link>
                 <Tooltip title="Add sub county" placement="top" arrow>
                   <IconButton
-                    color={quickEdit.value ? 'inherit' : 'default'}
-                    onClick={quickEdit.onTrue}
+                    color={newSubcounty.value ? 'inherit' : 'default'}
+                    onClick={newSubcounty.onTrue}
+                    size="small"
                   >
                     <Iconify icon="mingcute:add-line" />
                   </IconButton>
@@ -89,6 +98,13 @@ export function CountyTableRow({ row, selected, onEditRow, onSelectRow, onDelete
       </TableRow>
 
       <CountyQuickEditForm county={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      <SubCountyNewEditForm county={row} open={newSubcounty.value} onClose={newSubcounty.onFalse} />
+      <SubcountyList
+        subCounties={row.subCounties}
+        open={subcountyView.value}
+        county={row}
+        onClose={subcountyView.onFalse}
+      />
 
       <CustomPopover
         open={popover.open}

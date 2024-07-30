@@ -51,7 +51,7 @@ import { CountyTableFiltersResult } from '../county-table-filters-result';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
+const STATUS_OPTIONS = [{ value: 'all', label: 'All' }];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
@@ -218,7 +218,7 @@ export function CountyListView() {
           <CountyTableToolbar
             filters={filters}
             onResetPage={table.onResetPage}
-            options={{ roles: _roles }}
+            options={{ roles: [] }}
           />
 
           {canReset && (
@@ -342,7 +342,7 @@ type ApplyFilterProps = {
 };
 
 function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
-  const { name, status, role } = filters;
+  const { name, status } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -362,10 +362,6 @@ function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
 
   if (status !== 'all') {
     inputData = inputData.filter((user) => user.name === status);
-  }
-
-  if (role.length) {
-    inputData = inputData.filter((user) => role.includes(user.name));
   }
 
   return inputData;

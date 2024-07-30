@@ -240,6 +240,19 @@ export type IUserAccount = {
   photoURL: File | string | null;
 };
 
+export type UserAccount = {
+  acceptTerms: boolean;
+  accountState: string;
+  email: string;
+  emailVerified: boolean;
+  firstName: string;
+  id: number;
+  lastName: string;
+  phonenumber: string;
+  userType: 'SYSTEM_ADMIN' | 'ADMIN' | 'SUPPORT' | 'USER' | 'FARMER';
+  verified: boolean;
+};
+
 export type IUserAccountBillingHistory = {
   id: string;
   price: number;

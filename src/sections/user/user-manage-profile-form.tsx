@@ -20,7 +20,12 @@ import DialogContent from '@mui/material/DialogContent';
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { MARITAL_STATUS_OPTIONS, USER_TYPES } from 'src/utils/default';
-import { createFarmer, createStakeholder, getCounties } from 'src/api/services';
+import {
+  createFarmer,
+  createStakeholder,
+  getCounties,
+  getStakeholderTypes,
+} from 'src/api/services';
 import { County, SubCounty } from 'src/api/data.inteface';
 
 // ----------------------------------------------------------------------
@@ -75,6 +80,7 @@ export function UserManageProfileForm({ currentUser, open, onClose }: Props) {
   const [counties, setCounties] = useState<County[]>([]);
   const [subCounties, setSubCounties] = useState<SubCounty[]>([]);
   const [isFarmer, setIsFarmer] = useState<boolean>(false);
+  const [stakeholderTypes, setStakeholderTypes] = useState<string[]>([]);
 
   const defaultValues = useMemo(
     () => ({
@@ -177,9 +183,21 @@ export function UserManageProfileForm({ currentUser, open, onClose }: Props) {
       });
   };
 
+  const fetchStakeholderTypes = () => {
+    getStakeholderTypes()
+      .then((data) => {
+        setStakeholderTypes(data);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error('Failed to fetch stakeholder types');
+      });
+  };
+
   // use effect
   useEffect(() => {
     getchCounties();
+    fetchStakeholderTypes();
   }, []);
 
   return (
@@ -205,15 +223,15 @@ export function UserManageProfileForm({ currentUser, open, onClose }: Props) {
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
           >
             <Field.Select name="type" label="Type">
-              {USER_TYPES.map((status) => (
+              {stakeholderTypes.map((type) => (
                 <MenuItem
                   onClick={() => {
-                    handleUserTypeChange(status.value);
+                    handleUserTypeChange(type);
                   }}
-                  key={status.value}
-                  value={status.value}
+                  key={type}
+                  value={type}
                 >
-                  {status.label}
+                  {type}
                 </MenuItem>
               ))}
             </Field.Select>
@@ -244,9 +262,7 @@ export function UserManageProfileForm({ currentUser, open, onClose }: Props) {
               </>
             )}
 
-            {(values.type === 'IMMEDIATE_OFFTAKERS' ||
-              values.type === 'AGRO_INPUT_DEALER' ||
-              values.type === 'EQUIPMENT_PROVIDER') && (
+            {values.type !== 'FARMER' && (
               <>
                 <Field.Text name="businessName" label="Business name" />
                 <Field.Phone name="mobilePhone" country="KE" label="Business phone" />
