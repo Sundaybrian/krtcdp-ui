@@ -108,7 +108,7 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
                 {option.groupName}
               </Box>
 
-              <Label color={'default'}>{option.county}</Label>
+              <Label color="default">{option.county}</Label>
             </MenuItem>
           ))}
         </MenuList>

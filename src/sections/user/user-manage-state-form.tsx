@@ -16,8 +16,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
 import { toast } from 'src/components/snackbar';
-import { Form, Field } from 'src/components/hook-form';
 import { chnageUserState } from 'src/api/services';
+import { Form, Field } from 'src/components/hook-form';
 import { USER_STATUS_OPTIONS } from 'src/_mock/_user';
 
 // ----------------------------------------------------------------------
@@ -41,7 +41,7 @@ export function UserManageStateForm({ currentUser, open, onClose }: Props) {
     () => ({
       accountState: '',
     }),
-    [currentUser]
+    []
   );
 
   const methods = useForm<UserQuickEditUserStateSchemaType>({
@@ -62,7 +62,7 @@ export function UserManageStateForm({ currentUser, open, onClose }: Props) {
       toast.error('Account state is already the same');
       return;
     }
-    let promise = chnageUserState(currentUser.id, {
+    const promise = chnageUserState(currentUser.id, {
       accountState: data.accountState,
     });
     try {
