@@ -35,7 +35,7 @@ export function HomeMinimal({ sx, ...other }: StackProps) {
       <SectionTitle
         caption="Visualizing Success"
         title="What's in"
-        txtGradient="Minimal?"
+        txtGradient="KRTDCP?"
         sx={{ mb: { xs: 5, md: 8 }, textAlign: { xs: 'center', md: 'left' } }}
       />
 
@@ -137,17 +137,17 @@ export function HomeMinimal({ sx, ...other }: StackProps) {
 const ITEMS = [
   {
     icon: `${CONFIG.site.basePath}/assets/icons/home/ic-make-brand.svg`,
-    title: 'Branding',
+    title: 'Flexibility',
     description: 'Consistent design makes it easy to brand your own.',
   },
   {
     icon: `${CONFIG.site.basePath}/assets/icons/home/ic-design.svg`,
-    title: 'UI & UX design',
-    description: 'The kit is built on the principles of the atomic design system.',
+    title: 'Market place',
+    description: 'Access thousands of products and services.',
   },
   {
     icon: `${CONFIG.site.basePath}/assets/icons/home/ic-development.svg`,
-    title: 'Development',
-    description: 'Easy to customize and extend, saving you time and money.',
+    title: 'Cooperatives',
+    description: 'Easy to join and start your own cooperative.',
   },
 ];
