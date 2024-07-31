@@ -18,6 +18,7 @@ import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import { CategoryData } from 'src/types/category';
+import { fTime, fDate } from 'src/utils/format-time';
 
 // import { CountyQuickEditForm } from './county-edit-form';
 // import { SubCountyNewEditForm } from './sub-county-new-form';
@@ -75,9 +76,9 @@ export function CategoryTableRow({ row, selected, onEditRow, onSelectRow, onDele
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.creationDate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.creationDate)}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.lastModifiedDate}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fDate(row.lastModifiedDate)}</TableCell>
 
         <TableCell>
           <Stack direction="row" alignItems="center">

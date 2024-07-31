@@ -14,6 +14,7 @@ import { CreateCooperative } from 'src/types/cooperative';
 import { NewValueChain } from 'src/types/value-chain';
 
 import { County, Page } from './data.inteface';
+import { CategoryData } from 'src/types/category';
 
 // Function to fetch users
 export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
@@ -322,6 +323,30 @@ export const createCategory = async (data: any) => {
     return response.data;
   } catch (error) {
     console.error('Error adding category:', error);
+    throw error;
+  }
+};
+
+// search categories
+export const searchCategories = async (query = {}): Promise<Page<CategoryData[]>> => {
+  try {
+    const response = await axios.post(
+      endpoints.category.search,
+      {
+        page: 1,
+        limit: 20,
+      },
+      {
+        params: {
+          page: 1,
+          limit: 20,
+          ...query,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
     throw error;
   }
 };

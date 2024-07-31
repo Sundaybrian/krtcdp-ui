@@ -42,17 +42,14 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import { County } from 'src/api/data.inteface';
-import { useSearchCategories } from 'src/actions/category';
 import { CategoryData } from 'src/types/category';
 
 import { CategoryTableRow } from '../category-table-row';
 import { CategoryTableToolbar } from '../category-table-toolbar';
 import { CategoryTableFiltersResult } from '../category-table-filters-result';
+import { searchCategories } from 'src/api/services';
 
 // ----------------------------------------------------------------------
-
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
@@ -64,7 +61,6 @@ const TABLE_HEAD = [
 // ----------------------------------------------------------------------
 
 export function CategoryListView() {
-  const { searchResults, searchLoading } = useSearchCategories();
   const table = useTable();
 
   const router = useRouter();
@@ -136,10 +132,14 @@ export function CategoryListView() {
 
   // use effect
   useEffect(() => {
-    if (searchResults) {
-      setTableData(searchResults);
-      applyNewFilter(searchResults);
-    }
+    searchCategories()
+      .then((res) => {
+        setTableData(res.results);
+        applyNewFilter(res.results);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
