@@ -198,13 +198,13 @@ export function HeaderBase({
                   variant="contained"
                   rel="noopener"
                   target="_blank"
-                  href={paths.minimalStore}
+                  href={paths.auth.jwt.signUp}
                   sx={{
                     display: 'none',
                     [theme.breakpoints.up(layoutQuery)]: { display: 'inline-flex' },
                   }}
                 >
-                  Purchase
+                  Sign up
                 </Button>
               )}
             </Box>

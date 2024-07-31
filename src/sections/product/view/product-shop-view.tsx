@@ -127,7 +127,7 @@ export function ProductShopView({ products }: Props) {
       <CartIcon totalItems={checkout.totalItems} />
 
       <Typography variant="h4" sx={{ my: { xs: 3, md: 5 } }}>
-        Shop
+        Marketplace
       </Typography>
 
       <Stack spacing={2.5} sx={{ mb: { xs: 3, md: 5 } }}>

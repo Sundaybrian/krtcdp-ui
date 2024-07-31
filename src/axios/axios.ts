@@ -59,6 +59,10 @@ export const endpoints = {
     county: '/api/county',
     subcounty: '/api/county/subcounty',
   },
+  category: {
+    new: '/api/category',
+    search: '/api/category/search',
+  },
   users: {
     details: '/api/users/details',
     search: '/api/user/search',

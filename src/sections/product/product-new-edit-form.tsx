@@ -26,10 +26,12 @@ import {
   PRODUCT_GENDER_OPTIONS,
   PRODUCT_COLOR_NAME_OPTIONS,
   PRODUCT_CATEGORY_GROUP_OPTIONS,
+  PRODUCT_CATEGORIES,
 } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import MenuItem from '@mui/material/MenuItem/MenuItem';
 
 // ----------------------------------------------------------------------
 
@@ -150,18 +152,26 @@ export function ProductNewEditForm({ currentProduct }: Props) {
 
   const renderDetails = (
     <Card>
-      <CardHeader title="Details" subheader="Title, short description, image..." sx={{ mb: 3 }} />
+      <CardHeader
+        title="Product Details"
+        subheader="Title, short description, image..."
+        sx={{ mb: 3 }}
+      />
 
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.Text name="name" label="Product name" />
 
-        <Field.Text name="subDescription" label="Sub description" multiline rows={4} />
+        <Field.Text name="subDescription" label="Highlight" multiline rows={4} />
 
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Content</Typography>
-          <Field.Editor name="description" sx={{ maxHeight: 480 }} />
+          <Typography variant="subtitle2">Detailed description</Typography>
+          <Field.Editor
+            placeholder="Detailed description"
+            name="description"
+            sx={{ maxHeight: 480 }}
+          />
         </Stack>
 
         <Stack spacing={1.5}>
@@ -182,11 +192,7 @@ export function ProductNewEditForm({ currentProduct }: Props) {
 
   const renderProperties = (
     <Card>
-      <CardHeader
-        title="Properties"
-        subheader="Additional functions and attributes..."
-        sx={{ mb: 3 }}
-      />
+      <CardHeader title="Properties" subheader="Additional informmation..." sx={{ mb: 3 }} />
 
       <Divider />
 
@@ -199,36 +205,25 @@ export function ProductNewEditForm({ currentProduct }: Props) {
         >
           <Field.Text name="code" label="Product code" />
 
-          <Field.Text name="sku" label="Product SKU" />
+          <Field.Text name="sku" label="Product State" />
 
-          <Field.Text
-            name="quantity"
-            label="Quantity"
-            placeholder="0"
-            type="number"
-            InputLabelProps={{ shrink: true }}
-          />
+          <Field.Select name="county" label="Product category">
+            <MenuItem
+              value=""
+              onClick={() => null}
+              sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+            >
+              None
+            </MenuItem>
 
-          <Field.Select native name="category" label="Category" InputLabelProps={{ shrink: true }}>
-            {PRODUCT_CATEGORY_GROUP_OPTIONS.map((category) => (
-              <optgroup key={category.group} label={category.group}>
-                {category.classify.map((classify) => (
-                  <option key={classify} value={classify}>
-                    {classify}
-                  </option>
-                ))}
-              </optgroup>
+            <Divider sx={{ borderStyle: 'dashed' }} />
+
+            {PRODUCT_CATEGORIES.map((county) => (
+              <MenuItem key={county} value={county}>
+                {county}
+              </MenuItem>
             ))}
           </Field.Select>
-
-          <Field.MultiSelect
-            checkbox
-            name="colors"
-            label="Colors"
-            options={PRODUCT_COLOR_NAME_OPTIONS}
-          />
-
-          <Field.MultiSelect checkbox name="sizes" label="Sizes" options={PRODUCT_SIZE_OPTIONS} />
         </Box>
 
         <Field.Autocomplete
@@ -259,14 +254,9 @@ export function ProductNewEditForm({ currentProduct }: Props) {
           }
         />
 
-        <Stack spacing={1}>
-          <Typography variant="subtitle2">Gender</Typography>
-          <Field.MultiCheckbox row name="gender" options={PRODUCT_GENDER_OPTIONS} sx={{ gap: 2 }} />
-        </Stack>
-
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <Stack direction="row" alignItems="center" spacing={3}>
+        {/* <Stack direction="row" alignItems="center" spacing={3}>
           <Field.Switch name="saleLabel.enabled" label={null} sx={{ m: 0 }} />
           <Field.Text
             name="saleLabel.content"
@@ -284,7 +274,7 @@ export function ProductNewEditForm({ currentProduct }: Props) {
             fullWidth
             disabled={!values.newLabel.enabled}
           />
-        </Stack>
+        </Stack> */}
       </Stack>
     </Card>
   );
@@ -306,7 +296,7 @@ export function ProductNewEditForm({ currentProduct }: Props) {
             startAdornment: (
               <InputAdornment position="start">
                 <Box component="span" sx={{ color: 'text.disabled' }}>
-                  $
+                  Ksh
                 </Box>
               </InputAdornment>
             ),
@@ -323,7 +313,7 @@ export function ProductNewEditForm({ currentProduct }: Props) {
             startAdornment: (
               <InputAdornment position="start">
                 <Box component="span" sx={{ color: 'text.disabled' }}>
-                  $
+                  Ksh
                 </Box>
               </InputAdornment>
             ),

@@ -138,6 +138,12 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/county/list`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/county/${id}/edit`,
     },
+    category: {
+      root: `${ROOTS.DASHBOARD}/category`,
+      new: `${ROOTS.DASHBOARD}/category/new`,
+      list: `${ROOTS.DASHBOARD}/category/list`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/category/${id}/edit`,
+    },
     valuechain: {
       root: `${ROOTS.DASHBOARD}/valuechain`,
       new: `${ROOTS.DASHBOARD}/valuechain/new`,

@@ -126,12 +126,13 @@ export const navData = [
       // {
       //   title: 'Product',
       //   path: paths.dashboard.product.root,
+      //   permission: 'view:product',
       //   icon: ICONS.product,
       //   children: [
       //     { title: 'List', path: paths.dashboard.product.root },
-      //     { title: 'Details', path: paths.dashboard.product.demo.details },
+      //     // { title: 'Details', path: paths.dashboard.product.demo.details },
       //     { title: 'Create', path: paths.dashboard.product.new },
-      //     { title: 'Edit', path: paths.dashboard.product.demo.edit },
+      //     // { title: 'Edit', path: paths.dashboard.product.demo.edit },
       //   ],
       // },
       // {
@@ -158,6 +159,8 @@ export const navData = [
       //   title: 'Blog',
       //   path: paths.dashboard.post.root,
       //   icon: ICONS.blog,
+      //   permission: 'view:cooperative',
+
       //   children: [
       //     { title: 'List', path: paths.dashboard.post.root },
       //     { title: 'Details', path: paths.dashboard.post.demo.details },
@@ -201,6 +204,34 @@ export const navData = [
       // { title: 'Chat', path: paths.dashboard.chat, icon: ICONS.chat },
       // { title: 'Calendar', path: paths.dashboard.calendar, icon: ICONS.calendar },
       // { title: 'Kanban', path: paths.dashboard.kanban, icon: ICONS.kanban },
+    ],
+  },
+  {
+    subheader: 'Marketplace Mgt',
+    items: [
+      {
+        title: 'Product',
+        path: paths.dashboard.product.root,
+        permission: 'view:product',
+        icon: ICONS.product,
+        children: [
+          { title: 'List', path: paths.dashboard.product.root },
+          // { title: 'Details', path: paths.dashboard.product.demo.details },
+          { title: 'Create', path: paths.dashboard.product.new },
+          // { title: 'Edit', path: paths.dashboard.product.demo.edit },
+        ],
+      },
+
+      {
+        title: 'Categories',
+        permission: 'view:county',
+        path: paths.dashboard.category.root,
+        icon: ICONS.job,
+        children: [
+          { title: 'Categories', path: paths.dashboard.category.root },
+          { title: 'New Category', path: paths.dashboard.category.new },
+        ],
+      },
     ],
   },
   /**

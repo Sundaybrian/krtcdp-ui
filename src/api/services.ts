@@ -314,3 +314,14 @@ export const createValueChain = async (data: NewValueChain) => {
     throw error;
   }
 };
+
+// create category
+export const createCategory = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.category.new, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding category:', error);
+    throw error;
+  }
+};

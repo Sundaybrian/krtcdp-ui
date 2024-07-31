@@ -29,11 +29,13 @@ export const PERMISSIONS = [
       'view:management',
       'view:permission',
       'view:valuechain',
+      'view:product',
+      'view:order',
     ],
   },
   {
     role: 'COOPERATIVE_ADMIN',
-    permissions: ['view:dashboard', 'view:cooperative'],
+    permissions: ['view:dashboard', 'view:cooperative', 'view:product'],
   },
   {
     role: 'SYSTEM_USER',
