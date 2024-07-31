@@ -23,8 +23,7 @@ import { useSetState } from 'src/hooks/use-set-state';
 
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
-import { getCounties } from 'src/api/services';
+import { _roles, _userList } from 'src/_mock';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -44,12 +43,12 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 import { County } from 'src/api/data.inteface';
+import { useSearchCategories } from 'src/actions/category';
+import { CategoryData } from 'src/types/category';
 
 import { CategoryTableRow } from '../category-table-row';
 import { CategoryTableToolbar } from '../category-table-toolbar';
 import { CategoryTableFiltersResult } from '../category-table-filters-result';
-import { useSearchCategories } from 'src/actions/category';
-import { CategoryData } from 'src/types/category';
 
 // ----------------------------------------------------------------------
 

@@ -31,11 +31,12 @@ export const PERMISSIONS = [
       'view:valuechain',
       'view:product',
       'view:order',
+      'view:category',
     ],
   },
   {
     role: 'COOPERATIVE_ADMIN',
-    permissions: ['view:dashboard', 'view:cooperative', 'view:product'],
+    permissions: ['view:dashboard', 'view:cooperative', 'view:product', 'view:category'],
   },
   {
     role: 'SYSTEM_USER',

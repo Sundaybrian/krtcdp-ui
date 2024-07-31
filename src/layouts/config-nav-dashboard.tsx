@@ -224,7 +224,7 @@ export const navData = [
 
       {
         title: 'Categories',
-        permission: 'view:county',
+        permission: 'view:category',
         path: paths.dashboard.category.root,
         icon: ICONS.job,
         children: [

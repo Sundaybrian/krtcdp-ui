@@ -41,7 +41,7 @@ export function CategoryNewForm({ currentUser }: Props) {
       categoryName: '',
       subCategories: [],
     }),
-    [currentUser]
+    []
   );
 
   const methods = useForm<NewUserSchemaType>({

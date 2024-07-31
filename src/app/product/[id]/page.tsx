@@ -51,9 +51,7 @@ export default async function Page({ params }: Props) {
 
   // generate an array of 5 random number from 1 to 4
   const arr = Array.from({ length: 5 }, () => Math.floor(Math.random() * 4) + 1);
-  product.images = arr.map((index) => {
-    return `../../assets/farm/${index}.avif`;
-  });
+  product.images = arr.map((index) => `../../assets/farm/${index}.avif`);
 
   return <ProductShopDetailsView product={product} />;
 }
