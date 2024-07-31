@@ -12,9 +12,9 @@ import {
 } from 'src/types/user';
 import { CreateCooperative } from 'src/types/cooperative';
 import { NewValueChain } from 'src/types/value-chain';
+import { CategoryData } from 'src/types/category';
 
 import { County, Page } from './data.inteface';
-import { CategoryData } from 'src/types/category';
 
 // Function to fetch users
 export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
