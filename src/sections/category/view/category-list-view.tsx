@@ -43,11 +43,11 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 import { CategoryData } from 'src/types/category';
+import { searchCategories } from 'src/api/services';
 
 import { CategoryTableRow } from '../category-table-row';
 import { CategoryTableToolbar } from '../category-table-toolbar';
 import { CategoryTableFiltersResult } from '../category-table-filters-result';
-import { searchCategories } from 'src/api/services';
 
 // ----------------------------------------------------------------------
 
