@@ -221,7 +221,6 @@ export const navData = [
           // { title: 'Edit', path: paths.dashboard.product.demo.edit },
         ],
       },
-
       {
         title: 'Categories',
         permission: 'view:category',
@@ -230,6 +229,36 @@ export const navData = [
         children: [
           { title: 'Categories', path: paths.dashboard.category.root },
           { title: 'New Category', path: paths.dashboard.category.new },
+        ],
+      },
+      {
+        title: 'Orders',
+        path: paths.dashboard.order.root,
+        icon: ICONS.order,
+        permission: 'view:category',
+        children: [
+          { title: 'List', path: paths.dashboard.order.root },
+          { title: 'Details', path: paths.dashboard.order.demo.details },
+        ],
+      },
+      {
+        title: 'Catalog',
+        permission: 'view:category',
+        path: paths.dashboard.category.root,
+        icon: ICONS.job,
+        children: [
+          { title: 'List', path: paths.dashboard.category.root },
+          { title: 'New', path: paths.dashboard.category.new },
+        ],
+      },
+      {
+        title: 'Payment Channels',
+        permission: 'view:category',
+        path: paths.dashboard.category.root,
+        icon: ICONS.job,
+        children: [
+          { title: 'Channels', path: paths.dashboard.category.root },
+          { title: 'New Payment Channel', path: paths.dashboard.category.new },
         ],
       },
     ],

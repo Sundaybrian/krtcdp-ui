@@ -116,6 +116,10 @@ export function ProductListView() {
           'Cotton',
           'Sugarcane',
         ][Math.floor(Math.random() * 21)],
+        category: ['Agriculture', 'Gardening', 'Landscaping', 'Farming'][
+          Math.floor(Math.random() * 4)
+        ],
+        coverUrl: `../../assets/farm/${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17][Math.floor(Math.random() * 18)]}.avif`,
       }));
       setTableData(p);
     }
