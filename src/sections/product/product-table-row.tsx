@@ -22,6 +22,14 @@ export function RenderCellPrice({ params }: ParamsProps) {
   return fCurrency(params.row.price);
 }
 
+export function RenderCellCategory({ params }: ParamsProps) {
+  return params.row.category;
+}
+
+export function RenderCellCode({ params }: ParamsProps) {
+  return params.row.code;
+}
+
 export function RenderCellPublish({ params }: ParamsProps) {
   return (
     <Label variant="soft" color={(params.row.publish === 'published' && 'info') || 'default'}>
@@ -54,7 +62,7 @@ export function RenderCellStock({ params }: ParamsProps) {
         }
         sx={{ mb: 1, width: 1, height: 6, maxWidth: 80 }}
       />
-      {!!params.row.available && params.row.available} {params.row.inventoryType}
+      {(!!params.row.available && params.row.available) || 0} orders
     </Stack>
   );
 }

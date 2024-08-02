@@ -36,7 +36,7 @@ const LINKS = [
       { name: 'Privacy policy', href: '#' },
     ],
   },
-  { headline: 'Contact', children: [{ name: 'support@minimals.cc', href: '#' }] },
+  { headline: 'Contact', children: [{ name: 'support@krtdcp.co.ke', href: '#' }] },
 ];
 
 // ----------------------------------------------------------------------
@@ -80,8 +80,7 @@ export function Footer({ layoutQuery, sx }: FooterProps) {
                 [theme.breakpoints.up(layoutQuery)]: { mx: 'unset' },
               }}
             >
-              The starting point for your next project with Minimal UI Kit, built on the newest
-              version of Material-UI ©, ready to be customized to your style.
+              All in one marketplace for all your needs.
             </Typography>
 
             <Stack
@@ -170,8 +169,8 @@ export function HomeFooter({ sx }: HomeFooterProps) {
         <Logo />
         <Box sx={{ mt: 1, typography: 'caption' }}>
           © All rights reserved.
-          <br /> made by
-          <Link href="https://minimals.cc/"> minimals.cc </Link>
+          {/* <br /> made by
+          <Link href="https://minimals.cc/"> minimals.cc </Link> */}
         </Box>
       </Container>
     </Box>

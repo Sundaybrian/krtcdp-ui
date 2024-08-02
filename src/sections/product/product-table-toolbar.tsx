@@ -76,7 +76,7 @@ export function ProductTableToolbar({ filters, options }: Props) {
   return (
     <>
       <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 200 } }}>
-        <InputLabel htmlFor="product-filter-stock-select-label">Stock</InputLabel>
+        <InputLabel htmlFor="product-filter-stock-select-label">Product category</InputLabel>
 
         <Select
           multiple

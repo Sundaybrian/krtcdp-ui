@@ -249,9 +249,9 @@ export function ProductFilters({ open, onOpen, onClose, canReset, filters, optio
 
         <Scrollbar sx={{ px: 2.5, py: 3 }}>
           <Stack spacing={3}>
-            {renderGender}
+            {/* {renderGender} */}
             {renderCategory}
-            {renderColor}
+            {/* {renderColor} */}
             {renderPrice}
             {renderRating}
           </Stack>

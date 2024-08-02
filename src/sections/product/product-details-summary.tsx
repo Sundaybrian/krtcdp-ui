@@ -303,9 +303,9 @@ export function ProductDetailsSummary({
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        {renderColorOptions}
+        {/* {renderColorOptions} */}
 
-        {renderSizeOptions}
+        {/* {renderSizeOptions} */}
 
         {renderQuantity}
 
