@@ -92,7 +92,7 @@ export function CooperativeFarmerListView() {
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
   useEffect(() => {
-    searchCoopFarmers({ cooperativeId: state.coopId }).then((data) => {
+    searchCoopFarmers(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
       if (data.results.length) {
         setTableData(data.results);
       }
