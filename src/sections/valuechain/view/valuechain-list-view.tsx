@@ -381,7 +381,7 @@ function applyFilter({ inputData, filters }: ApplyFilterProps) {
   const { stock, publish } = filters;
 
   if (stock.length) {
-    inputData = inputData.filter((product) => stock.includes(product.name));
+    inputData = inputData.filter((product) => stock.includes(product.valueChainName));
   }
 
   if (publish.length) {

@@ -92,7 +92,7 @@ export function OrderTableToolbar({ filters, onResetPage, dateError }: Props) {
             fullWidth
             value={filters.state.name}
             onChange={handleFilterName}
-            placeholder="Search farmer or order number..."
+            placeholder="Search farmer or GRN number..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -122,15 +122,6 @@ export function OrderTableToolbar({ filters, onResetPage, dateError }: Props) {
           >
             <Iconify icon="solar:printer-minimalistic-bold" />
             Print
-          </MenuItem>
-
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="solar:import-bold" />
-            Import
           </MenuItem>
 
           <MenuItem

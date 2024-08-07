@@ -1,4 +1,6 @@
 import type { IDateValue, IDatePickerControl } from './common';
+import { Grn } from './farm';
+import { CoopFarmerList, Cooperative } from './user';
 
 // ----------------------------------------------------------------------
 
@@ -67,4 +69,21 @@ export type IOrderItem = {
   delivery: IOrderDelivery;
   items: IOrderProductItem[];
   shippingAddress: IOrderShippingAddress;
+};
+
+export type PurchaseOrderItem = {
+  id: any;
+  orderDate: string;
+  amount: number;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  terms: string;
+  grnId: number;
+  grn: Grn;
+  farmerId: 0;
+  farmer: CoopFarmerList;
+  cooperativeId: number;
+  cooperative: Cooperative;
+  creationDate: string;
+  lastModifiedDate: string;
+  deleteAt: string;
 };

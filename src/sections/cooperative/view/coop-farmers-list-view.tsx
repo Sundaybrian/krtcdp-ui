@@ -41,9 +41,10 @@ import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { useSearchCooperative, useSearchCooperativeFarmers } from 'src/actions/cooperative';
-import { INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
+import { INSURANCE_TYPE_OPTIONS, TENANT_LOCAL_STORAGE } from 'src/utils/default';
 import { approveCoopFarmer, searchCoopFarmers } from 'src/api/services';
 import { CoopFarmerList } from 'src/types/user';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
 
 import { CooperativeTableToolbar } from '../cooperative-table-toolbar';
 import { CooperativeTableFiltersResult } from '../cooperative-table-filters-result';
@@ -75,6 +76,7 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 export function CooperativeFarmerListView() {
   const confirmRows = useBoolean();
+  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
   const router = useRouter();
 
@@ -90,12 +92,12 @@ export function CooperativeFarmerListView() {
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
   useEffect(() => {
-    searchCoopFarmers().then((data) => {
+    searchCoopFarmers({ cooperativeId: state.coopId }).then((data) => {
       if (data.results.length) {
         setTableData(data.results);
       }
     });
-  }, []);
+  }, [state.coopId]);
 
   const canReset = filters.state.publish.length > 0 || filters.state.stock.length > 0;
 
@@ -172,7 +174,7 @@ export function CooperativeFarmerListView() {
 
   const handleViewRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.product.details(id));
+      router.push(paths.dashboard.cooperative.details(id));
     },
     [router]
   );

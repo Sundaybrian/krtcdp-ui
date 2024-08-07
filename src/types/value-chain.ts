@@ -5,6 +5,12 @@ export type NewValueChain = {
 
 export type ValueChain = {
   id: any;
-  name: string;
+  valueChainName: string;
   valueChainType: string;
+  creationDate?: string;
+
+  season: string;
+  intendedUseOfHarvest: string;
+  areaInAcres: number;
+  anticipatedHarvestDate: string;
 };

@@ -1,4 +1,6 @@
-import type { IOrderItem, PurchaseOrderItem } from 'src/types/order';
+import { z as zod } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { IOrderItem } from 'src/types/order';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -24,23 +26,72 @@ import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
+import { Grn } from 'src/types/farm';
+import { Form, Field } from 'src/components/hook-form';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: PurchaseOrderItem;
+  row: Grn;
   selected: boolean;
   onViewRow: () => void;
   onSelectRow: () => void;
   onDeleteRow: () => void;
+  onApproveRow: (data: { amount: any; terms: string }) => any;
 };
 
-export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteRow }: Props) {
+// ----------------------------------------------------------------------
+export type PurchaseOrderSchema = zod.infer<typeof OrderSchema>;
+
+export const OrderSchema = zod.object({
+  amount: zod.string().min(1, { message: 'Amount is required' }),
+  terms: zod.string(),
+});
+// ----------------------------------------------------------------------
+
+export function OrderTableRow({
+  row,
+  selected,
+  onViewRow,
+  onSelectRow,
+  onDeleteRow,
+  onApproveRow,
+}: Props) {
   const confirm = useBoolean();
 
   const collapse = useBoolean();
 
   const popover = usePopover();
+
+  const defaultValues = {
+    amount: '',
+    terms: '',
+  };
+
+  const methods = useForm<PurchaseOrderSchema>({
+    resolver: zodResolver(OrderSchema),
+    defaultValues,
+  });
+
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+    watch,
+  } = methods;
+
+  const values = watch();
+
+  const handleSubmitPurchaseOrder = () => {
+    if (!values.amount) {
+      toast.error('Amount is required');
+    }
+
+    confirm.onFalse();
+
+    onApproveRow(values);
+  };
 
   const renderPrimary = (
     <TableRow hover selected={selected}>
@@ -60,7 +111,7 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
 
       <TableCell>
         <Stack spacing={2} direction="row" alignItems="center">
-          <Avatar alt={row.farmer.firstName} src={row.farmer.lastName} />
+          {/* <Avatar alt={row.farmerId} src={row.farmerId} /> */}
 
           <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
             <Box component="span">
@@ -72,26 +123,24 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
           </Stack>
         </Stack>
       </TableCell>
-      <TableCell> {row.cooperative.groupName} </TableCell>
+
       <TableCell>
         <ListItemText
-          primary={fDate(row.orderDate)}
-          secondary={fTime(row.orderDate)}
+          primary={fDate(row.creationDate)}
+          secondary={fTime(row.creationDate)}
           primaryTypographyProps={{ typography: 'body2', noWrap: true }}
           secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
         />
       </TableCell>
 
-      <TableCell align="center"> {row.terms} </TableCell>
-
-      <TableCell> {fCurrency(row.amount)} </TableCell>
+      <TableCell align="center"> {row.approvedQuantity} </TableCell>
 
       <TableCell>
         <Label
           variant="soft"
           color={
             (row.status === 'APPROVED' && 'success') ||
-            (row.status === 'PENDING' && 'warning') ||
+            (row.status === 'PENDINGCONFIRMATION' && 'warning') ||
             (row.status === 'REJECTED' && 'error') ||
             'default'
           }
@@ -101,13 +150,13 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
       </TableCell>
 
       <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-        <IconButton
+        {/* <IconButton
           color={collapse.value ? 'inherit' : 'default'}
           onClick={collapse.onToggle}
           sx={{ ...(collapse.value && { bgcolor: 'action.hover' }) }}
         >
           <Iconify icon="eva:arrow-ios-downward-fill" />
-        </IconButton>
+        </IconButton> */}
 
         <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
           <Iconify icon="eva:more-vertical-fill" />
@@ -116,56 +165,9 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
     </TableRow>
   );
 
-  // const renderSecondary = (
-  //   <TableRow>
-  //     <TableCell sx={{ p: 0, border: 'none' }} colSpan={8}>
-  //       <Collapse
-  //         in={collapse.value}
-  //         timeout="auto"
-  //         unmountOnExit
-  //         sx={{ bgcolor: 'background.neutral' }}
-  //       >
-  //         <Paper sx={{ m: 1.5 }}>
-  //           {row.items.map((item) => (
-  //             <Stack
-  //               key={item.id}
-  //               direction="row"
-  //               alignItems="center"
-  //               sx={{
-  //                 p: (theme) => theme.spacing(1.5, 2, 1.5, 1.5),
-  //                 '&:not(:last-of-type)': {
-  //                   borderBottom: (theme) => `solid 2px ${theme.vars.palette.background.neutral}`,
-  //                 },
-  //               }}
-  //             >
-  //               <Avatar
-  //                 src={item.coverUrl}
-  //                 variant="rounded"
-  //                 sx={{ width: 48, height: 48, mr: 2 }}
-  //               />
-
-  //               <ListItemText
-  //                 primary={item.name}
-  //                 secondary={item.sku}
-  //                 primaryTypographyProps={{ typography: 'body2' }}
-  //                 secondaryTypographyProps={{ component: 'span', color: 'text.disabled', mt: 0.5 }}
-  //               />
-
-  //               <div>x{item.quantity} </div>
-
-  //               <Box sx={{ width: 110, textAlign: 'right' }}>{fCurrency(item.price)}</Box>
-  //             </Stack>
-  //           ))}
-  //         </Paper>
-  //       </Collapse>
-  //     </TableCell>
-  //   </TableRow>
-  // );
-
   return (
     <>
       {renderPrimary}
-
       {/* {renderSecondary} */}
 
       <CustomPopover
@@ -180,32 +182,42 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
               confirm.onTrue();
               popover.onClose();
             }}
-            sx={{ color: 'error.main' }}
+            sx={{ color: 'success.main' }}
           >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            <Iconify icon="solar:check-square-bold" />
+            Approve
           </MenuItem>
 
-          <MenuItem
+          {/* <MenuItem
             onClick={() => {
               onViewRow();
               popover.onClose();
             }}
+            sx={{ color: 'success.main' }}
           >
-            <Iconify icon="solar:eye-bold" />
-            View
-          </MenuItem>
+            <Iconify icon="solar:check-square-bold" />
+            Approve
+          </MenuItem> */}
         </MenuList>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title="Purchase Order"
+        content={
+          <>
+            <Form methods={methods}>
+              <Stack spacing={1.5}>
+                <Field.Text name="amount" placeholder="Price" label="Price" />
+                <Field.Text name="terms" label="Comment" />
+              </Stack>
+            </Form>
+          </>
+        }
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+          <Button variant="contained" color="primary" onClick={handleSubmitPurchaseOrder}>
+            Submit
           </Button>
         }
       />

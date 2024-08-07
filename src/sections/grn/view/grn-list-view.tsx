@@ -1,35 +1,31 @@
 'use client';
 
-import type { InvoiceItem, IInvoiceTableFilters } from 'src/types/invoice';
+import type { IOrderTableFilters } from 'src/types/order';
 
 import { useState, useCallback, useEffect } from 'react';
 
-import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import TableBody from '@mui/material/TableBody';
-import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
+import { RouterLink } from 'src/routes/components';
 
-import { sumBy } from 'src/utils/helper';
 import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _invoices, INVOICE_SERVICE_OPTIONS } from 'src/_mock';
+import { _orders, ORDER_STATUS_OPTIONS } from 'src/_mock';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -48,41 +44,54 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import { searchInvoice } from 'src/api/services';
+import { Grn } from 'src/types/farm';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
+import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
+import { createPurchaseOrder, searchGrn } from 'src/api/services';
 
-import { InvoiceAnalytic } from '../invoice-analytic';
-import { InvoiceTableRow } from '../invoice-table-row';
-import { InvoiceTableToolbar } from '../invoice-table-toolbar';
-import { InvoiceTableFiltersResult } from '../invoice-table-filters-result';
+import { OrderTableRow } from '../order-table-row';
+import { OrderTableToolbar } from '../order-table-toolbar';
+import { OrderTableFiltersResult } from '../order-table-filters-result';
 
 // ----------------------------------------------------------------------
+const GRN_STATUS_OPTIONS = [
+  { value: 'PENDING', label: 'Pending' },
+  { value: 'APPROVED', label: 'Approved' },
+  { value: 'PENDINGPURCHASEORDER', label: 'Pending purchase order' },
+  { value: 'REJECTED', label: 'rejected' },
+];
+
+const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...GRN_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  { id: 'invoiceNumber', label: 'Farmer' },
-  { id: 'createDate', label: 'Date created' },
-  { id: 'dueDate', label: 'Due Date' },
-  { id: 'price', label: 'Amount Due' },
-  { id: 'sent', label: 'Amount Paid', align: 'center' },
-  { id: 'status', label: 'Status' },
-  { id: '' },
+  { id: 'orderNumber', label: 'Grn', width: 88 },
+  { id: 'name', label: 'Farmer' },
+  { id: 'createdAt', label: 'Date', width: 140 },
+  {
+    id: 'totalQuantity',
+    label: 'Approved quantity',
+    width: 120,
+    align: 'center',
+  },
+  { id: 'status', label: 'Status', width: 110 },
+  { id: '', width: 88 },
 ];
 
 // ----------------------------------------------------------------------
 
-export function InvoiceListView() {
-  const theme = useTheme();
+export function GrnListView() {
+  const table = useTable({ defaultOrderBy: 'orderNumber' });
 
   const router = useRouter();
 
-  const table = useTable({ defaultOrderBy: 'createDate' });
-
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState<InvoiceItem[]>([]);
+  const [tableData, setTableData] = useState<Grn[]>([]);
 
-  const filters = useSetState<IInvoiceTableFilters>({
+  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
+
+  const filters = useSetState<IOrderTableFilters>({
     name: '',
-    service: [],
     status: 'all',
     startDate: null,
     endDate: null,
@@ -101,50 +110,10 @@ export function InvoiceListView() {
 
   const canReset =
     !!filters.state.name ||
-    filters.state.service.length > 0 ||
     filters.state.status !== 'all' ||
     (!!filters.state.startDate && !!filters.state.endDate);
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-
-  const getInvoiceLength = (status: string) =>
-    tableData.filter((item) => item.status === status).length;
-
-  const getTotalAmount = (status: string) =>
-    sumBy(
-      tableData.filter((item) => item.status === status),
-      (invoice) => invoice.amountDue
-    );
-
-  const getPercentByStatus = (status: string) =>
-    (getInvoiceLength(status) / tableData.length) * 100;
-
-  const TABS = [
-    {
-      value: 'all',
-      label: 'All',
-      color: 'default',
-      count: tableData.length,
-    },
-    {
-      value: 'PAID',
-      label: 'Paid',
-      color: 'success',
-      count: getInvoiceLength('PAID'),
-    },
-    {
-      value: 'PENDING',
-      label: 'Pending',
-      color: 'warning',
-      count: getInvoiceLength('PENDING'),
-    },
-    {
-      value: 'LATE',
-      label: 'Overdue',
-      color: 'error',
-      count: getInvoiceLength('LATE'),
-    },
-  ] as const;
 
   const handleDeleteRow = useCallback(
     (id: string) => {
@@ -157,6 +126,35 @@ export function InvoiceListView() {
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
     [dataInPage.length, table, tableData]
+  );
+
+  const handleApproveRow = useCallback(
+    (id: string, data: { amount: any; terms: string }) => {
+      try {
+        const selectedRaw = tableData.find((row) => row.id === id);
+        if (!selectedRaw) {
+          toast.info('This action cannot be completed at the moment');
+          return;
+        }
+        const promise = createPurchaseOrder({
+          amount: Number(data.amount),
+          terms: data.terms,
+          grnId: selectedRaw.id,
+          farmerId: selectedRaw?.farmerId,
+          cooperativeId: selectedRaw?.cooperativeId,
+          orderDate: new Date().toISOString(),
+        });
+
+        toast.promise(promise, {
+          loading: 'Loading...',
+          success: 'Purchase order created successfully',
+          error: 'Purchase order could not be created',
+        });
+      } catch (error) {
+        toast.error('Purchase order could not be created');
+      }
+    },
+    [tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
@@ -172,16 +170,9 @@ export function InvoiceListView() {
     });
   }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
-  const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.invoice.edit(id));
-    },
-    [router]
-  );
-
   const handleViewRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.invoice.details(id));
+      router.push(paths.dashboard.order.details(id));
     },
     [router]
   );
@@ -194,89 +185,33 @@ export function InvoiceListView() {
     [filters, table]
   );
 
-  const getInvoices = async () => {
-    try {
-      const response = await searchInvoice();
-      console.log(response);
-
-      setTableData(response.results);
-    } catch (error) {
-      toast.error('Failed to fetch invoices');
-    }
+  const getGrn = () => {
+    searchGrn({ cooperativeId: state.coopId })
+      .then((data) => {
+        setTableData(data.results);
+      })
+      .catch((error) => {
+        toast.error(`Error fetching GRN: ${error.message}`);
+      });
   };
 
   useEffect(() => {
-    getInvoices();
-  }, []);
+    getGrn();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.coopId]);
 
   return (
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="List"
+          heading="GRN List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Invoice', href: paths.dashboard.invoice.root },
+            { name: 'GRN', href: paths.dashboard.order.root },
             { name: 'List' },
           ]}
-          // action={
-          //   <Button
-          //     component={RouterLink}
-          //     href={paths.dashboard.invoice.new}
-          //     variant="contained"
-          //     startIcon={<Iconify icon="mingcute:add-line" />}
-          //   >
-          //     New invoice
-          //   </Button>
-          // }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
-
-        <Card sx={{ mb: { xs: 3, md: 5 } }}>
-          <Scrollbar sx={{ minHeight: 108 }}>
-            <Stack
-              direction="row"
-              divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-              sx={{ py: 2 }}
-            >
-              <InvoiceAnalytic
-                title="Total"
-                total={tableData.length}
-                percent={100}
-                price={sumBy(tableData, (invoice) => invoice.amountDue)}
-                icon="solar:bill-list-bold-duotone"
-                color={theme.vars.palette.info.main}
-              />
-
-              <InvoiceAnalytic
-                title="Paid"
-                total={getInvoiceLength('PAID')}
-                percent={getPercentByStatus('PAID')}
-                price={getTotalAmount('PAID')}
-                icon="solar:file-check-bold-duotone"
-                color={theme.vars.palette.success.main}
-              />
-
-              <InvoiceAnalytic
-                title="Pending"
-                total={getInvoiceLength('PENDING')}
-                percent={getPercentByStatus('PENDING')}
-                price={getTotalAmount('PENDING')}
-                icon="solar:sort-by-time-bold-duotone"
-                color={theme.vars.palette.warning.main}
-              />
-
-              <InvoiceAnalytic
-                title="Overdue"
-                total={getInvoiceLength('LATE')}
-                percent={getPercentByStatus('LATE')}
-                price={getTotalAmount('LATE')}
-                icon="solar:bell-bing-bold-duotone"
-                color={theme.vars.palette.error.main}
-              />
-            </Stack>
-          </Scrollbar>
-        </Card>
 
         <Card>
           <Tabs
@@ -284,42 +219,49 @@ export function InvoiceListView() {
             onChange={handleFilterStatus}
             sx={{
               px: 2.5,
-              boxShadow: `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
+              boxShadow: (theme) =>
+                `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
             }}
           >
-            {TABS.map((tab) => (
+            {STATUS_OPTIONS.map((tab) => (
               <Tab
                 key={tab.value}
+                iconPosition="end"
                 value={tab.value}
                 label={tab.label}
-                iconPosition="end"
                 icon={
                   <Label
                     variant={
                       ((tab.value === 'all' || tab.value === filters.state.status) && 'filled') ||
                       'soft'
                     }
-                    color={tab.color}
+                    color={
+                      (tab.value === 'APPROVED' && 'success') ||
+                      (tab.value === 'PENDING' && 'warning') ||
+                      (tab.value === 'REJECTED' && 'error') ||
+                      'default'
+                    }
                   >
-                    {tab.count}
+                    {['PENDING', 'REJECTED', 'APPROVED', 'PENDINGPURCHASEORDER'].includes(tab.value)
+                      ? tableData.filter((user) => user.status === tab.value).length
+                      : tableData.length}
                   </Label>
                 }
               />
             ))}
           </Tabs>
 
-          <InvoiceTableToolbar
+          <OrderTableToolbar
             filters={filters}
-            dateError={dateError}
             onResetPage={table.onResetPage}
-            options={{ services: INVOICE_SERVICE_OPTIONS.map((option) => option.name) }}
+            dateError={dateError}
           />
 
           {canReset && (
-            <InvoiceTableFiltersResult
+            <OrderTableFiltersResult
               filters={filters}
-              onResetPage={table.onResetPage}
               totalResults={dataFiltered.length}
+              onResetPage={table.onResetPage}
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
@@ -329,43 +271,23 @@ export function InvoiceListView() {
               dense={table.dense}
               numSelected={table.selected.length}
               rowCount={dataFiltered.length}
-              onSelectAllRows={(checked) => {
+              onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
                   dataFiltered.map((row) => row.id)
-                );
-              }}
+                )
+              }
               action={
-                <Stack direction="row">
-                  <Tooltip title="Sent">
-                    <IconButton color="primary">
-                      <Iconify icon="iconamoon:send-fill" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Download">
-                    <IconButton color="primary">
-                      <Iconify icon="eva:download-outline" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Print">
-                    <IconButton color="primary">
-                      <Iconify icon="solar:printer-minimalistic-bold" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Delete">
-                    <IconButton color="primary" onClick={confirm.onTrue}>
-                      <Iconify icon="solar:trash-bin-trash-bold" />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
+                <Tooltip title="Delete">
+                  <IconButton color="primary" onClick={confirm.onTrue}>
+                    <Iconify icon="solar:trash-bin-trash-bold" />
+                  </IconButton>
+                </Tooltip>
               }
             />
 
             <Scrollbar sx={{ minHeight: 444 }}>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
@@ -388,14 +310,14 @@ export function InvoiceListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <InvoiceTableRow
+                      <OrderTableRow
                         key={row.id}
                         row={row}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
+                        onApproveRow={(data) => handleApproveRow(row.id, data)}
+                        onViewRow={() => handleViewRow(row.id)}
                       />
                     ))}
 
@@ -452,13 +374,13 @@ export function InvoiceListView() {
 
 type ApplyFilterProps = {
   dateError: boolean;
-  inputData: InvoiceItem[];
-  filters: IInvoiceTableFilters;
+  inputData: Grn[];
+  filters: IOrderTableFilters;
   comparator: (a: any, b: any) => number;
 };
 
 function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterProps) {
-  const { name, status, service, startDate, endDate } = filters;
+  const { status, name, startDate, endDate } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -472,27 +394,20 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
 
   if (name) {
     inputData = inputData.filter(
-      (invoice) =>
-        invoice.id.indexOf(name.toLowerCase()) !== -1 ||
-        invoice.farmer.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (order) =>
+        order.farmer.mobilePhone.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        order.farmer.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        order.farmer.lastName.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
   if (status !== 'all') {
-    inputData = inputData.filter((invoice) => invoice.status === status);
+    inputData = inputData.filter((order) => order.status === status);
   }
-
-  // if (service.length) {
-  //   inputData = inputData.filter((invoice) =>
-  //     invoice.items.some((filterItem) => service.includes(filterItem.service))
-  //   );
-  // }
 
   if (!dateError) {
     if (startDate && endDate) {
-      inputData = inputData.filter((invoice) =>
-        fIsBetween(invoice.invoiceDate, startDate, endDate)
-      );
+      inputData = inputData.filter((order) => fIsBetween(order.creationDate, startDate, endDate));
     }
   }
 

@@ -152,6 +152,15 @@ export type CoopFarmerList = {
     insuranceType: string;
     cooperativeId?: number;
   };
+  status: {
+    status:
+      | 'APPROVED'
+      | 'REJECTED'
+      | 'PENDINGAPPROVAL'
+      | 'ACTIVE'
+      | 'INACTIVE'
+      | 'PENDINGEXITAPPROVAL';
+  }[];
 };
 
 export type NewFarmer = {
@@ -200,6 +209,7 @@ export type Cooperative = {
   subCounty: string;
   ward: string;
   supplyChainId?: 0;
+  groupName: string;
 };
 
 export type IUserItem = {
@@ -251,6 +261,7 @@ export type UserAccount = {
   phonenumber: string;
   userType: 'SYSTEM_ADMIN' | 'ADMIN' | 'SUPPORT' | 'USER' | 'FARMER';
   verified: boolean;
+  coopId?: number;
 };
 
 export type IUserAccountBillingHistory = {

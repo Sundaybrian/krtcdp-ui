@@ -34,7 +34,7 @@ export const creator = async (args: string | [string, AxiosRequestConfig]) => {
   try {
     const [url, config] = Array.isArray(args) ? args : [args];
 
-    const res = await axiosInstance.post(url, { ...config });
+    const res = await axiosInstance.post(url, { limit: 10, page: 1 }, { ...config });
 
     return res.data;
   } catch (error) {
@@ -67,6 +67,7 @@ export const endpoints = {
     details: '/api/users/details',
     search: '/api/user/search',
     update: '/api/user',
+    get: '/api/user',
     changeStatus: '/api/user/changeStatus',
     changeState: '/api/user/changeState',
     types: '/api/user/types',
@@ -74,6 +75,21 @@ export const endpoints = {
   farmer: {
     new: '/api/farmer',
     search: '/api/farmer/search',
+    get: '/api/farmer',
+    searchFarms: '/api/farm/search',
+    searchHarvests: '/api/harvest/search',
+    searchFarmValueChain: '/api/farm/valuechain/search',
+    searchGrn: '/api/grn/search',
+    approveHarvest: (id: number) => `/api/harvest/${id}/reject-harvest`,
+    evaluateHarvest: (id: number) => `/api/harvest/${id}/evaluate`,
+    rejectJoin: (userId: number, coopId: number) =>
+      `/api/cooperative/${userId}/reject-join-cooperative/${coopId}`,
+    approveLeaveCoop: (userId: number, coopId: number) =>
+      `/api/cooperative/${userId}/approve-leave-cooperative/${coopId}`,
+  },
+  purchaseOrder: {
+    new: '/api/purchaseorder',
+    search: '/api/purchaseorder/search',
   },
   stakeholder: {
     new: '/api/stakeholder',
@@ -83,6 +99,7 @@ export const endpoints = {
   cooperative: {
     new: '/api/cooperative',
     search: '/api/cooperative/search',
+    get: 'api/cooperative',
     assignAdmin: 'api/cooperative',
     unlinkAdmin: 'api/cooperative',
     addCoopFarmer: '/api/cooperative',
@@ -108,5 +125,8 @@ export const endpoints = {
     list: '/api/product/list',
     details: '/api/product/details',
     search: '/api/product/search',
+  },
+  invoice: {
+    search: '/api/invoice/search',
   },
 };

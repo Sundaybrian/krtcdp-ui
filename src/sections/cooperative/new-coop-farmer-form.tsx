@@ -31,8 +31,9 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { addCoopFarmer, addUser, getCounties } from 'src/api/services';
 import { County, SubCounty } from 'src/api/data.inteface';
-import { MARITAL_STATUS_OPTIONS } from 'src/utils/default';
+import { MARITAL_STATUS_OPTIONS, TENANT_LOCAL_STORAGE } from 'src/utils/default';
 import { useSearchCooperative } from 'src/actions/cooperative';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
 
 // ----------------------------------------------------------------------
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
@@ -78,6 +79,7 @@ type Props = {
 export function CoopFarmerNewEditForm({ currentUser }: Props) {
   const router = useRouter();
   const { searchResults } = useSearchCooperative();
+  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
   const password = useBoolean();
   const [counties, setCounties] = useState<County[]>([]);
@@ -158,7 +160,11 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
     };
 
     try {
-      await addCoopFarmer(data.coopId, submitData);
+      if (!state.coopId && !data.coopId) {
+        toast.error('Failed to create coop farmer');
+      }
+      await addCoopFarmer(state.coopId || data.coopId, submitData);
+
       reset();
       toast.success(currentUser ? 'Update success!' : 'User created successfully!');
       // router.push(paths.dashboard.user.list);
@@ -196,25 +202,27 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
     <Form methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={8}>
-          <Card sx={{ p: 3 }}>
-            <Field.Select name="coopId" label="Cooperative">
-              <MenuItem
-                value=""
-                onClick={() => null}
-                sx={{ fontStyle: 'italic', color: 'text.secondary' }}
-              >
-                None
-              </MenuItem>
-
-              <Divider sx={{ borderStyle: 'dashed' }} />
-
-              {searchResults.map((coop) => (
-                <MenuItem key={coop.krapin} value={coop.id} onClick={() => null}>
-                  {coop.groupName}
+          {!state.coopId && (
+            <Card sx={{ p: 3 }}>
+              <Field.Select name="coopId" label="Cooperative">
+                <MenuItem
+                  value=""
+                  onClick={() => null}
+                  sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                >
+                  None
                 </MenuItem>
-              ))}
-            </Field.Select>
-          </Card>
+
+                <Divider sx={{ borderStyle: 'dashed' }} />
+
+                {searchResults.map((coop) => (
+                  <MenuItem key={coop.krapin} value={coop.id} onClick={() => null}>
+                    {coop.groupName}
+                  </MenuItem>
+                ))}
+              </Field.Select>
+            </Card>
+          )}
           <Card sx={{ p: 3 }}>
             <Box
               rowGap={3}

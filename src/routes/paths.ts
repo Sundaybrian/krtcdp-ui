@@ -118,6 +118,14 @@ export const paths = {
       admin: `${ROOTS.DASHBOARD}/cooperative/admin`,
       coopFarmers: `${ROOTS.DASHBOARD}/cooperative/coop-farmers`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/product/${id}/edit`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/cooperative/farmer/${id}`,
+    },
+    farner: {
+      root: `${ROOTS.DASHBOARD}/cooperative/coop-farmers`,
+      newCoopFarmer: `${ROOTS.DASHBOARD}/cooperative/new-farmer`,
+      coopFarmers: `${ROOTS.DASHBOARD}/cooperative/coop-farmers`,
+      grn: `${ROOTS.DASHBOARD}/farmer/grn`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/cooperative/farmer/${id}`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
@@ -187,6 +195,7 @@ export const paths = {
     },
     order: {
       root: `${ROOTS.DASHBOARD}/order`,
+      new: `${ROOTS.DASHBOARD}/order/new`,
       details: (id: string) => `${ROOTS.DASHBOARD}/order/${id}`,
       demo: {
         details: `${ROOTS.DASHBOARD}/order/${MOCK_ID}`,

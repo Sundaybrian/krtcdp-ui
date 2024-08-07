@@ -32,6 +32,7 @@ export const PERMISSIONS = [
       'view:product',
       'view:order',
       'view:category',
+      'view:farmer',
     ],
   },
   {
@@ -63,3 +64,5 @@ export const PERMISSIONS = [
     permissions: ['view:dashboard'],
   },
 ];
+
+export const TENANT_LOCAL_STORAGE = 'tenant';

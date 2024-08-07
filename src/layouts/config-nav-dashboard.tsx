@@ -88,6 +88,19 @@ export const navData = [
       },
 
       {
+        title: 'Farmers',
+        permission: 'view:farmer',
+        path: paths.dashboard.farner.root,
+        icon: ICONS.banking,
+        children: [
+          { title: 'New farmer', path: paths.dashboard.farner.newCoopFarmer },
+          { title: 'Farmers', path: paths.dashboard.farner.coopFarmers },
+          // { title: 'Farms', path: paths.dashboard.farner.coopFarmers },
+          // { title: 'Harvest', path: paths.dashboard.farner.coopFarmers },
+          { title: 'GRN', path: paths.dashboard.farner.grn },
+        ],
+      },
+      {
         title: 'Cooperative',
         permission: 'view:cooperative',
         path: paths.dashboard.cooperative.root,
@@ -97,8 +110,8 @@ export const navData = [
           { title: 'Create', path: paths.dashboard.cooperative.new },
           { title: 'Assign Admin', path: paths.dashboard.cooperative.assignAdmin },
           { title: 'Coop Admins', path: paths.dashboard.cooperative.admin },
-          { title: 'New coop-farmer', path: paths.dashboard.cooperative.newCoopFarmer },
-          { title: 'Coop-Farmers', path: paths.dashboard.cooperative.coopFarmers },
+          // { title: 'New coop-farmer', path: paths.dashboard.cooperative.newCoopFarmer },
+          // { title: 'Coop-Farmers', path: paths.dashboard.cooperative.coopFarmers },
         ],
       },
 
@@ -144,17 +157,7 @@ export const navData = [
       //     { title: 'Details', path: paths.dashboard.order.demo.details },
       //   ],
       // },
-      // {
-      //   title: 'Invoice',
-      //   path: paths.dashboard.invoice.root,
-      //   icon: ICONS.invoice,
-      //   children: [
-      //     { title: 'List', path: paths.dashboard.invoice.root },
-      //     { title: 'Details', path: paths.dashboard.invoice.demo.details },
-      //     { title: 'Create', path: paths.dashboard.invoice.new },
-      //     { title: 'Edit', path: paths.dashboard.invoice.demo.edit },
-      //   ],
-      // },
+
       // {
       //   title: 'Blog',
       //   path: paths.dashboard.post.root,
@@ -232,35 +235,44 @@ export const navData = [
         ],
       },
       {
-        title: 'Orders',
+        title: 'Purchase Orders',
         path: paths.dashboard.order.root,
         icon: ICONS.order,
         permission: 'view:category',
-        children: [
-          { title: 'List', path: paths.dashboard.order.root },
-          { title: 'Details', path: paths.dashboard.order.demo.details },
-        ],
+        children: [{ title: 'Orders', path: paths.dashboard.order.root }],
       },
       {
-        title: 'Catalog',
-        permission: 'view:category',
-        path: paths.dashboard.category.root,
-        icon: ICONS.job,
+        title: 'Invoice',
+        path: paths.dashboard.invoice.root,
+        icon: ICONS.invoice,
+        permission: 'view:farmer',
         children: [
-          { title: 'List', path: paths.dashboard.category.root },
-          { title: 'New', path: paths.dashboard.category.new },
+          { title: 'List', path: paths.dashboard.invoice.root },
+          // { title: 'Details', path: paths.dashboard.invoice.demo.details },
+          // { title: 'Create', path: paths.dashboard.invoice.new },
+          // { title: 'Edit', path: paths.dashboard.invoice.demo.edit },
         ],
       },
-      {
-        title: 'Payment Channels',
-        permission: 'view:category',
-        path: paths.dashboard.category.root,
-        icon: ICONS.job,
-        children: [
-          { title: 'Channels', path: paths.dashboard.category.root },
-          { title: 'New Payment Channel', path: paths.dashboard.category.new },
-        ],
-      },
+      // {
+      //   title: 'Catalog',
+      //   permission: 'view:category',
+      //   path: paths.dashboard.category.root,
+      //   icon: ICONS.job,
+      //   children: [
+      //     { title: 'List', path: paths.dashboard.category.root },
+      //     { title: 'New', path: paths.dashboard.category.new },
+      //   ],
+      // },
+      // {
+      //   title: 'Payment Channels',
+      //   permission: 'view:category',
+      //   path: paths.dashboard.category.root,
+      //   icon: ICONS.job,
+      //   children: [
+      //     { title: 'Channels', path: paths.dashboard.category.root },
+      //     { title: 'New Payment Channel', path: paths.dashboard.category.new },
+      //   ],
+      // },
     ],
   },
   /**

@@ -32,10 +32,11 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { addUser, assignAdminToCoop, createCooperative, getCounties } from 'src/api/services';
 import { County, SubCounty } from 'src/api/data.inteface';
-import { INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
+import { INSURANCE_TYPE_OPTIONS, TENANT_LOCAL_STORAGE } from 'src/utils/default';
 import { useSearchCooperative } from 'src/actions/cooperative';
 import { useSearchAdmins } from 'src/actions/user';
 import { PRODUCT_COLOR_NAME_OPTIONS, PRODUCT_CATEGORY_GROUP_OPTIONS } from 'src/_mock';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
 // ----------------------------------------------------------------------
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 
@@ -53,14 +54,16 @@ type Props = {
 export function AssignAdminNewEditForm({ selectedAdmin }: Props) {
   const router = useRouter();
   const { searchResults } = useSearchCooperative();
+  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
+
   const { userResults } = useSearchAdmins({ userType: 'COOPERATIVE_ADMIN' });
 
   const defaultValues = useMemo(
     () => ({
       admins: [],
-      coopId: '',
+      coopId: state.coopId,
     }),
-    []
+    [state.coopId]
   );
 
   const methods = useForm<NewUserSchemaType>({
@@ -82,7 +85,7 @@ export function AssignAdminNewEditForm({ selectedAdmin }: Props) {
     };
 
     try {
-      await assignAdminToCoop(data.coopId, submitData);
+      await assignAdminToCoop(state.coopId || data.coopId, submitData);
       reset();
       toast.success(selectedAdmin ? 'Update success!' : 'Admin assigned successfully!');
       // router.push(paths.dashboard.user.list);
@@ -108,29 +111,31 @@ export function AssignAdminNewEditForm({ selectedAdmin }: Props) {
               display="grid"
               gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
             >
-              <Field.Select name="coopId" label="Cooperative">
-                <MenuItem
-                  value=""
-                  onClick={() => null}
-                  sx={{ fontStyle: 'italic', color: 'text.secondary' }}
-                >
-                  None
-                </MenuItem>
-
-                <Divider sx={{ borderStyle: 'dashed' }} />
-
-                {searchResults.map((coop) => (
+              {!state.coopId && (
+                <Field.Select name="coopId" label="Cooperative">
                   <MenuItem
-                    key={coop.mobilePhone}
-                    value={coop.id}
-                    onClick={() => {
-                      handleChange(coop.id);
-                    }}
+                    value=""
+                    onClick={() => null}
+                    sx={{ fontStyle: 'italic', color: 'text.secondary' }}
                   >
-                    {coop.groupName}--{coop.incorporationNumber}
+                    None
                   </MenuItem>
-                ))}
-              </Field.Select>
+
+                  <Divider sx={{ borderStyle: 'dashed' }} />
+
+                  {searchResults.map((coop) => (
+                    <MenuItem
+                      key={coop.mobilePhone}
+                      value={coop.id}
+                      onClick={() => {
+                        handleChange(coop.id);
+                      }}
+                    >
+                      {coop.groupName}--{coop.incorporationNumber}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
+              )}
 
               <Field.Autocomplete
                 name="admins"
