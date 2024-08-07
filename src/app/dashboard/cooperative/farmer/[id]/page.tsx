@@ -81,7 +81,7 @@ export default function FarmerAccountView({ params }: Props) {
   const [selectedFarm, setSelectedFarm] = useState<number>();
 
   const getFarms = () => {
-    searchFarms()
+    searchFarms({ userId: Number(id) })
       .then((res) => {
         setFarms(res.results);
       })

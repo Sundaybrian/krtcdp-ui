@@ -88,6 +88,17 @@ export const navData = [
       },
 
       {
+        title: 'Users',
+        permission: 'view:users',
+        path: paths.dashboard.user.root,
+        icon: ICONS.user,
+        children: [
+          { title: 'Assign Admin', path: paths.dashboard.cooperative.assignAdmin },
+          { title: 'Admins', path: paths.dashboard.cooperative.admin },
+        ],
+      },
+
+      {
         title: 'Farmers',
         permission: 'view:farmer',
         path: paths.dashboard.farner.root,
@@ -238,14 +249,14 @@ export const navData = [
         title: 'Purchase Orders',
         path: paths.dashboard.order.root,
         icon: ICONS.order,
-        permission: 'view:category',
+        permission: 'view:order',
         children: [{ title: 'Orders', path: paths.dashboard.order.root }],
       },
       {
         title: 'Invoice',
         path: paths.dashboard.invoice.root,
         icon: ICONS.invoice,
-        permission: 'view:farmer',
+        permission: 'view:invoice',
         children: [
           { title: 'List', path: paths.dashboard.invoice.root },
           // { title: 'Details', path: paths.dashboard.invoice.demo.details },

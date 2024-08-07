@@ -92,7 +92,7 @@ export function CooperativeFarmerListView() {
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
   useEffect(() => {
-    searchCoopFarmers({ cooperativeId: state.coopId }).then((data) => {
+    searchCoopFarmers(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
       if (data.results.length) {
         setTableData(data.results);
       }
@@ -300,15 +300,15 @@ export function CooperativeFarmerListView() {
           label="View"
           onClick={() => handleViewRow(params.row.id)}
         />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:pen-bold" />}
+        //   label="Edit"
+        //   onClick={() => handleEditRow(params.row.id)}
+        // />,
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          onClick={() => handleEditRow(params.row.id)}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:check-circle-outine" />}
+          icon={<Iconify icon="solar:check-square-bold" />}
           label="Approve Join"
           onClick={() => {
             handleApproval(params.row.id);
@@ -318,7 +318,7 @@ export function CooperativeFarmerListView() {
 
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:user-cross-bold-duotone" />}
+          icon={<Iconify icon="solar:user-cross-bold" />}
           label="Reject Join"
           onClick={() => {
             rejectFarmerJoin(params.row.id);
@@ -328,7 +328,7 @@ export function CooperativeFarmerListView() {
 
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:check-circle-outin" />}
+          icon={<Iconify icon="solar:check-circle-bold" />}
           label="Approve Leave"
           onClick={() => {
             handleApprovalLeave(params.row.id);

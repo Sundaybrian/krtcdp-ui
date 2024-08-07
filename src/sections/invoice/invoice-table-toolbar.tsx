@@ -79,7 +79,7 @@ export function InvoiceTableToolbar({ filters, options, dateError, onResetPage }
         direction={{ xs: 'column', md: 'row' }}
         sx={{ p: 2.5, pr: { xs: 2.5, md: 1 } }}
       >
-        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
+        {/* <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 180 } }}>
           <InputLabel htmlFor="invoice-filter-service-select-label">Service</InputLabel>
 
           <Select
@@ -102,7 +102,7 @@ export function InvoiceTableToolbar({ filters, options, dateError, onResetPage }
               </MenuItem>
             ))}
           </Select>
-        </FormControl>
+        </FormControl> */}
 
         <DatePicker
           label="Start date"

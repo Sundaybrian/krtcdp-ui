@@ -186,7 +186,7 @@ export function GrnListView() {
   );
 
   const getGrn = () => {
-    searchGrn({ cooperativeId: state.coopId })
+    searchGrn(state.coopId ? { cooperativeId: state.coopId } : {})
       .then((data) => {
         setTableData(data.results);
       })
