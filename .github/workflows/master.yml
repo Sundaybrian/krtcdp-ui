@@ -1,10 +1,10 @@
 name: Deploy
 
-# Controls when the action will run.
+# Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [dev]
+    branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -15,30 +15,38 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      # - name: Install PM2 globally
-      #   run: npm install -g pm2
+    # - name: Install PM2 globally
+    #   run: npm install -g pm2
 
-      - name: Deploy using ssh
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            cd /var/www/krtcdp-frontend/
-            git pull origin dev
-            git status
+    - name: Deploy using ssh
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd /var/www/krtcdp-ui/
+          git pull origin master
+          git status
+          npm install
+          npm run build
+          pm2 restart ecosystem.config.js
 
-      - name: run app start up
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-          script: |
-            cd /var/www/krtcdp-frontend/
-            # npm install
-            npm run build
-            pm2 restart kenyaruralFrontend
+    - name: Deploy to dev environment
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.KRTCD_HOST }}
+        username: ${{ secrets.KRTCD_USERNAME }}
+        key: ${{ secrets.KRTCD_DEV_SERVER_KEY }}
+        port: 1148
+        password: ${{ secrets.KRTCD_PASS }}
+        script: |
+          cd /var/www/krtcdp-ui/
+          eval `ssh-agent -s`
+          ssh-add ~/.ssh/dev
+          git pull origin dev
+          git status     
