@@ -37,7 +37,18 @@ export const PERMISSIONS = [
   },
   {
     role: 'COOPERATIVE_ADMIN',
-    permissions: ['view:dashboard', 'view:cooperative', 'view:product', 'view:category'],
+    permissions: [
+      'view:dashboard',
+      // 'view:cooperative',
+      'view:farmer',
+      'view:product',
+      'view:category',
+      'view:county',
+      'view:valuechain',
+      'view:invoice',
+      'view:order',
+      'view:category',
+    ],
   },
   {
     role: 'SYSTEM_USER',
