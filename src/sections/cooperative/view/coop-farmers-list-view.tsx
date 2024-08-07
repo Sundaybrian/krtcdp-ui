@@ -308,7 +308,7 @@ export function CooperativeFarmerListView() {
         // />,
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:check-circle-outine" />}
+          icon={<Iconify icon="solar:check-square-bold" />}
           label="Approve Join"
           onClick={() => {
             handleApproval(params.row.id);
