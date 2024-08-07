@@ -39,7 +39,7 @@ import { useLocalStorage } from 'src/hooks/use-local-storage';
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 
 export const NewUserSchema = zod.object({
-  coopId: zod.number(),
+  coopId: zod.any(),
   firstName: zod.string().min(1, { message: 'First name is required!' }),
   lastName: zod.string().min(1, { message: 'Last name is required!' }),
   middleName: zod.string().min(1, { message: 'Middle name is required!' }),
