@@ -33,6 +33,7 @@ export const PERMISSIONS = [
       'view:order',
       'view:category',
       'view:farmer',
+      'view:invoice',
     ],
   },
   {

@@ -300,12 +300,12 @@ export function CooperativeFarmerListView() {
           label="View"
           onClick={() => handleViewRow(params.row.id)}
         />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          onClick={() => handleEditRow(params.row.id)}
-        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:pen-bold" />}
+        //   label="Edit"
+        //   onClick={() => handleEditRow(params.row.id)}
+        // />,
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:check-circle-outine" />}
@@ -318,7 +318,7 @@ export function CooperativeFarmerListView() {
 
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:user-cross-bold-duotone" />}
+          icon={<Iconify icon="solar:user-cross-bold" />}
           label="Reject Join"
           onClick={() => {
             rejectFarmerJoin(params.row.id);
@@ -328,7 +328,7 @@ export function CooperativeFarmerListView() {
 
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:check-circle-outin" />}
+          icon={<Iconify icon="solar:check-circle-bold" />}
           label="Approve Leave"
           onClick={() => {
             handleApprovalLeave(params.row.id);

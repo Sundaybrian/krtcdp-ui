@@ -105,7 +105,7 @@ export function InvoiceTableRow({
 
         <TableCell>{fCurrency(row.amountDue)}</TableCell>
 
-        <TableCell align="center">{row.amountPaid}</TableCell>
+        <TableCell align="center">{fCurrency(row.amountPaid)}</TableCell>
 
         <TableCell>
           <Label
@@ -135,7 +135,7 @@ export function InvoiceTableRow({
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem
+          {/* <MenuItem
             onClick={() => {
               onViewRow();
               popover.onClose();
@@ -143,7 +143,7 @@ export function InvoiceTableRow({
           >
             <Iconify icon="solar:eye-bold" />
             View
-          </MenuItem>
+          </MenuItem> */}
 
           <MenuItem
             onClick={() => {
