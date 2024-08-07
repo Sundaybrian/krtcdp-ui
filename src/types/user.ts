@@ -96,8 +96,125 @@ export type CreateUser = {
   userType: string;
 };
 
+export type CoopFarmer = {
+  user: {
+    firstName: string;
+    lastName: string;
+    middleName: string;
+    email: string;
+    password: string;
+    mobilePhone: string;
+    birthDate: string;
+    ward: string;
+    residence: string;
+    county: string;
+    subCounty: string;
+    kraPin: string;
+    // Not required
+    acceptTerms: boolean;
+    isAdministrator: boolean;
+    userState: string;
+    isSupport: boolean;
+    userType: string;
+  };
+  farmer: {
+    maritalStatus: string;
+    hasInsurance: boolean;
+    insuranceProvider: string;
+    insuranceType: string;
+  };
+};
+
+export type CoopFarmerList = {
+  id: any;
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  email: string;
+  password: string;
+  mobilePhone: string;
+  birthDate: string;
+  ward: string;
+  residence: string;
+  county: string;
+  subCounty: string;
+  kraPin: string;
+  // Not required
+  acceptTerms: boolean;
+  isAdministrator: boolean;
+  userState: string;
+  isSupport: boolean;
+  userType: string;
+  Farmer: {
+    maritalStatus: string;
+    hasInsurance: boolean;
+    insuranceProvider: string;
+    insuranceType: string;
+    cooperativeId?: number;
+  };
+  status: {
+    status:
+      | 'APPROVED'
+      | 'REJECTED'
+      | 'PENDINGAPPROVAL'
+      | 'ACTIVE'
+      | 'INACTIVE'
+      | 'PENDINGEXITAPPROVAL';
+  }[];
+};
+
+export type NewFarmer = {
+  maritalStatus: string;
+  hasInsurance: boolean;
+  insuranceProvider: string;
+  insuranceType: string;
+};
+
+export type NewStakeholder = {
+  type: string;
+  businessName: string;
+  mobilePhone: string;
+  yearOfRegistration: any;
+  kraPin: string;
+  residence: string;
+  county: string;
+  subCounty: string;
+  ward: string;
+  supplyChainId?: 0;
+};
+
+export type Stakeholder = {
+  id: any;
+  type: string;
+  businessName: string;
+  mobilePhone: string;
+  yearOfRegistration: any;
+  kraPin: string;
+  residence: string;
+  county: string;
+  subCounty: string;
+  ward: string;
+  supplyChainId?: 0;
+};
+
+export type Cooperative = {
+  id: number;
+  type: string;
+  businessName: string;
+  mobilePhone: string;
+  yearOfRegistration: any;
+  kraPin: string;
+  residence: string;
+  county: string;
+  subCounty: string;
+  ward: string;
+  supplyChainId?: 0;
+  groupName: string;
+};
+
 export type IUserItem = {
-  id: string;
+  id: any;
+  coopId?: number;
   firstName: string;
   lastName: string;
   middleName: string;
@@ -131,6 +248,20 @@ export type IUserAccount = {
   phoneNumber: string;
   country: string | null;
   photoURL: File | string | null;
+};
+
+export type UserAccount = {
+  acceptTerms: boolean;
+  accountState: string;
+  email: string;
+  emailVerified: boolean;
+  firstName: string;
+  id: number;
+  lastName: string;
+  phonenumber: string;
+  userType: 'SYSTEM_ADMIN' | 'ADMIN' | 'SUPPORT' | 'USER' | 'FARMER';
+  verified: boolean;
+  coopId?: number;
 };
 
 export type IUserAccountBillingHistory = {

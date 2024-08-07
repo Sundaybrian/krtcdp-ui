@@ -92,7 +92,7 @@ export function OrderTableToolbar({ filters, onResetPage, dateError }: Props) {
             fullWidth
             value={filters.state.name}
             onChange={handleFilterName}
-            placeholder="Search customer or order number..."
+            placeholder="Search farmer or order number..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

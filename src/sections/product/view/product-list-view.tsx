@@ -50,6 +50,8 @@ import {
   RenderCellPublish,
   RenderCellProduct,
   RenderCellCreatedAt,
+  RenderCellCategory,
+  RenderCellCode,
 } from '../product-table-row';
 
 // ----------------------------------------------------------------------
@@ -59,7 +61,7 @@ const PUBLISH_OPTIONS = [
   { value: 'draft', label: 'Draft' },
 ];
 
-const HIDE_COLUMNS = { category: false };
+const HIDE_COLUMNS = { category: true, code: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
@@ -85,7 +87,41 @@ export function ProductListView() {
 
   useEffect(() => {
     if (products.length) {
-      setTableData(products);
+      const p = products.map((product) => ({
+        ...product,
+        price: Math.ceil(Math.random() * 100000),
+        name: [
+          'Fertilizer spreaders',
+          'Harrows',
+          'Tractor',
+          'Baler',
+          'Wheelbarrow',
+          'Cultivator',
+          'Seed Tender',
+          'Pruner',
+          'Combine Harverster',
+          'Potato Digger',
+          'Sprayer',
+          'Plow',
+          'Seeder',
+          'Mower',
+          'Tedder',
+          'Loader',
+          'Rake',
+          'Sprinkler',
+          'Maize',
+          'Wheat',
+          'Rice',
+          'Soybean',
+          'Cotton',
+          'Sugarcane',
+        ][Math.floor(Math.random() * 21)],
+        category: ['Agriculture', 'Gardening', 'Landscaping', 'Farming'][
+          Math.floor(Math.random() * 4)
+        ],
+        coverUrl: `../../assets/farm/${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17][Math.floor(Math.random() * 18)]}.avif`,
+      }));
+      setTableData(p);
     }
   }, [products]);
 
@@ -142,7 +178,7 @@ export function ProductListView() {
   );
 
   const columns: GridColDef[] = [
-    { field: 'category', headerName: 'Category', filterable: false },
+    // { field: 'category', headerName: 'Category', filterable: false },
     {
       field: 'name',
       headerName: 'Product',
@@ -154,14 +190,32 @@ export function ProductListView() {
       ),
     },
     {
+      field: 'category',
+      headerName: 'Category',
+      width: 160,
+      renderCell: (params) => <RenderCellCategory params={params} />,
+    },
+    {
+      field: 'code',
+      headerName: 'Product Code',
+      width: 160,
+      renderCell: (params) => <RenderCellCode params={params} />,
+    },
+    {
       field: 'createdAt',
       headerName: 'Create at',
       width: 160,
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
     {
+      field: 'updatedAt',
+      headerName: 'Updated at',
+      width: 160,
+      renderCell: (params) => <RenderCellCreatedAt params={params} />,
+    },
+    {
       field: 'inventoryType',
-      headerName: 'Stock',
+      headerName: 'Orders',
       width: 160,
       type: 'singleSelect',
       valueOptions: PRODUCT_STOCK_OPTIONS,
@@ -381,6 +435,7 @@ type ApplyFilterProps = {
 
 function applyFilter({ inputData, filters }: ApplyFilterProps) {
   const { stock, publish } = filters;
+  console.log('APplying--------');
 
   if (stock.length) {
     inputData = inputData.filter((product) => stock.includes(product.inventoryType));

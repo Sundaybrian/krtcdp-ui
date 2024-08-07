@@ -111,7 +111,6 @@ export function HeaderBase({
   ...other
 }: HeaderBaseProps) {
   const theme = useTheme();
-
   return (
     <HeaderSection
       sx={sx}
@@ -181,7 +180,7 @@ export function HeaderBase({
               )}
 
               {/* -- Contacts popover -- */}
-              {contacts && <ContactsPopover data-slot="contacts" data={data?.contacts} />}
+              {/* {contacts && <ContactsPopover data-slot="contacts" data={data?.contacts} />} */}
 
               {/* -- Settings button -- */}
               {settings && <SettingsButton data-slot="settings" />}
@@ -199,13 +198,13 @@ export function HeaderBase({
                   variant="contained"
                   rel="noopener"
                   target="_blank"
-                  href={paths.minimalStore}
+                  href={paths.auth.jwt.signUp}
                   sx={{
                     display: 'none',
                     [theme.breakpoints.up(layoutQuery)]: { display: 'inline-flex' },
                   }}
                 >
-                  Purchase
+                  Sign up
                 </Button>
               )}
             </Box>

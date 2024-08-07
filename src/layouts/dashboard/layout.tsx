@@ -4,7 +4,7 @@ import type { SettingsState } from 'src/components/settings';
 import type { NavSectionProps } from 'src/components/nav-section';
 import type { Theme, SxProps, CSSObject, Breakpoint } from '@mui/material/styles';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
@@ -18,6 +18,9 @@ import { varAlpha, stylesMode } from 'src/theme/styles';
 
 import { bulletColor } from 'src/components/nav-section';
 import { useSettingsContext } from 'src/components/settings';
+import useAuthUser from 'src/auth/hooks/use-auth-user';
+import { PERMISSIONS } from 'src/utils/default';
+import { useSearchCooperative } from 'src/actions/cooperative';
 
 import { Main } from './main';
 import { NavMobile } from './nav-mobile';
@@ -29,7 +32,6 @@ import { HeaderBase } from '../core/header-base';
 import { _workspaces } from '../config-nav-workspace';
 import { LayoutSection } from '../core/layout-section';
 import { navData as dashboardNavData } from '../config-nav-dashboard';
-
 // ----------------------------------------------------------------------
 
 export type DashboardLayoutProps = {
@@ -43,6 +45,10 @@ export type DashboardLayoutProps = {
 export function DashboardLayout({ sx, children, data }: DashboardLayoutProps) {
   const theme = useTheme();
 
+  const { searchResults } = useSearchCooperative();
+
+  const currentUser = useAuthUser();
+
   const mobileNavOpen = useBoolean();
 
   const settings = useSettingsContext();
@@ -51,13 +57,22 @@ export function DashboardLayout({ sx, children, data }: DashboardLayoutProps) {
 
   const layoutQuery: Breakpoint = 'lg';
 
-  const navData = data?.nav ?? dashboardNavData;
-
   const isNavMini = settings.navLayout === 'mini';
 
   const isNavHorizontal = settings.navLayout === 'horizontal';
 
   const isNavVertical = isNavMini || settings.navLayout === 'vertical';
+
+  const navData = dashboardNavData.filter((item, index) => {
+    const zz = item.items.filter((subItem) => {
+      const perm = PERMISSIONS.find((permission) => permission.role === currentUser?.userType);
+      return perm?.permissions.includes(subItem.permission!);
+    });
+    if (zz.length) {
+      item.items = zz;
+    }
+    return true;
+  });
 
   return (
     <>
@@ -82,7 +97,7 @@ export function DashboardLayout({ sx, children, data }: DashboardLayoutProps) {
               langs: allLangs,
               account: _account,
               contacts: _contacts,
-              workspaces: _workspaces,
+              workspaces: searchResults,
               notifications: _notifications,
             }}
             slotsDisplay={{

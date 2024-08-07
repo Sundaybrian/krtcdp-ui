@@ -1,4 +1,4 @@
-import type { IOrderItem } from 'src/types/order';
+import type { IOrderItem, PurchaseOrderItem } from 'src/types/order';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -28,7 +28,7 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: IOrderItem;
+  row: PurchaseOrderItem;
   selected: boolean;
   onViewRow: () => void;
   onSelectRow: () => void;
@@ -54,43 +54,45 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
 
       <TableCell>
         <Link color="inherit" onClick={onViewRow} underline="always" sx={{ cursor: 'pointer' }}>
-          {row.orderNumber}
+          {row.id}
         </Link>
       </TableCell>
 
       <TableCell>
         <Stack spacing={2} direction="row" alignItems="center">
-          <Avatar alt={row.customer.name} src={row.customer.avatarUrl} />
+          <Avatar alt={row.farmer.firstName} src={row.farmer.lastName} />
 
           <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
-            <Box component="span">{row.customer.name}</Box>
+            <Box component="span">
+              {row.farmer.firstName} {row.farmer.lastName}
+            </Box>
             <Box component="span" sx={{ color: 'text.disabled' }}>
-              {row.customer.email}
+              {row.farmer.mobilePhone}
             </Box>
           </Stack>
         </Stack>
       </TableCell>
-
+      <TableCell> {row.cooperative.groupName} </TableCell>
       <TableCell>
         <ListItemText
-          primary={fDate(row.createdAt)}
-          secondary={fTime(row.createdAt)}
+          primary={fDate(row.orderDate)}
+          secondary={fTime(row.orderDate)}
           primaryTypographyProps={{ typography: 'body2', noWrap: true }}
           secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
         />
       </TableCell>
 
-      <TableCell align="center"> {row.totalQuantity} </TableCell>
+      <TableCell align="center"> {row.terms} </TableCell>
 
-      <TableCell> {fCurrency(row.subtotal)} </TableCell>
+      <TableCell> {fCurrency(row.amount)} </TableCell>
 
       <TableCell>
         <Label
           variant="soft"
           color={
-            (row.status === 'completed' && 'success') ||
-            (row.status === 'pending' && 'warning') ||
-            (row.status === 'cancelled' && 'error') ||
+            (row.status === 'APPROVED' && 'success') ||
+            (row.status === 'PENDING' && 'warning') ||
+            (row.status === 'REJECTED' && 'error') ||
             'default'
           }
         >
@@ -114,57 +116,57 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
     </TableRow>
   );
 
-  const renderSecondary = (
-    <TableRow>
-      <TableCell sx={{ p: 0, border: 'none' }} colSpan={8}>
-        <Collapse
-          in={collapse.value}
-          timeout="auto"
-          unmountOnExit
-          sx={{ bgcolor: 'background.neutral' }}
-        >
-          <Paper sx={{ m: 1.5 }}>
-            {row.items.map((item) => (
-              <Stack
-                key={item.id}
-                direction="row"
-                alignItems="center"
-                sx={{
-                  p: (theme) => theme.spacing(1.5, 2, 1.5, 1.5),
-                  '&:not(:last-of-type)': {
-                    borderBottom: (theme) => `solid 2px ${theme.vars.palette.background.neutral}`,
-                  },
-                }}
-              >
-                <Avatar
-                  src={item.coverUrl}
-                  variant="rounded"
-                  sx={{ width: 48, height: 48, mr: 2 }}
-                />
+  // const renderSecondary = (
+  //   <TableRow>
+  //     <TableCell sx={{ p: 0, border: 'none' }} colSpan={8}>
+  //       <Collapse
+  //         in={collapse.value}
+  //         timeout="auto"
+  //         unmountOnExit
+  //         sx={{ bgcolor: 'background.neutral' }}
+  //       >
+  //         <Paper sx={{ m: 1.5 }}>
+  //           {row.items.map((item) => (
+  //             <Stack
+  //               key={item.id}
+  //               direction="row"
+  //               alignItems="center"
+  //               sx={{
+  //                 p: (theme) => theme.spacing(1.5, 2, 1.5, 1.5),
+  //                 '&:not(:last-of-type)': {
+  //                   borderBottom: (theme) => `solid 2px ${theme.vars.palette.background.neutral}`,
+  //                 },
+  //               }}
+  //             >
+  //               <Avatar
+  //                 src={item.coverUrl}
+  //                 variant="rounded"
+  //                 sx={{ width: 48, height: 48, mr: 2 }}
+  //               />
 
-                <ListItemText
-                  primary={item.name}
-                  secondary={item.sku}
-                  primaryTypographyProps={{ typography: 'body2' }}
-                  secondaryTypographyProps={{ component: 'span', color: 'text.disabled', mt: 0.5 }}
-                />
+  //               <ListItemText
+  //                 primary={item.name}
+  //                 secondary={item.sku}
+  //                 primaryTypographyProps={{ typography: 'body2' }}
+  //                 secondaryTypographyProps={{ component: 'span', color: 'text.disabled', mt: 0.5 }}
+  //               />
 
-                <div>x{item.quantity} </div>
+  //               <div>x{item.quantity} </div>
 
-                <Box sx={{ width: 110, textAlign: 'right' }}>{fCurrency(item.price)}</Box>
-              </Stack>
-            ))}
-          </Paper>
-        </Collapse>
-      </TableCell>
-    </TableRow>
-  );
+  //               <Box sx={{ width: 110, textAlign: 'right' }}>{fCurrency(item.price)}</Box>
+  //             </Stack>
+  //           ))}
+  //         </Paper>
+  //       </Collapse>
+  //     </TableCell>
+  //   </TableRow>
+  // );
 
   return (
     <>
       {renderPrimary}
 
-      {renderSecondary}
+      {/* {renderSecondary} */}
 
       <CustomPopover
         open={popover.open}

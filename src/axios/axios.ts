@@ -30,6 +30,19 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
   }
 };
 
+export const creator = async (args: string | [string, AxiosRequestConfig]) => {
+  try {
+    const [url, config] = Array.isArray(args) ? args : [args];
+
+    const res = await axiosInstance.post(url, { limit: 10, page: 1 }, { ...config });
+
+    return res.data;
+  } catch (error) {
+    console.error('Failed to fetch:', error);
+    throw error;
+  }
+};
+
 // ----------------------------------------------------------------------
 
 export const endpoints = {
@@ -44,10 +57,58 @@ export const endpoints = {
   },
   region: {
     county: '/api/county',
+    subcounty: '/api/county/subcounty',
+  },
+  category: {
+    new: '/api/category',
+    search: '/api/category/search',
   },
   users: {
     details: '/api/users/details',
     search: '/api/user/search',
+    update: '/api/user',
+    get: '/api/user',
+    changeStatus: '/api/user/changeStatus',
+    changeState: '/api/user/changeState',
+    types: '/api/user/types',
+  },
+  farmer: {
+    new: '/api/farmer',
+    search: '/api/farmer/search',
+    get: '/api/farmer',
+    searchFarms: '/api/farm/search',
+    searchHarvests: '/api/harvest/search',
+    searchFarmValueChain: '/api/farm/valuechain/search',
+    searchGrn: '/api/grn/search',
+    approveHarvest: (id: number) => `/api/harvest/${id}/reject-harvest`,
+    evaluateHarvest: (id: number) => `/api/harvest/${id}/evaluate`,
+    rejectJoin: (userId: number, coopId: number) =>
+      `/api/cooperative/${userId}/reject-join-cooperative/${coopId}`,
+    approveLeaveCoop: (userId: number, coopId: number) =>
+      `/api/cooperative/${userId}/approve-leave-cooperative/${coopId}`,
+  },
+  purchaseOrder: {
+    new: '/api/purchaseorder',
+    search: '/api/purchaseorder/search',
+  },
+  stakeholder: {
+    new: '/api/stakeholder',
+    search: '/api/stakeholder/search',
+    types: '/api/stakeholder/types',
+  },
+  cooperative: {
+    new: '/api/cooperative',
+    search: '/api/cooperative/search',
+    get: 'api/cooperative',
+    assignAdmin: 'api/cooperative',
+    unlinkAdmin: 'api/cooperative',
+    addCoopFarmer: '/api/cooperative',
+    approveFarmer: '/api/cooperative',
+    searchCoopFarmer: '/api/cooperative/search-coop-farmers',
+  },
+  valuechain: {
+    new: '/api/valuechain',
+    search: '/api/valuechain/search',
   },
   mail: {
     list: '/api/mail/list',
@@ -64,5 +125,8 @@ export const endpoints = {
     list: '/api/product/list',
     details: '/api/product/details',
     search: '/api/product/search',
+  },
+  invoice: {
+    search: '/api/invoice/search',
   },
 };

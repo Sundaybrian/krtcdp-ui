@@ -21,6 +21,8 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 import { UserQuickEditForm } from './user-quick-edit-form';
+import { UserManageProfileForm } from './user-manage-profile-form';
+import { UserManageStateForm } from './user-manage-state-form';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +40,10 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
   const popover = usePopover();
 
   const quickEdit = useBoolean();
+
+  const manageProfile = useBoolean();
+
+  const manageUserState = useBoolean();
 
   return (
     <>
@@ -101,6 +107,16 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
       </TableRow>
 
       <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      <UserManageProfileForm
+        currentUser={row}
+        open={manageProfile.value}
+        onClose={manageProfile.onFalse}
+      />
+      <UserManageStateForm
+        currentUser={row}
+        open={manageUserState.value}
+        onClose={manageUserState.onFalse}
+      />
 
       <CustomPopover
         open={popover.open}
@@ -109,6 +125,28 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
+          <MenuItem
+            onClick={() => {
+              manageProfile.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'success.main' }}
+          >
+            <Iconify icon="solar:case-round-bold-duotone" />
+            Manage profile
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              manageUserState.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'success.primary' }}
+          >
+            <Iconify icon="solar:case-round-bold-duotone" />
+            Manage user state
+          </MenuItem>
+
           <MenuItem
             onClick={() => {
               confirm.onTrue();

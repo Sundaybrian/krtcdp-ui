@@ -1,8 +1,8 @@
 'use client';
 
-import type { IOrderItem, IOrderTableFilters } from 'src/types/order';
+import type { PurchaseOrderItem, IOrderTableFilters } from 'src/types/order';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -19,12 +19,13 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
+import { RouterLink } from 'src/routes/components';
 
 import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _orders, ORDER_STATUS_OPTIONS } from 'src/_mock';
+import { _orders } from 'src/_mock';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -43,22 +44,32 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+import { searchPurchaseOrder } from 'src/api/services';
 
 import { OrderTableRow } from '../order-table-row';
 import { OrderTableToolbar } from '../order-table-toolbar';
 import { OrderTableFiltersResult } from '../order-table-filters-result';
 
 // ----------------------------------------------------------------------
+const ORDER_STATUS_OPTIONS = [
+  { value: 'PENDINGCONFIRMATION', label: 'Pending confirmation' },
+  { value: 'PENDING', label: 'Pending' },
+  { value: 'CLOSED', label: 'Completed' },
+  { value: 'REJECTED', label: 'Rejected' },
+  { value: 'FARMERREJECTED', label: 'Farmer rejected' },
+  { value: 'APPROVED', label: 'Approved' },
+];
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...ORDER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
   { id: 'orderNumber', label: 'Order', width: 88 },
-  { id: 'name', label: 'Customer' },
-  { id: 'createdAt', label: 'Date', width: 140 },
+  { id: 'name', label: 'Farmer' },
+  { id: 'cooperative', label: 'Cooperative' },
+  { id: 'createdAt', label: 'Order Date', width: 140 },
   {
     id: 'totalQuantity',
-    label: 'Items',
+    label: 'Terms',
     width: 120,
     align: 'center',
   },
@@ -76,7 +87,7 @@ export function OrderListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState<IOrderItem[]>(_orders);
+  const [tableData, setTableData] = useState<PurchaseOrderItem[]>([]);
 
   const filters = useSetState<IOrderTableFilters>({
     name: '',
@@ -144,11 +155,25 @@ export function OrderListView() {
     [filters, table]
   );
 
+  // async functions
+  const getPurchaseOrders = async () => {
+    try {
+      const response = await searchPurchaseOrder();
+      setTableData(response.results);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getPurchaseOrders();
+  }, []);
+
   return (
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="List"
+          heading="Orders"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Order', href: paths.dashboard.order.root },
@@ -180,13 +205,21 @@ export function OrderListView() {
                       'soft'
                     }
                     color={
-                      (tab.value === 'completed' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'cancelled' && 'error') ||
+                      (tab.value === 'APPROVED' && 'success') ||
+                      ((tab.value === 'PENDINGCONFIRMATION' || tab.value === 'PENDING') &&
+                        'warning') ||
+                      ((tab.value === 'REJECTED' || tab.value === 'FARMERREJECTED') && 'error') ||
                       'default'
                     }
                   >
-                    {['completed', 'pending', 'cancelled', 'refunded'].includes(tab.value)
+                    {[
+                      'APPROVED',
+                      'PENDINGCONFIRMATION',
+                      'PENDING',
+                      'FARMERREJECTED',
+                      'REJECTED',
+                      'CLOSED',
+                    ].includes(tab.value)
                       ? tableData.filter((user) => user.status === tab.value).length
                       : tableData.length}
                   </Label>
@@ -317,7 +350,7 @@ export function OrderListView() {
 
 type ApplyFilterProps = {
   dateError: boolean;
-  inputData: IOrderItem[];
+  inputData: PurchaseOrderItem[];
   filters: IOrderTableFilters;
   comparator: (a: any, b: any) => number;
 };
@@ -338,9 +371,9 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
   if (name) {
     inputData = inputData.filter(
       (order) =>
-        order.orderNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        order.customer.name.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        order.customer.email.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        order.farmer.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        order.farmer.lastName.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        order.farmer.mobilePhone.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
@@ -350,7 +383,7 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
 
   if (!dateError) {
     if (startDate && endDate) {
-      inputData = inputData.filter((order) => fIsBetween(order.createdAt, startDate, endDate));
+      inputData = inputData.filter((order) => fIsBetween(order.orderDate, startDate, endDate));
     }
   }
 

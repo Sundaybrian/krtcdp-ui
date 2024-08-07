@@ -1,4 +1,4 @@
-import type { IInvoice } from 'src/types/invoice';
+import type { IInvoice, InvoiceItem } from 'src/types/invoice';
 
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
@@ -27,7 +27,7 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: IInvoice;
+  row: InvoiceItem;
   selected: boolean;
   onViewRow: () => void;
   onEditRow: () => void;
@@ -60,13 +60,15 @@ export function InvoiceTableRow({
 
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar alt={row.invoiceTo.name}>{row.invoiceTo.name.charAt(0).toUpperCase()}</Avatar>
+            <Avatar alt={row.farmer.firstName}>
+              {row.farmer.firstName.charAt(0).toUpperCase()}
+            </Avatar>
 
             <ListItemText
               disableTypography
               primary={
                 <Typography variant="body2" noWrap>
-                  {row.invoiceTo.name}
+                  {row.farmer.firstName} {row.farmer.lastName}
                 </Typography>
               }
               secondary={
@@ -76,7 +78,7 @@ export function InvoiceTableRow({
                   onClick={onViewRow}
                   sx={{ color: 'text.disabled', cursor: 'pointer' }}
                 >
-                  {row.invoiceNumber}
+                  {row.id}
                 </Link>
               }
             />
@@ -85,8 +87,8 @@ export function InvoiceTableRow({
 
         <TableCell>
           <ListItemText
-            primary={fDate(row.createDate)}
-            secondary={fTime(row.createDate)}
+            primary={fDate(row.creationDate)}
+            secondary={fTime(row.creationDate)}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
             secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
           />
@@ -101,17 +103,17 @@ export function InvoiceTableRow({
           />
         </TableCell>
 
-        <TableCell>{fCurrency(row.totalAmount)}</TableCell>
+        <TableCell>{fCurrency(row.amountDue)}</TableCell>
 
-        <TableCell align="center">{row.sent}</TableCell>
+        <TableCell align="center">{row.amountPaid}</TableCell>
 
         <TableCell>
           <Label
             variant="soft"
             color={
-              (row.status === 'paid' && 'success') ||
-              (row.status === 'pending' && 'warning') ||
-              (row.status === 'overdue' && 'error') ||
+              (row.status === 'PAID' && 'success') ||
+              (row.status === 'PENDIND' && 'warning') ||
+              (row.status === 'LATE' && 'error') ||
               'default'
             }
           >

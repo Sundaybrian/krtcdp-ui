@@ -29,7 +29,7 @@ import { Iconify } from 'src/components/iconify';
 import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { addUser, getCounties } from 'src/api/services';
+import { addUser, getCounties, getUserTypes } from 'src/api/services';
 import { County, SubCounty } from 'src/api/data.inteface';
 import { MARITAL_STATUS_OPTIONS } from 'src/utils/default';
 
@@ -79,6 +79,7 @@ export function UserNewEditForm({ currentUser }: Props) {
   const password = useBoolean();
   const [counties, setCounties] = useState<County[]>([]);
   const [subCounties, setSubCounties] = useState<SubCounty[]>([]);
+  const [userTypes, setUserTypes] = useState<string[]>([]);
 
   const defaultValues = useMemo(
     () => ({
@@ -93,7 +94,7 @@ export function UserNewEditForm({ currentUser }: Props) {
       birthDate: '2024-07-17T08:14:18.190Z',
       maritalStatus: 'single',
       kraPin: '',
-      userState: 'A',
+      userState: 'active',
       residence: '',
       county: '',
       subCounty: '',
@@ -153,9 +154,21 @@ export function UserNewEditForm({ currentUser }: Props) {
       });
   };
 
+  const fetchUserTypes = () => {
+    getUserTypes()
+      .then((data) => {
+        setUserTypes(data);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error('Failed to fetch user types');
+      });
+  };
+
   // use effect
   useEffect(() => {
     getchCounties();
+    fetchUserTypes();
   }, []);
 
   return (
@@ -285,7 +298,7 @@ export function UserNewEditForm({ currentUser }: Props) {
               <Field.Text
                 name="password"
                 label="Password"
-                placeholder="6+ characters"
+                placeholder="8+ characters"
                 type={password.value ? 'text' : 'password'}
                 InputLabelProps={{ shrink: true }}
                 InputProps={{
@@ -371,6 +384,24 @@ export function UserNewEditForm({ currentUser }: Props) {
               </Stack>
 
               <Field.Text name="ward" label="Ward" />
+
+              <Field.Select name="userType" label="User type">
+                <MenuItem
+                  value=""
+                  onClick={() => null}
+                  sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                >
+                  None
+                </MenuItem>
+
+                <Divider sx={{ borderStyle: 'dashed' }} />
+
+                {userTypes.map((status) => (
+                  <MenuItem key={status} value={status} onClick={() => null}>
+                    {status}
+                  </MenuItem>
+                ))}
+              </Field.Select>
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

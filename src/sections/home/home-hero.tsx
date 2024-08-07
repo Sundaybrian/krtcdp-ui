@@ -74,7 +74,7 @@ export function HomeHero({ sx, ...other }: StackProps) {
         }}
       >
         <Box component="span" sx={{ width: 1, opacity: 0.24 }}>
-          Boost your building
+          Boost your input and output
         </Box>
         process with
         <Box
@@ -94,7 +94,7 @@ export function HomeHero({ sx, ...other }: StackProps) {
             ml: { xs: 0.75, md: 1, xl: 1.5 },
           }}
         >
-          Minimal
+          digital farm managment
         </Box>
       </Box>
     </MInview>
@@ -110,7 +110,7 @@ export function HomeHero({ sx, ...other }: StackProps) {
           [theme.breakpoints.up(lgKey)]: { fontSize: 20, lineHeight: '36px' },
         }}
       >
-        {`The starting point for your next project is based on MUI. \nEasy customization helps you build apps faster and better.`}
+        {`The starting point for your farm produce and managment is based on digital farm managment. \nEasy customization helps you deliver to customers faster.`}
       </Typography>
     </MInview>
   );
@@ -137,67 +137,6 @@ export function HomeHero({ sx, ...other }: StackProps) {
         160+ Happy customers
       </Box>
     </MInview>
-  );
-
-  const renderButtons = (
-    <Box display="flex" flexWrap="wrap" justifyContent="center" gap={{ xs: 1.5, sm: 2 }}>
-      <MInview>
-        <Stack alignItems="center" spacing={2.5}>
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.root}
-            color="inherit"
-            size="large"
-            variant="contained"
-            startIcon={<Iconify width={24} icon="iconoir:flash" />}
-          >
-            <span>
-              Live preview
-              <Box
-                component="small"
-                sx={{
-                  mt: '-3px',
-                  opacity: 0.64,
-                  display: 'flex',
-                  fontSize: theme.typography.pxToRem(10),
-                  fontWeight: theme.typography.fontWeightMedium,
-                }}
-              >
-                v{CONFIG.site.version}
-              </Box>
-            </span>
-          </Button>
-
-          <Link
-            color="inherit"
-            variant="body2"
-            target="_blank"
-            rel="noopener"
-            href={paths.freeUI}
-            underline="always"
-            sx={{ gap: 0.5, alignItems: 'center', display: 'inline-flex' }}
-          >
-            Get free version
-            <Iconify width={16} icon="eva:external-link-fill" />
-          </Link>
-        </Stack>
-      </MInview>
-
-      <MInview>
-        <Button
-          color="inherit"
-          size="large"
-          variant="outlined"
-          target="_blank"
-          rel="noopener"
-          href={paths.figma}
-          startIcon={<Iconify width={24} icon="solar:figma-outline" />}
-          sx={{ borderColor: 'text.primary' }}
-        >
-          Figma preview
-        </Button>
-      </MInview>
-    </Box>
   );
 
   const renderIcons = (
@@ -282,7 +221,6 @@ export function HomeHero({ sx, ...other }: StackProps) {
             <m.div style={{ y: y2 }}>{renderText}</m.div>
           </Stack>
           <m.div style={{ y: y3 }}>{renderRatings}</m.div>
-          <m.div style={{ y: y4 }}>{renderButtons}</m.div>
           <m.div style={{ y: y5 }}>{renderIcons}</m.div>
         </Container>
 

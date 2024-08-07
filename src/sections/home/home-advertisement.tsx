@@ -40,7 +40,7 @@ export function HomeAdvertisement({ sx, ...other }: StackProps) {
         sx={{ m: 0, color: 'common.white', typography: { xs: 'h2', md: 'h1' } }}
       >
         Get started with
-        <br /> Minimal kit
+        <br /> Digital farming
         <Box
           component="span"
           sx={{
@@ -69,7 +69,7 @@ export function HomeAdvertisement({ sx, ...other }: StackProps) {
             rel="noopener"
             href={paths.minimalStore}
           >
-            Purchase now
+            Login
           </Button>
         </m.div>
 
@@ -88,7 +88,7 @@ export function HomeAdvertisement({ sx, ...other }: StackProps) {
               '&:hover': { borderColor: 'currentColor' },
             }}
           >
-            Get free version
+            Signup
           </Button>
         </m.div>
       </Stack>

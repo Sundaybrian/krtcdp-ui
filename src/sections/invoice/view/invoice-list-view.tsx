@@ -1,8 +1,8 @@
 'use client';
 
-import type { IInvoice, IInvoiceTableFilters } from 'src/types/invoice';
+import type { InvoiceItem, IInvoiceTableFilters } from 'src/types/invoice';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -48,6 +48,7 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+import { searchInvoice } from 'src/api/services';
 
 import { InvoiceAnalytic } from '../invoice-analytic';
 import { InvoiceTableRow } from '../invoice-table-row';
@@ -57,11 +58,11 @@ import { InvoiceTableFiltersResult } from '../invoice-table-filters-result';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'invoiceNumber', label: 'Customer' },
-  { id: 'createDate', label: 'Create' },
-  { id: 'dueDate', label: 'Due' },
-  { id: 'price', label: 'Amount' },
-  { id: 'sent', label: 'Sent', align: 'center' },
+  { id: 'invoiceNumber', label: 'Farmer' },
+  { id: 'createDate', label: 'Date created' },
+  { id: 'dueDate', label: 'Due Date' },
+  { id: 'price', label: 'Amount Due' },
+  { id: 'sent', label: 'Amount Paid', align: 'center' },
   { id: 'status', label: 'Status' },
   { id: '' },
 ];
@@ -77,7 +78,7 @@ export function InvoiceListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState<IInvoice[]>(_invoices);
+  const [tableData, setTableData] = useState<InvoiceItem[]>([]);
 
   const filters = useSetState<IInvoiceTableFilters>({
     name: '',
@@ -112,7 +113,7 @@ export function InvoiceListView() {
   const getTotalAmount = (status: string) =>
     sumBy(
       tableData.filter((item) => item.status === status),
-      (invoice) => invoice.totalAmount
+      (invoice) => invoice.amountDue
     );
 
   const getPercentByStatus = (status: string) =>
@@ -126,28 +127,22 @@ export function InvoiceListView() {
       count: tableData.length,
     },
     {
-      value: 'paid',
+      value: 'PAID',
       label: 'Paid',
       color: 'success',
-      count: getInvoiceLength('paid'),
+      count: getInvoiceLength('PAID'),
     },
     {
-      value: 'pending',
+      value: 'PENDING',
       label: 'Pending',
       color: 'warning',
-      count: getInvoiceLength('pending'),
+      count: getInvoiceLength('PENDING'),
     },
     {
-      value: 'overdue',
+      value: 'LATE',
       label: 'Overdue',
       color: 'error',
-      count: getInvoiceLength('overdue'),
-    },
-    {
-      value: 'draft',
-      label: 'Draft',
-      color: 'default',
-      count: getInvoiceLength('draft'),
+      count: getInvoiceLength('LATE'),
     },
   ] as const;
 
@@ -199,6 +194,21 @@ export function InvoiceListView() {
     [filters, table]
   );
 
+  const getInvoices = async () => {
+    try {
+      const response = await searchInvoice();
+      console.log(response);
+
+      setTableData(response.results);
+    } catch (error) {
+      toast.error('Failed to fetch invoices');
+    }
+  };
+
+  useEffect(() => {
+    getInvoices();
+  }, []);
+
   return (
     <>
       <DashboardContent>
@@ -209,16 +219,16 @@ export function InvoiceListView() {
             { name: 'Invoice', href: paths.dashboard.invoice.root },
             { name: 'List' },
           ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.invoice.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New invoice
-            </Button>
-          }
+          // action={
+          //   <Button
+          //     component={RouterLink}
+          //     href={paths.dashboard.invoice.new}
+          //     variant="contained"
+          //     startIcon={<Iconify icon="mingcute:add-line" />}
+          //   >
+          //     New invoice
+          //   </Button>
+          // }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
@@ -233,45 +243,36 @@ export function InvoiceListView() {
                 title="Total"
                 total={tableData.length}
                 percent={100}
-                price={sumBy(tableData, (invoice) => invoice.totalAmount)}
+                price={sumBy(tableData, (invoice) => invoice.amountDue)}
                 icon="solar:bill-list-bold-duotone"
                 color={theme.vars.palette.info.main}
               />
 
               <InvoiceAnalytic
                 title="Paid"
-                total={getInvoiceLength('paid')}
-                percent={getPercentByStatus('paid')}
-                price={getTotalAmount('paid')}
+                total={getInvoiceLength('PAID')}
+                percent={getPercentByStatus('PAID')}
+                price={getTotalAmount('PAID')}
                 icon="solar:file-check-bold-duotone"
                 color={theme.vars.palette.success.main}
               />
 
               <InvoiceAnalytic
                 title="Pending"
-                total={getInvoiceLength('pending')}
-                percent={getPercentByStatus('pending')}
-                price={getTotalAmount('pending')}
+                total={getInvoiceLength('PENDING')}
+                percent={getPercentByStatus('PENDING')}
+                price={getTotalAmount('PENDING')}
                 icon="solar:sort-by-time-bold-duotone"
                 color={theme.vars.palette.warning.main}
               />
 
               <InvoiceAnalytic
                 title="Overdue"
-                total={getInvoiceLength('overdue')}
-                percent={getPercentByStatus('overdue')}
-                price={getTotalAmount('overdue')}
+                total={getInvoiceLength('LATE')}
+                percent={getPercentByStatus('LATE')}
+                price={getTotalAmount('LATE')}
                 icon="solar:bell-bing-bold-duotone"
                 color={theme.vars.palette.error.main}
-              />
-
-              <InvoiceAnalytic
-                title="Draft"
-                total={getInvoiceLength('draft')}
-                percent={getPercentByStatus('draft')}
-                price={getTotalAmount('draft')}
-                icon="solar:file-corrupted-bold-duotone"
-                color={theme.vars.palette.text.secondary}
               />
             </Stack>
           </Scrollbar>
@@ -451,7 +452,7 @@ export function InvoiceListView() {
 
 type ApplyFilterProps = {
   dateError: boolean;
-  inputData: IInvoice[];
+  inputData: InvoiceItem[];
   filters: IInvoiceTableFilters;
   comparator: (a: any, b: any) => number;
 };
@@ -472,8 +473,8 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
   if (name) {
     inputData = inputData.filter(
       (invoice) =>
-        invoice.invoiceNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        invoice.invoiceTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        invoice.id.indexOf(name.toLowerCase()) !== -1 ||
+        invoice.farmer.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
@@ -481,15 +482,17 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
     inputData = inputData.filter((invoice) => invoice.status === status);
   }
 
-  if (service.length) {
-    inputData = inputData.filter((invoice) =>
-      invoice.items.some((filterItem) => service.includes(filterItem.service))
-    );
-  }
+  // if (service.length) {
+  //   inputData = inputData.filter((invoice) =>
+  //     invoice.items.some((filterItem) => service.includes(filterItem.service))
+  //   );
+  // }
 
   if (!dateError) {
     if (startDate && endDate) {
-      inputData = inputData.filter((invoice) => fIsBetween(invoice.createDate, startDate, endDate));
+      inputData = inputData.filter((invoice) =>
+        fIsBetween(invoice.invoiceDate, startDate, endDate)
+      );
     }
   }
 
