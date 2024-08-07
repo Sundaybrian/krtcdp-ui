@@ -88,6 +88,17 @@ export const navData = [
       },
 
       {
+        title: 'Users',
+        permission: 'view:users',
+        path: paths.dashboard.user.root,
+        icon: ICONS.user,
+        children: [
+          { title: 'Assign Admin', path: paths.dashboard.cooperative.assignAdmin },
+          { title: 'Admins', path: paths.dashboard.cooperative.admin },
+        ],
+      },
+
+      {
         title: 'Farmers',
         permission: 'view:farmer',
         path: paths.dashboard.farner.root,

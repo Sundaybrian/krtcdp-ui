@@ -49,6 +49,7 @@ export const PERMISSIONS = [
       'view:invoice',
       'view:order',
       'view:category',
+      'view:users',
     ],
   },
   {
