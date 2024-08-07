@@ -36,17 +36,17 @@ jobs:
             npm run build
             pm2 restart ecosystem.config.js
 
-      - name: Deploy to dev environment
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.KRTCD_HOST }}
-          username: ${{ secrets.KRTCD_USERNAME }}
-          key: ${{ secrets.KRTCD_DEV_SERVER_KEY }}
-          port: 1148
-          password: ${{ secrets.KRTCD_PASS }}
-          script: |
-            cd /var/www/krtcdp-frontend/
-            eval `ssh-agent -s`
-            ssh-add ~/.ssh/dev
-            git pull origin dev
-            git status
+      # - name: Deploy to dev environment
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.KRTCD_HOST }}
+      #     username: ${{ secrets.KRTCD_USERNAME }}
+      #     key: ${{ secrets.KRTCD_DEV_SERVER_KEY }}
+      #     port: 1148
+      #     password: ${{ secrets.KRTCD_PASS }}
+      #     script: |
+      #       cd /var/www/krtcdp-frontend/
+      #       eval `ssh-agent -s`
+      #       ssh-add ~/.ssh/dev
+      #       git pull origin dev
+      #       git status
