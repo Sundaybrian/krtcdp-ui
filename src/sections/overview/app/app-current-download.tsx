@@ -79,8 +79,8 @@ export function AppCurrentDownload({ title, subheader, chart, ...other }: Props)
         type="donut"
         series={chartSeries}
         options={chartOptions}
-        width={{ xs: 240, xl: 260 }}
-        height={{ xs: 240, xl: 260 }}
+        width={{ xs: 120, xl: 160 }}
+        height={{ xs: 120, xl: 160 }}
         sx={{ my: 6, mx: 'auto' }}
       />
 
