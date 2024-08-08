@@ -11,7 +11,8 @@ import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled } f
 
 import { svgColorClasses } from 'src/components/svg-color';
 
-import { useMockedUser } from 'src/auth/hooks';
+import useAuthUser from 'src/auth/hooks/use-auth-user';
+import { Istats, useGetStatistcis } from 'src/actions/stats';
 
 import { AppWidget } from '../app-widget';
 import { AppWelcome } from '../app-welcome';
@@ -23,8 +24,6 @@ import { AppAreaInstalled } from '../app-area-installed';
 import { AppWidgetSummary } from '../app-widget-summary';
 import { AppCurrentDownload } from '../app-current-download';
 import { AppTopInstalledCountries } from '../app-top-installed-countries';
-import useAuthUser from 'src/auth/hooks/use-auth-user';
-import { Istats, useGetStatistcis } from 'src/actions/stats';
 
 // ----------------------------------------------------------------------
 
