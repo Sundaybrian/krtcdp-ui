@@ -129,4 +129,7 @@ export const endpoints = {
   invoice: {
     search: '/api/invoice/search',
   },
+  statistics: {
+    get: '/api/stats/statistics',
+  },
 };

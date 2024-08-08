@@ -23,21 +23,30 @@ import { AppAreaInstalled } from '../app-area-installed';
 import { AppWidgetSummary } from '../app-widget-summary';
 import { AppCurrentDownload } from '../app-current-download';
 import { AppTopInstalledCountries } from '../app-top-installed-countries';
+import useAuthUser from 'src/auth/hooks/use-auth-user';
+import { Istats, useGetStatistcis } from 'src/actions/stats';
 
 // ----------------------------------------------------------------------
 
 export function OverviewAppView() {
-  const { user } = useMockedUser();
+  const { firstName } = useAuthUser();
 
   const theme = useTheme();
+
+  const { searchLoading, searchError, searchResults } = useGetStatistcis();
+
+  console.log(searchResults);
+  console.log(searchError);
+
+  const data = searchResults as Istats;
 
   return (
     <DashboardContent maxWidth="xl">
       <Grid container spacing={3}>
         <Grid xs={12} md={8}>
           <AppWelcome
-            title={`Welcome back 👋 \n ${user?.displayName}`}
-            description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
+            title={`Welcome back 👋 \n ${firstName}`}
+            description="Start by viewing todays invoices, and purchase orders."
             img={<SeoIllustration hideBackground />}
             action={
               <Button variant="contained" color="primary">
@@ -47,15 +56,69 @@ export function OverviewAppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={4}>
+        {/* <Grid xs={12} md={4}>
           <AppFeatured list={_appFeatured} />
+        </Grid> */}
+        {/* <Grid xs={12} md={6} lg={4}>
+          <Box sx={{ gap: 3, display: 'flex', flexDirection: 'column' }}>
+            <AppWidget
+              title="Conversion"
+              total={38566}
+              icon="solar:user-rounded-bold"
+              chart={{ series: 48 }}
+            />
+
+            <AppWidget
+              title="Applications"
+              total={55566}
+              icon="fluent:mail-24-filled"
+              chart={{
+                series: 75,
+                colors: [theme.vars.palette.info.light, theme.vars.palette.info.main],
+              }}
+              sx={{ bgcolor: 'info.dark', [`& .${svgColorClasses.root}`]: { color: 'info.light' } }}
+            />
+          </Box>
+        </Grid> */}
+
+        <Grid xs={12} md={6} lg={4}>
+          <AppCurrentDownload
+            title="Current users"
+            subheader="Users types"
+            chart={{
+              series: [
+                {
+                  label: 'System admin',
+                  value:
+                    data?.userTypeCounts?.filter((user) => user.userType === 'SYSTEM_ADMIN')[0]
+                      ?.count || 0,
+                },
+                { label: 'Farmers', value: data?.farmersCount || 0 },
+                {
+                  label: 'Coop admin',
+                  value:
+                    data?.userTypeCounts?.filter((user) => user.userType === 'COOPERATIVE_ADMIN')[0]
+                      ?.count || 0,
+                },
+                {
+                  label: 'Other',
+                  value:
+                    data?.userTypeCounts?.filter(
+                      (user) => !['COOPERATIVE_ADMIN', 'SYSTEM_ADMIN'].includes(user.userType)
+                    )[0]?.count || 0,
+                },
+              ],
+            }}
+          />
         </Grid>
 
         <Grid xs={12} md={4}>
           <AppWidgetSummary
             title="Total active users"
             percent={2.6}
-            total={18765}
+            total={
+              data?.activeUsers?.filter((user) => user.accountState === 'active')[0]?.count || 0
+            }
             chart={{
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
               series: [15, 18, 12, 51, 68, 11, 39, 37],
@@ -65,9 +128,9 @@ export function OverviewAppView() {
 
         <Grid xs={12} md={4}>
           <AppWidgetSummary
-            title="Total installed"
+            title="Total Farmers"
             percent={0.2}
-            total={4876}
+            total={data?.farmersCount || 0}
             chart={{
               colors: [theme.vars.palette.info.main],
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
@@ -78,9 +141,12 @@ export function OverviewAppView() {
 
         <Grid xs={12} md={4}>
           <AppWidgetSummary
-            title="Total downloads"
+            title="Total Amins"
             percent={-0.1}
-            total={678}
+            total={
+              data?.userTypeCounts?.filter((user) => user.userType === 'SYSTEM_ADMIN')[0]?.count ||
+              0
+            }
             chart={{
               colors: [theme.vars.palette.error.main],
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
@@ -89,22 +155,33 @@ export function OverviewAppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
-          <AppCurrentDownload
-            title="Current download"
-            subheader="Downloaded by operating system"
+        <Grid xs={12} md={4}>
+          <AppWidgetSummary
+            title="Total Farms"
+            percent={-0.1}
+            total={data?.farmsCount || 0}
             chart={{
-              series: [
-                { label: 'Mac', value: 12244 },
-                { label: 'Window', value: 53345 },
-                { label: 'iOS', value: 44313 },
-                { label: 'Android', value: 78343 },
-              ],
+              colors: [theme.vars.palette.error.main],
+              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+              series: [18, 19, 31, 8, 16, 37, 12, 33],
             }}
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={8}>
+        <Grid xs={12} md={4}>
+          <AppWidgetSummary
+            title="Total Cooperatives"
+            percent={-0.1}
+            total={data?.cooperativesCount || 0}
+            chart={{
+              colors: [theme.vars.palette.error.main],
+              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+              series: [18, 19, 31, 8, 16, 37, 12, 33],
+            }}
+          />
+        </Grid>
+
+        {/* <Grid xs={12} md={6} lg={8}>
           <AppAreaInstalled
             title="Area installed"
             subheader="(+43%) than last year"
@@ -151,9 +228,9 @@ export function OverviewAppView() {
               ],
             }}
           />
-        </Grid>
+        </Grid> */}
 
-        <Grid xs={12} lg={8}>
+        {/* <Grid xs={12} lg={8}>
           <AppNewInvoice
             title="New invoice"
             tableData={_appInvoices}
@@ -173,33 +250,11 @@ export function OverviewAppView() {
 
         <Grid xs={12} md={6} lg={4}>
           <AppTopInstalledCountries title="Top installed countries" list={_appInstalled} />
-        </Grid>
+        </Grid> */}
 
-        <Grid xs={12} md={6} lg={4}>
+        {/* <Grid xs={12} md={6} lg={4}>
           <AppTopAuthors title="Top authors" list={_appAuthors} />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={4}>
-          <Box sx={{ gap: 3, display: 'flex', flexDirection: 'column' }}>
-            <AppWidget
-              title="Conversion"
-              total={38566}
-              icon="solar:user-rounded-bold"
-              chart={{ series: 48 }}
-            />
-
-            <AppWidget
-              title="Applications"
-              total={55566}
-              icon="fluent:mail-24-filled"
-              chart={{
-                series: 75,
-                colors: [theme.vars.palette.info.light, theme.vars.palette.info.main],
-              }}
-              sx={{ bgcolor: 'info.dark', [`& .${svgColorClasses.root}`]: { color: 'info.light' } }}
-            />
-          </Box>
-        </Grid>
+        </Grid> */}
       </Grid>
     </DashboardContent>
   );

@@ -52,7 +52,7 @@ export const navData = [
     subheader: 'Overview',
     items: [
       {
-        title: 'App',
+        title: 'Dashboard',
         permission: 'view:dashboard',
         path: paths.dashboard.root,
         icon: ICONS.dashboard,
