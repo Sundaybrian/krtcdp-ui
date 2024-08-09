@@ -57,7 +57,7 @@ const TABS = [
   { value: 'general', label: 'General', icon: <Iconify icon="solar:user-id-bold" width={24} /> },
   { value: 'billing', label: 'Farms', icon: <Iconify icon="solar:bill-list-bold" width={24} /> },
   {
-    value: 'notifications',
+    value: 'harvests',
     label: 'Harvests',
     icon: <Iconify icon="solar:snowflake-bold" width={24} />,
   },
@@ -67,12 +67,15 @@ const TABS = [
 // ----------------------------------------------------------------------
 
 type Props = {
-  params: { id: string };
+  params: { id: string; tab: string };
+  searchParams: { tab: string };
 };
 
-export default function FarmerAccountView({ params }: Props) {
-  const tabs = useTabs('general');
+export default function FarmerAccountView({ params, searchParams }: Props) {
   const { id } = params;
+  const { tab } = searchParams;
+  const tabs = useTabs(tab || 'general');
+
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: null });
   const [farmer, setFarmer] = useState<CoopFarmerList>({} as any);
   const [farms, setFarms] = useState<any[]>([]);
@@ -170,7 +173,7 @@ export default function FarmerAccountView({ params }: Props) {
         />
       )}
 
-      {tabs.value === 'notifications' && (
+      {tabs.value === 'harvests' && (
         <>
           {!harvests.length && (
             <EmptyContent

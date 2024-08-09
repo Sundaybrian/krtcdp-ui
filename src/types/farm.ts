@@ -31,7 +31,7 @@ export type Farm = {
 };
 
 export type Harvest = {
-  id: number;
+  id: any;
   farmId: number;
   crop: string;
   quantity: number;

@@ -107,7 +107,7 @@ export const navData = [
           { title: 'New farmer', path: paths.dashboard.farner.newCoopFarmer },
           { title: 'Farmers', path: paths.dashboard.farner.coopFarmers },
           // { title: 'Farms', path: paths.dashboard.farner.coopFarmers },
-          // { title: 'Harvest', path: paths.dashboard.farner.coopFarmers },
+          { title: 'Harvest', path: paths.dashboard.farner.harvest },
           { title: 'GRN', path: paths.dashboard.farner.grn },
         ],
       },
