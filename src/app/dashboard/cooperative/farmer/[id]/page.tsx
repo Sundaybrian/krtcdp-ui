@@ -57,7 +57,7 @@ const TABS = [
   { value: 'general', label: 'General', icon: <Iconify icon="solar:user-id-bold" width={24} /> },
   { value: 'billing', label: 'Farms', icon: <Iconify icon="solar:bill-list-bold" width={24} /> },
   {
-    value: 'harvests',
+    value: 'harvest',
     label: 'Harvests',
     icon: <Iconify icon="solar:snowflake-bold" width={24} />,
   },
@@ -173,7 +173,7 @@ export default function FarmerAccountView({ params, searchParams }: Props) {
         />
       )}
 
-      {tabs.value === 'harvests' && (
+      {tabs.value === 'harvest' && (
         <>
           {!harvests.length && (
             <EmptyContent
