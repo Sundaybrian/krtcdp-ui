@@ -127,7 +127,7 @@ export const paths = {
       grn: `${ROOTS.DASHBOARD}/farmer/grn`,
       harvest: `${ROOTS.DASHBOARD}/farmer/harvest`,
       details: (id: string) => `${ROOTS.DASHBOARD}/cooperative/farmer/${id}`,
-      detailsParam: (id: string) => `${ROOTS.DASHBOARD}/cooperative/farmer/${id}?tab=harvest`,
+      detailsParam: (id: string) => `${ROOTS.DASHBOARD}/cooperative/farmer/${id}?activeTab=harvest`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,

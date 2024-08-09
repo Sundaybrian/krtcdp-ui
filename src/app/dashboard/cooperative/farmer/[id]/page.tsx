@@ -68,13 +68,13 @@ const TABS = [
 
 type Props = {
   params: { id: string; tab: string };
-  searchParams: { tab: string };
+  searchParams: { activeTab: string };
 };
 
 export default function FarmerAccountView({ params, searchParams }: Props) {
   const { id } = params;
-  const { tab } = searchParams;
-  const tabs = useTabs(tab || 'general');
+  const { activeTab } = searchParams;
+  const tabs = useTabs(activeTab || 'general');
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: null });
   const [farmer, setFarmer] = useState<CoopFarmerList>({} as any);
