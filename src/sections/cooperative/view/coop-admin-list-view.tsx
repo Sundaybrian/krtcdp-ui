@@ -289,11 +289,11 @@ export function CooperativeAdminListView() {
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.cooperative.new}
+              href={paths.dashboard.user.new}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Farmer
+              New Admin
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}

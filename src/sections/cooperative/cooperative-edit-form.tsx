@@ -1,4 +1,4 @@
-import type { IUserItem } from 'src/types/user';
+import type { Cooperative, IUserItem } from 'src/types/user';
 
 import { z as zod } from 'zod';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
@@ -29,7 +29,7 @@ import { Iconify } from 'src/components/iconify';
 import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { addUser, createCooperative, getCounties } from 'src/api/services';
+import { addUser, createCooperative, getCounties, updateCooperative } from 'src/api/services';
 import { County, SubCounty } from 'src/api/data.inteface';
 import { INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
 
@@ -47,7 +47,7 @@ export const NewUserSchema = zod.object({
   // Not required
   insuranceProvider: zod.string(),
   insuranceType: zod.string(),
-  krapin: zod.string().min(1, { message: 'KRA PIN is required!' }),
+  krapin: zod.string(),
   enterpriseCovered: zod.string(),
   hasInsurance: zod.boolean(),
 });
@@ -55,30 +55,30 @@ export const NewUserSchema = zod.object({
 // ----------------------------------------------------------------------
 
 type Props = {
-  currentUser?: IUserItem;
+  cooperative?: Cooperative;
 };
 
-export function CooperativeNewEditForm({ currentUser }: Props) {
+export function CooperativeNewEditForm({ cooperative }: Props) {
   const router = useRouter();
   const [counties, setCounties] = useState<County[]>([]);
   const [subCounties, setSubCounties] = useState<SubCounty[]>([]);
 
   const defaultValues = useMemo(
     () => ({
-      groupName: '',
-      mobilePhone: '',
-      yearOfCreation: '',
-      residence: '',
-      county: '',
-      subCounty: '',
-      insuranceProvider: '',
-      incorporationNumber: '',
-      krapin: '',
-      enterpriseCovered: '',
-      insuranceType: '',
-      hasInsurance: true,
+      groupName: cooperative?.groupName || '',
+      mobilePhone: cooperative?.mobilePhone || '',
+      yearOfCreation: cooperative?.yearOfCreation || '',
+      residence: cooperative?.residence || '',
+      county: cooperative?.county || '',
+      subCounty: cooperative?.subCounty || '',
+      insuranceProvider: cooperative?.insuranceProvider || '',
+      incorporationNumber: cooperative?.incorporationNumber || '',
+      krapin: cooperative?.krapin || '',
+      enterpriseCovered: cooperative?.enterpriseCovered || '',
+      insuranceType: cooperative?.insuranceType || '',
+      hasInsurance: cooperative?.hasInsurance || false,
     }),
-    []
+    [cooperative]
   );
 
   const methods = useForm<NewUserSchemaType>({
@@ -100,9 +100,13 @@ export function CooperativeNewEditForm({ currentUser }: Props) {
   const onSubmit = handleSubmit(async (data) => {
     data.yearOfCreation = new Date(data.yearOfCreation).getFullYear() as any;
     try {
-      await createCooperative(data);
-      reset();
-      toast.success(currentUser ? 'Update success!' : 'Cooperative created successfully!');
+      if (cooperative?.id) {
+        await updateCooperative(cooperative.id, data);
+      } else {
+        await createCooperative(data);
+        reset();
+      }
+      toast.success(cooperative ? 'Update success!' : 'Cooperative created successfully!');
       // router.push(paths.dashboard.user.list);
       console.info('DATA', data);
     } catch (error) {
@@ -132,6 +136,12 @@ export function CooperativeNewEditForm({ currentUser }: Props) {
   useEffect(() => {
     getchCounties();
   }, []);
+
+  useEffect(() => {
+    if (cooperative) {
+      reset(defaultValues);
+    }
+  }, [cooperative, defaultValues, reset]);
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
@@ -166,7 +176,7 @@ export function CooperativeNewEditForm({ currentUser }: Props) {
 
                   {counties.map((county) => (
                     <MenuItem
-                      key={county.code}
+                      key={county.code + county.id}
                       value={county.name}
                       onClick={() => {
                         handleCountyChange(county.id);
@@ -189,7 +199,11 @@ export function CooperativeNewEditForm({ currentUser }: Props) {
                   <Divider sx={{ borderStyle: 'dashed' }} />
 
                   {subCounties.map((subCounty) => (
-                    <MenuItem key={subCounty.code} value={subCounty.name} onClick={() => null}>
+                    <MenuItem
+                      key={subCounty.code + subCounty.name}
+                      value={subCounty.name}
+                      onClick={() => null}
+                    >
                       {subCounty.name}
                     </MenuItem>
                   ))}
@@ -222,7 +236,7 @@ export function CooperativeNewEditForm({ currentUser }: Props) {
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentUser ? 'Submit' : 'Save changes'}
+                {!cooperative ? 'Submit' : 'Save changes'}
               </LoadingButton>
             </Stack>
           </Card>

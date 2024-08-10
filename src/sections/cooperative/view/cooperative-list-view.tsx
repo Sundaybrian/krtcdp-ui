@@ -55,6 +55,7 @@ import {
   RenderGeneric,
   RenderHasInsurance,
 } from '../cooperative-table-row';
+import { CooperativeNewEditForm } from '../cooperative-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -76,6 +77,7 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 export function CooperativeListView() {
   const confirmRows = useBoolean();
+  const quickEdit = useBoolean();
 
   const router = useRouter();
 
@@ -123,14 +125,14 @@ export function CooperativeListView() {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.product.edit(id));
+      router.push(paths.dashboard.cooperative.edit(id));
     },
     [router]
   );
 
   const handleViewRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.product.details(id));
+      router.push(paths.dashboard.cooperative.edit(id));
     },
     [router]
   );
@@ -262,18 +264,19 @@ export function CooperativeListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          onClick={() => handleViewRow(params.row.id)}
-        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:eye-bold" />}
+        //   label="View"
+        //   onClick={() => handleViewRow(params.row.id)}
+        // />,
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
           label="Edit"
           onClick={() => handleEditRow(params.row.id)}
         />,
+
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:trash-bin-trash-bold" />}

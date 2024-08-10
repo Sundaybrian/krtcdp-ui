@@ -117,7 +117,7 @@ export const paths = {
       assignAdmin: `${ROOTS.DASHBOARD}/cooperative/assign-admin`,
       admin: `${ROOTS.DASHBOARD}/cooperative/admin`,
       coopFarmers: `${ROOTS.DASHBOARD}/cooperative/coop-farmers`,
-      edit: (id: string) => `${ROOTS.DASHBOARD}/product/${id}/edit`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/cooperative/${id}`,
       details: (id: string) => `${ROOTS.DASHBOARD}/cooperative/farmer/${id}`,
     },
     farner: {

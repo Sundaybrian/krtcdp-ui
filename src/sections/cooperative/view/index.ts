@@ -9,3 +9,5 @@ export * from './new-coop-farmer';
 export * from './coop-farmers-list-view';
 
 export * from './coop-admin-list-view';
+
+export * from './coop-edit-view';

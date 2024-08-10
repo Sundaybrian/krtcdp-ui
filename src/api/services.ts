@@ -227,6 +227,17 @@ export const createCooperative = async (data: CreateCooperative) => {
   }
 };
 
+// update cooperative
+export const updateCooperative = async (id: number, data: any) => {
+  try {
+    const response = await axios.patch(`${endpoints.cooperative.update(id)}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating cooperative:', error);
+    throw error;
+  }
+};
+
 /**
  * Fetches all cooperatives
  * @param query any eg limit:10
@@ -260,6 +271,8 @@ export const getCooperativeById = async (id: number): Promise<Cooperative> => {
 };
 
 export const assignAdminToCoop = async (id: number, data: { admins: number[] }) => {
+  console.log(data, 'data');
+
   try {
     const response = await axios.patch(
       `${endpoints.cooperative.assignAdmin}/${id}/assign-admin`,

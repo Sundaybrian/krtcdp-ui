@@ -109,6 +109,7 @@ export const navData = [
           // { title: 'Farms', path: paths.dashboard.farner.coopFarmers },
           { title: 'Harvest', path: paths.dashboard.farner.harvest },
           { title: 'GRN', path: paths.dashboard.farner.grn },
+          { title: 'Invoice', path: paths.dashboard.invoice.root },
         ],
       },
       {
@@ -252,18 +253,18 @@ export const navData = [
         permission: 'view:order',
         children: [{ title: 'Orders', path: paths.dashboard.order.root }],
       },
-      {
-        title: 'Invoice',
-        path: paths.dashboard.invoice.root,
-        icon: ICONS.invoice,
-        permission: 'view:invoice',
-        children: [
-          { title: 'List', path: paths.dashboard.invoice.root },
-          // { title: 'Details', path: paths.dashboard.invoice.demo.details },
-          // { title: 'Create', path: paths.dashboard.invoice.new },
-          // { title: 'Edit', path: paths.dashboard.invoice.demo.edit },
-        ],
-      },
+      // {
+      //   title: 'Invoice',
+      //   path: paths.dashboard.invoice.root,
+      //   icon: ICONS.invoice,
+      //   permission: 'view:invoice',
+      //   children: [
+      //     { title: 'List', path: paths.dashboard.invoice.root },
+      //     { title: 'Details', path: paths.dashboard.invoice.demo.details },
+      //     { title: 'Create', path: paths.dashboard.invoice.new },
+      //     { title: 'Edit', path: paths.dashboard.invoice.demo.edit },
+      //   ],
+      // },
       // {
       //   title: 'Catalog',
       //   permission: 'view:category',

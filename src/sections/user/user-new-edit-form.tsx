@@ -29,9 +29,11 @@ import { Iconify } from 'src/components/iconify';
 import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { addUser, getCounties, getUserTypes } from 'src/api/services';
+import { addUser, assignAdminToCoop, getCounties, getUserTypes } from 'src/api/services';
 import { County, SubCounty } from 'src/api/data.inteface';
-import { MARITAL_STATUS_OPTIONS } from 'src/utils/default';
+import { MARITAL_STATUS_OPTIONS, TENANT_LOCAL_STORAGE } from 'src/utils/default';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
+import { useSearchCooperative } from 'src/actions/cooperative';
 
 // ----------------------------------------------------------------------
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
@@ -39,7 +41,7 @@ export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 export const NewUserSchema = zod.object({
   firstName: zod.string().min(1, { message: 'First name is required!' }),
   lastName: zod.string().min(1, { message: 'Last name is required!' }),
-  middleName: zod.string().min(1, { message: 'Middle name is required!' }),
+  middleName: zod.string(),
   email: zod
     .string()
     .min(1, { message: 'Email is required!' })
@@ -58,13 +60,14 @@ export const NewUserSchema = zod.object({
   county: zod.string().min(1, { message: 'County is required!' }),
   maritalStatus: zod.string().min(1, { message: 'Marital Status is required!' }),
   subCounty: zod.string().min(1, { message: 'Sub county is required!' }),
-  kraPin: zod.string().min(1, { message: 'KRA PIN is required!' }),
+  kraPin: zod.string(),
   // Not required
   acceptTerms: zod.boolean(),
   isAdministrator: zod.boolean(),
   userState: zod.string(),
   isSupport: zod.boolean(),
   userType: zod.string(),
+  coopId: zod.any(),
   // avatarUrl: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
 });
 
@@ -76,10 +79,12 @@ type Props = {
 
 export function UserNewEditForm({ currentUser }: Props) {
   const router = useRouter();
+  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
   const password = useBoolean();
   const [counties, setCounties] = useState<County[]>([]);
   const [subCounties, setSubCounties] = useState<SubCounty[]>([]);
   const [userTypes, setUserTypes] = useState<string[]>([]);
+  const { searchResults } = useSearchCooperative();
 
   const defaultValues = useMemo(
     () => ({
@@ -89,7 +94,7 @@ export function UserNewEditForm({ currentUser }: Props) {
       firstName: '',
       lastName: '',
       middleName: '',
-      userType: 'SYSTEM_ADMIN',
+      userType: state.coopId ? 'COOPERATIVE_ADMIN' : 'SYSTEM_ADMIN',
       password: '',
       birthDate: '2024-07-17T08:14:18.190Z',
       maritalStatus: 'single',
@@ -102,8 +107,9 @@ export function UserNewEditForm({ currentUser }: Props) {
       isAdministrator: true,
       isSupport: true,
       acceptTerms: true,
+      coopId: state.coopId || null,
     }),
-    [currentUser]
+    [currentUser, state.coopId]
   );
 
   const methods = useForm<NewUserSchemaType>({
@@ -123,14 +129,21 @@ export function UserNewEditForm({ currentUser }: Props) {
   const values = watch();
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log('DATA', data);
-
+    // birthdate to utc
+    data.birthDate = new Date(data.birthDate).toISOString();
     try {
-      await addUser(data);
+      const user = await addUser(data);
       reset();
       toast.success(currentUser ? 'Update success!' : 'User created successfully!');
       // router.push(paths.dashboard.user.list);
-      console.info('DATA', data);
+      if (values.userType === 'COOPERATIVE_ADMIN') {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const submitData = {
+          admins: [user?.user?.id],
+        };
+        assignAdminToCoop(state.coopId || data.coopId, submitData);
+      }
+      // assignAdminToCoop
     } catch (error) {
       console.error(error);
     }
@@ -170,6 +183,14 @@ export function UserNewEditForm({ currentUser }: Props) {
     getchCounties();
     fetchUserTypes();
   }, []);
+
+  // use effect
+  useEffect(() => {
+    if (state.coopId) {
+      methods.setValue('userType', 'COOPERATIVE_ADMIN');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.coopId]);
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
@@ -402,6 +423,26 @@ export function UserNewEditForm({ currentUser }: Props) {
                   </MenuItem>
                 ))}
               </Field.Select>
+
+              {!state.coopId && values.userType === 'COOPERATIVE_ADMIN' && (
+                <Field.Select name="coopId" label="Cooperative">
+                  <MenuItem
+                    value=""
+                    onClick={() => null}
+                    sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                  >
+                    None
+                  </MenuItem>
+
+                  <Divider sx={{ borderStyle: 'dashed' }} />
+
+                  {searchResults.map((coop) => (
+                    <MenuItem key={coop.mobilePhone} value={coop.id}>
+                      {coop.groupName}--{coop.incorporationNumber}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
+              )}
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

@@ -202,14 +202,19 @@ export type Cooperative = {
   type: string;
   businessName: string;
   mobilePhone: string;
-  yearOfRegistration: any;
-  kraPin: string;
+  yearOfCreation: any;
+  krapin: string;
   residence: string;
   county: string;
   subCounty: string;
   ward: string;
   supplyChainId?: 0;
   groupName: string;
+  insuranceProvider: string;
+  incorporationNumber: string;
+  enterpriseCovered: string;
+  insuranceType: string;
+  hasInsurance: boolean;
 };
 
 export type IUserItem = {

@@ -172,12 +172,12 @@ export function HeaderBase({
               {searchbar && <Searchbar data-slot="searchbar" data={data?.nav} />}
 
               {/* -- Language popover -- */}
-              {localization && <LanguagePopover data-slot="localization" data={data?.langs} />}
+              {/* {localization && <LanguagePopover data-slot="localization" data={data?.langs} />} */}
 
               {/* -- Notifications popover -- */}
-              {notifications && (
+              {/* {notifications && (
                 <NotificationsDrawer data-slot="notifications" data={data?.notifications} />
-              )}
+              )} */}
 
               {/* -- Contacts popover -- */}
               {/* {contacts && <ContactsPopover data-slot="contacts" data={data?.contacts} />} */}

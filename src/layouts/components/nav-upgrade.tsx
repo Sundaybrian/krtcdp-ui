@@ -20,6 +20,8 @@ import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { useAuthContext } from 'src/auth/hooks';
 import { useRouter } from 'src/routes/hooks';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
+import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
 
 // ----------------------------------------------------------------------
 
@@ -27,18 +29,21 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
   const authUser = useAuthUser();
   const { checkUserSession } = useAuthContext();
   const router = useRouter();
+  const { resetState } = useLocalStorage(TENANT_LOCAL_STORAGE, null);
 
   const handleLogout = useCallback(async () => {
     try {
       await jwtSignOut();
+
       await checkUserSession?.();
 
+      resetState();
       router.refresh();
     } catch (error) {
       console.error(error);
       toast.error('Unable to logout!');
     }
-  }, [checkUserSession, router]);
+  }, [checkUserSession, router, resetState]);
 
   return (
     <Stack sx={{ px: 2, py: 5, textAlign: 'center', ...sx }} {...other}>
