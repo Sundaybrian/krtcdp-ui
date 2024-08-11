@@ -18,7 +18,7 @@ import { Farm, Grn, Harvest } from 'src/types/farm';
 import { PurchaseOrderItem } from 'src/types/order';
 import { InvoiceItem } from 'src/types/invoice';
 
-import { County, Page } from './data.inteface';
+import { County, Page, Ward } from './data.inteface';
 
 // Function to fetch users
 export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
@@ -156,6 +156,17 @@ export const addSubCounty = async (subcounty: any) => {
   }
 };
 
+// get wards based on subcounty ID
+export const getWards = async (id: number): Promise<Array<Ward>> => {
+  try {
+    const response = await axios.get(endpoints.region.ward(id));
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching wards:', error);
+    throw error;
+  }
+};
+
 // farmers
 export const getFarmers = async (query = {}): Promise<Page<IUserItem[]>> => {
   try {
@@ -271,8 +282,6 @@ export const getCooperativeById = async (id: number): Promise<Cooperative> => {
 };
 
 export const assignAdminToCoop = async (id: number, data: { admins: number[] }) => {
-  console.log(data, 'data');
-
   try {
     const response = await axios.patch(
       `${endpoints.cooperative.assignAdmin}/${id}/assign-admin`,

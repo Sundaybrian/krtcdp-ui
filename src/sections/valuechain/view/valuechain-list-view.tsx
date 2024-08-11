@@ -149,6 +149,7 @@ export function ValueChainListView() {
     [filters.state, selectedRowIds]
   );
 
+  // handleViewRow(params.row.id)
   const columns: GridColDef[] = [
     {
       field: 'name',
@@ -156,9 +157,7 @@ export function ValueChainListView() {
       flex: 1,
       minWidth: 8,
       hideable: false,
-      renderCell: (params) => (
-        <RenderCellProduct params={params} onViewRow={() => handleViewRow(params.row.id)} />
-      ),
+      renderCell: (params) => <RenderCellProduct params={params} onViewRow={() => null} />,
     },
     {
       field: 'valueChainType',
@@ -196,13 +195,13 @@ export function ValueChainListView() {
           showInMenu
           icon={<Iconify icon="solar:eye-bold" />}
           label="View"
-          onClick={() => handleViewRow(params.row.id)}
+          // onClick={() => handleViewRow(params.row.id)}
         />,
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
           label="Edit"
-          onClick={() => handleEditRow(params.row.id)}
+          // onClick={() => handleEditRow(params.row.id)}
         />,
         <GridActionsCellItem
           showInMenu

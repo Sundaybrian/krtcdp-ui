@@ -29,8 +29,8 @@ import { Iconify } from 'src/components/iconify';
 import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { addCoopFarmer, addUser, getCounties } from 'src/api/services';
-import { County, SubCounty } from 'src/api/data.inteface';
+import { addCoopFarmer, addUser, getCounties, getWards } from 'src/api/services';
+import { County, SubCounty, Ward } from 'src/api/data.inteface';
 import { MARITAL_STATUS_OPTIONS, TENANT_LOCAL_STORAGE } from 'src/utils/default';
 import { useSearchCooperative } from 'src/actions/cooperative';
 import { useLocalStorage } from 'src/hooks/use-local-storage';
@@ -84,6 +84,7 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
   const password = useBoolean();
   const [counties, setCounties] = useState<County[]>([]);
   const [subCounties, setSubCounties] = useState<SubCounty[]>([]);
+  const [wards, setWards] = useState<Ward[]>([]);
 
   const defaultValues = useMemo(
     () => ({
@@ -180,7 +181,6 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
   };
 
   // fetch counties
-
   const getchCounties = () => {
     getCounties()
       .then((data) => {
@@ -193,10 +193,26 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
       });
   };
 
+  const fetchWards = (id: number) => {
+    getWards(id)
+      .then((data) => {
+        setWards(data);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error('Failed to fetch wards');
+      });
+  };
+
   // use effect
   useEffect(() => {
     getchCounties();
   }, []);
+
+  // methods
+  const handleSubCountyChange = (id: number) => {
+    fetchWards(id);
+  };
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
@@ -301,7 +317,7 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
 
                   {counties.map((county) => (
                     <MenuItem
-                      key={county.code}
+                      key={county.code + county.name}
                       value={county.name}
                       onClick={() => {
                         handleCountyChange(county.id);
@@ -324,14 +340,33 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
                   <Divider sx={{ borderStyle: 'dashed' }} />
 
                   {subCounties.map((subCounty) => (
-                    <MenuItem key={subCounty.code} value={subCounty.name} onClick={() => null}>
+                    <MenuItem
+                      key={subCounty.code + subCounty.name}
+                      value={subCounty.name}
+                      onClick={() => {
+                        handleSubCountyChange(subCounty.id);
+                      }}
+                    >
                       {subCounty.name}
                     </MenuItem>
                   ))}
                 </Field.Select>
               </Stack>
 
-              <Field.Text name="ward" label="Ward" />
+              {/* <Field.Text name="ward" label="Ward" /> */}
+              <Field.Select name="ward" label="Ward">
+                <MenuItem value="" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                  None
+                </MenuItem>
+
+                <Divider sx={{ borderStyle: 'dashed' }} />
+
+                {wards.map((ward) => (
+                  <MenuItem key={ward.id + ward.name} value={ward.name}>
+                    {ward.name}
+                  </MenuItem>
+                ))}
+              </Field.Select>
 
               <Field.Checkbox name="hasInhasInsurancesurance" label="Insured" />
               <Field.Text name="insuranceProvider" label="Insurance provider" />

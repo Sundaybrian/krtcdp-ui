@@ -357,7 +357,7 @@ export function CooperativeFarmerListView() {
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.cooperative.new}
+              href={paths.dashboard.farner.newCoopFarmer}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >

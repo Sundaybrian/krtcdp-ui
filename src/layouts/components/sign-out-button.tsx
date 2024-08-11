@@ -17,6 +17,8 @@ import { signOut as jwtSignOut } from 'src/auth/context/jwt/action';
 import { signOut as amplifySignOut } from 'src/auth/context/amplify/action';
 import { signOut as supabaseSignOut } from 'src/auth/context/supabase/action';
 import { signOut as firebaseSignOut } from 'src/auth/context/firebase/action';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
+import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +36,8 @@ type Props = ButtonProps & {
 export function SignOutButton({ onClose, ...other }: Props) {
   const router = useRouter();
 
+  const { resetState } = useLocalStorage(TENANT_LOCAL_STORAGE, null);
+
   const { checkUserSession } = useAuthContext();
 
   const { logout: signOutAuth0 } = useAuth0();
@@ -42,14 +46,14 @@ export function SignOutButton({ onClose, ...other }: Props) {
     try {
       await signOut();
       await checkUserSession?.();
-
+      resetState();
       onClose?.();
       router.refresh();
     } catch (error) {
       console.error(error);
       toast.error('Unable to logout!');
     }
-  }, [checkUserSession, onClose, router]);
+  }, [checkUserSession, onClose, resetState, router]);
 
   const handleLogoutAuth0 = useCallback(async () => {
     try {

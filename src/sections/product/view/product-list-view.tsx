@@ -179,15 +179,14 @@ export function ProductListView() {
 
   const columns: GridColDef[] = [
     // { field: 'category', headerName: 'Category', filterable: false },
+    // handleViewRow(params.row.id)
     {
       field: 'name',
       headerName: 'Product',
       flex: 1,
       minWidth: 360,
       hideable: false,
-      renderCell: (params) => (
-        <RenderCellProduct params={params} onViewRow={() => handleViewRow(params.row.id)} />
-      ),
+      renderCell: (params) => <RenderCellProduct params={params} onViewRow={() => null} />,
     },
     {
       field: 'category',
@@ -248,18 +247,18 @@ export function ProductListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          onClick={() => handleViewRow(params.row.id)}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          onClick={() => handleEditRow(params.row.id)}
-        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:eye-bold" />}
+        //   label="View"
+        //   onClick={() => handleViewRow(params.row.id)}
+        // />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:pen-bold" />}
+        //   label="Edit"
+        //   onClick={() => handleEditRow(params.row.id)}
+        // />,
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:trash-bin-trash-bold" />}

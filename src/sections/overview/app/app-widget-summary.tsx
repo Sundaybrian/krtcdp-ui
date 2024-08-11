@@ -4,6 +4,7 @@ import type { ChartOptions } from 'src/components/chart';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import { useTheme } from '@mui/material/styles';
+import Link from '@mui/material/Link';
 
 import { fNumber, fPercent } from 'src/utils/format-number';
 
@@ -16,6 +17,7 @@ type Props = CardProps & {
   title: string;
   total: number;
   percent: number;
+  href?: string;
   chart: {
     colors?: string[];
     categories: string[];
@@ -24,7 +26,7 @@ type Props = CardProps & {
   };
 };
 
-export function AppWidgetSummary({ title, percent, total, chart, sx, ...other }: Props) {
+export function AppWidgetSummary({ title, percent, total, chart, sx, href, ...other }: Props) {
   const theme = useTheme();
 
   const chartColors = chart.colors ?? [theme.palette.primary.main];
@@ -74,7 +76,11 @@ export function AppWidgetSummary({ title, percent, total, chart, sx, ...other }:
       {...other}
     >
       <Box sx={{ flexGrow: 1 }}>
-        <Box sx={{ typography: 'subtitle2' }}>{title}</Box>
+        <Box sx={{ typography: 'subtitle2' }}>
+          <Link href={href} color="inherit" sx={{ cursor: 'pointer' }} underline="hover">
+            {title}
+          </Link>
+        </Box>
         <Box sx={{ mt: 1.5, mb: 1, typography: 'h3' }}>{fNumber(total)}</Box>
         {renderTrending}
       </Box>

@@ -29,8 +29,8 @@ import { Iconify } from 'src/components/iconify';
 import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { addUser, assignAdminToCoop, getCounties, getUserTypes } from 'src/api/services';
-import { County, SubCounty } from 'src/api/data.inteface';
+import { addUser, assignAdminToCoop, getCounties, getUserTypes, getWards } from 'src/api/services';
+import { County, SubCounty, Ward } from 'src/api/data.inteface';
 import { MARITAL_STATUS_OPTIONS, TENANT_LOCAL_STORAGE } from 'src/utils/default';
 import { useLocalStorage } from 'src/hooks/use-local-storage';
 import { useSearchCooperative } from 'src/actions/cooperative';
@@ -83,6 +83,7 @@ export function UserNewEditForm({ currentUser }: Props) {
   const password = useBoolean();
   const [counties, setCounties] = useState<County[]>([]);
   const [subCounties, setSubCounties] = useState<SubCounty[]>([]);
+  const [wards, setWards] = useState<Ward[]>([]);
   const [userTypes, setUserTypes] = useState<string[]>([]);
   const { searchResults } = useSearchCooperative();
 
@@ -178,6 +179,19 @@ export function UserNewEditForm({ currentUser }: Props) {
       });
   };
 
+  const fetchWards = (id: number) => {
+    getWards(id)
+      .then((data) => {
+        console.log('data:WARDS', data);
+
+        setWards(data);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error('Failed to fetch wards');
+      });
+  };
+
   // use effect
   useEffect(() => {
     getchCounties();
@@ -191,6 +205,11 @@ export function UserNewEditForm({ currentUser }: Props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.coopId]);
+
+  // methods
+  const handleSubCountyChange = (id: number) => {
+    fetchWards(id);
+  };
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
@@ -386,25 +405,40 @@ export function UserNewEditForm({ currentUser }: Props) {
                 </Field.Select>
 
                 <Field.Select name="subCounty" label="Sub county">
-                  <MenuItem
-                    value=""
-                    onClick={() => null}
-                    sx={{ fontStyle: 'italic', color: 'text.secondary' }}
-                  >
+                  <MenuItem value="" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
                     None
                   </MenuItem>
 
                   <Divider sx={{ borderStyle: 'dashed' }} />
 
                   {subCounties.map((subCounty) => (
-                    <MenuItem key={subCounty.code} value={subCounty.name} onClick={() => null}>
+                    <MenuItem
+                      key={subCounty.code}
+                      value={subCounty.name}
+                      onClick={() => {
+                        handleSubCountyChange(subCounty.id);
+                      }}
+                    >
                       {subCounty.name}
                     </MenuItem>
                   ))}
                 </Field.Select>
               </Stack>
 
-              <Field.Text name="ward" label="Ward" />
+              {/* <Field.Text name="ward" label="Ward" /> */}
+              <Field.Select name="ward" label="Ward">
+                <MenuItem value="" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                  None
+                </MenuItem>
+
+                <Divider sx={{ borderStyle: 'dashed' }} />
+
+                {wards.map((ward) => (
+                  <MenuItem key={ward.id + ward.name} value={ward.name}>
+                    {ward.name}
+                  </MenuItem>
+                ))}
+              </Field.Select>
 
               <Field.Select name="userType" label="User type">
                 <MenuItem

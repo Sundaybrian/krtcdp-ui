@@ -54,9 +54,9 @@ export function CountyTableRow({ row, selected, onEditRow, onSelectRow, onDelete
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
-              <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                {row.name}
-              </Link>
+              {/* <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}> */}
+              {row.name}
+              {/* </Link> */}
               <Box component="span" sx={{ color: 'text.disabled' }}>
                 <Link color="inherit" onClick={subcountyView.onTrue} sx={{ cursor: 'pointer' }}>
                   {row.subCounties.length} Sub Counties

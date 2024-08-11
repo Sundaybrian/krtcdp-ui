@@ -21,3 +21,10 @@ export interface Page<T> {
   totalItems: number;
   totalPages: number;
 }
+
+export interface Ward {
+  id: number;
+  name: string;
+  code: number;
+  subCountyId: number;
+}

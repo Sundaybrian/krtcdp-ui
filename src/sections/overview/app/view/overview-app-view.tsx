@@ -13,6 +13,7 @@ import { svgColorClasses } from 'src/components/svg-color';
 
 import useAuthUser from 'src/auth/hooks/use-auth-user';
 import { Istats, useGetStatistcis } from 'src/actions/stats';
+import { paths } from 'src/routes/paths';
 
 import { AppWidget } from '../app-widget';
 import { AppWelcome } from '../app-welcome';
@@ -45,7 +46,7 @@ export function OverviewAppView() {
         <Grid xs={12} md={8}>
           <AppWelcome
             title={`Welcome back 👋 \n ${firstName}`}
-            description="Start by viewing todays invoices, and purchase orders."
+            description="Check overview"
             img={<SeoIllustration hideBackground />}
             action={
               <Button variant="contained" color="primary">
@@ -103,8 +104,9 @@ export function OverviewAppView() {
                   label: 'Other',
                   value:
                     data?.userTypeCounts?.filter(
-                      (user) => !['COOPERATIVE_ADMIN', 'SYSTEM_ADMIN'].includes(user.userType)
-                    )[0]?.count || 0,
+                      (user) =>
+                        !['COOPERATIVE_ADMIN', 'SYSTEM_ADMIN', 'FARMER'].includes(user.userType)
+                    )?.length || 0,
                 },
               ],
             }}
@@ -114,6 +116,7 @@ export function OverviewAppView() {
         <Grid xs={12} md={4}>
           <AppWidgetSummary
             title="Total active users"
+            href={paths.dashboard.user.root}
             percent={2.6}
             total={
               data?.activeUsers?.filter((user) => user.accountState === 'active')[0]?.count || 0
@@ -129,6 +132,7 @@ export function OverviewAppView() {
           <AppWidgetSummary
             title="Total Farmers"
             percent={0.2}
+            href={paths.dashboard.farner.coopFarmers}
             total={data?.farmersCount || 0}
             chart={{
               colors: [theme.vars.palette.info.main],
@@ -141,6 +145,7 @@ export function OverviewAppView() {
         <Grid xs={12} md={4}>
           <AppWidgetSummary
             title="Total Amins"
+            href={paths.dashboard.user.root}
             percent={-0.1}
             total={
               data?.userTypeCounts?.filter((user) => user.userType === 'SYSTEM_ADMIN')[0]?.count ||
@@ -157,6 +162,7 @@ export function OverviewAppView() {
         <Grid xs={12} md={4}>
           <AppWidgetSummary
             title="Total Farms"
+            href={paths.dashboard.cooperative.coopFarmers}
             percent={-0.1}
             total={data?.farmsCount || 0}
             chart={{
@@ -170,6 +176,7 @@ export function OverviewAppView() {
         <Grid xs={12} md={4}>
           <AppWidgetSummary
             title="Total Cooperatives"
+            href={paths.dashboard.cooperative.root}
             percent={-0.1}
             total={data?.cooperativesCount || 0}
             chart={{

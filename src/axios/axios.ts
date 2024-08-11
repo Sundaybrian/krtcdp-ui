@@ -58,6 +58,7 @@ export const endpoints = {
   region: {
     county: '/api/county',
     subcounty: '/api/county/subcounty',
+    ward: (id: number) => `/api/county/${id}/wards`,
   },
   category: {
     new: '/api/category',
