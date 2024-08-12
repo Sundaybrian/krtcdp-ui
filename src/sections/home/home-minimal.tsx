@@ -114,11 +114,11 @@ export function HomeMinimal({ sx, ...other }: StackProps) {
           <Stack spacing={1}>
             <Typography sx={{ color: 'text.secondary' }}>
               The goal of the project is to increase productivity, profitability and sustainability
-              of agricultural cooperatives, and to consequently impact the entire
-              agriculture&apos;food and trade value chains, spurring holistic growth across Kenya's
-              agricultural sector. The project's goal will be achieved through the creation of a
-              single point of convergence for all agro-sector stakeholders in Kenya, thereby
-              connecting farmers with the private sector actors as well as public sector services.
+              of agricultural cooperatives, and to consequently impact the entire agriculture, food
+              and trade value chains, spurring holistic growth across Kenya&apos;s agricultural
+              sector. The project&apos;s goal will be achieved through the creation of a single
+              point of convergence for all agro-sector stakeholders in Kenya, thereby connecting
+              farmers with the private sector actors as well as public sector services.
             </Typography>
           </Stack>
         </Box>
