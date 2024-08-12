@@ -259,7 +259,7 @@ export const getCooperatives = async (query = {}): Promise<Page<Cooperative[]>> 
     const response = await axios.get(endpoints.cooperative.search, {
       params: {
         page: 1,
-        limit: 20,
+        limit: 200,
         ...query,
       },
     });
