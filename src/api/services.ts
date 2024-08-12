@@ -26,7 +26,7 @@ export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
     const response = await axios.get(endpoints.users.search, {
       params: {
         page: 1,
-        limit: 20,
+        limit: 200,
         ...query,
       },
     });
@@ -317,7 +317,7 @@ export const searchCoopFarmers = async (query = {}): Promise<Page<CoopFarmerList
       {
         params: {
           page: 1,
-          limit: 20,
+          limit: 200,
           ...query,
         },
       }
