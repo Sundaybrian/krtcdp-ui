@@ -39,8 +39,7 @@ export function HomeAdvertisement({ sx, ...other }: StackProps) {
         variants={varFade({ distance: 24 }).inDown}
         sx={{ m: 0, color: 'common.white', typography: { xs: 'h2', md: 'h1' } }}
       >
-        Get started with
-        <br /> Digital farming
+        Get started
         <Box
           component="span"
           sx={{

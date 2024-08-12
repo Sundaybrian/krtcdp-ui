@@ -33,9 +33,9 @@ export function HomeMinimal({ sx, ...other }: StackProps) {
   const renderDescription = (
     <>
       <SectionTitle
-        caption="Visualizing Success"
-        title="What's in"
-        txtGradient="KRTDCP?"
+        caption="The digital platform"
+        title="Objectives"
+        txtGradient="and benefits"
         sx={{ mb: { xs: 5, md: 8 }, textAlign: { xs: 'center', md: 'left' } }}
       />
 
@@ -67,8 +67,8 @@ export function HomeMinimal({ sx, ...other }: StackProps) {
     </>
   );
 
-  const renderImg = (
-    <Stack
+  {
+    /* </Stack> 
       component={m.div}
       variants={varFade({ distance: 24 }).inRight}
       alignItems="center"
@@ -97,7 +97,66 @@ export function HomeMinimal({ sx, ...other }: StackProps) {
           sx={{ width: 720 }}
         />
       </Box>
-    </Stack>
+    </Stack> */
+  }
+
+  const renderImg = (
+    <>
+      <SectionTitle
+        caption=""
+        title="About"
+        txtGradient="us"
+        sx={{ mb: { xs: 5, md: 8 }, textAlign: { xs: 'center', md: 'left' } }}
+      />
+
+      <Stack
+        spacing={6}
+        sx={{
+          maxWidth: { sm: 560, md: 400 },
+          mx: { xs: 'auto', md: 'unset' },
+        }}
+      >
+        <Box component={m.div} variants={varFade({ distance: 24 }).inUp} gap={3} display="flex">
+          <Stack spacing={1}>
+            <Typography sx={{ color: 'text.secondary' }}>
+              Kenya Rural Transformation Centres Digital Platform project introduces a uniquely
+              tailored innovative digital platform, which allows various service providers to plug
+              in, while delivering affordable and timely services to farmers and other value chain
+              actors. It will further enable and facilitate the following factors/elements in the
+              agricultural sector
+            </Typography>
+          </Stack>
+        </Box>
+      </Stack>
+
+      <SectionTitle
+        caption=""
+        title="Our"
+        txtGradient="goal"
+        sx={{ mb: { xs: 5, md: 8, mt: 2 }, textAlign: { xs: 'center', md: 'left' } }}
+      />
+
+      <Stack
+        spacing={6}
+        sx={{
+          maxWidth: { sm: 560, md: 400 },
+          mx: { xs: 'auto', md: 'unset' },
+        }}
+      >
+        <Box component={m.div} variants={varFade({ distance: 24 }).inUp} gap={3} display="flex">
+          <Stack spacing={1}>
+            <Typography sx={{ color: 'text.secondary' }}>
+              The goal of the project is to increase productivity, profitability and sustainability
+              of agricultural cooperatives, and to consequently impact the entire agriculture/food
+              and trade value chains, spurring holistic growth across Kenya's agricultural sector.
+              The project's goal will be achieved through the creation of a single point of
+              convergence for all agro-sector stakeholders in Kenya, thereby connecting farmers with
+              the private sector actors as well as public sector services.
+            </Typography>
+          </Stack>
+        </Box>
+      </Stack>
+    </>
   );
 
   return (
@@ -137,17 +196,19 @@ export function HomeMinimal({ sx, ...other }: StackProps) {
 const ITEMS = [
   {
     icon: `${CONFIG.site.basePath}/assets/icons/home/ic-make-brand.svg`,
-    title: 'Flexibility',
-    description: 'Consistent design makes it easy to brand your own.',
+    title: 'Digital Ecosystem',
+    description: `Put farmers at the center of a single digital "ecosystem" and connect them with value chain players such as input suppliers and agro-dealers, buyers, and other service providers, among others`,
   },
   {
     icon: `${CONFIG.site.basePath}/assets/icons/home/ic-design.svg`,
-    title: 'Market place',
-    description: 'Access thousands of products and services.',
+    title: 'Scalability',
+    description:
+      'Facilitate streamlining of processes coupled to mobile phone-based innovations to reach small scale farmers.',
   },
   {
     icon: `${CONFIG.site.basePath}/assets/icons/home/ic-development.svg`,
-    title: 'Cooperatives',
-    description: 'Easy to join and start your own cooperative.',
+    title: 'Linkages',
+    description:
+      'Enhance linkages between upstream, midstream, and downstream agriculture value chain activitie',
   },
 ];

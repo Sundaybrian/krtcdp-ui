@@ -74,9 +74,9 @@ export function HomeHero({ sx, ...other }: StackProps) {
         }}
       >
         <Box component="span" sx={{ width: 1, opacity: 0.24 }}>
-          Boost your input and output
+          Get started with
         </Box>
-        process with
+        the digital platform
         <Box
           component={m.span}
           animate={{ backgroundPosition: '200% center' }}
@@ -94,7 +94,7 @@ export function HomeHero({ sx, ...other }: StackProps) {
             ml: { xs: 0.75, md: 1, xl: 1.5 },
           }}
         >
-          digital farm managment
+          all in one market place
         </Box>
       </Box>
     </MInview>
@@ -110,7 +110,7 @@ export function HomeHero({ sx, ...other }: StackProps) {
           [theme.breakpoints.up(lgKey)]: { fontSize: 20, lineHeight: '36px' },
         }}
       >
-        {`The starting point for your farm produce and managment is based on digital farm managment. \nEasy customization helps you deliver to customers faster.`}
+        {`The goal of the project is to increase productivity, profitability and sustainability of agricultural cooperatives`}
       </Typography>
     </MInview>
   );
@@ -220,8 +220,8 @@ export function HomeHero({ sx, ...other }: StackProps) {
             <m.div style={{ y: y1 }}>{renderHeading}</m.div>
             <m.div style={{ y: y2 }}>{renderText}</m.div>
           </Stack>
-          <m.div style={{ y: y3 }}>{renderRatings}</m.div>
-          <m.div style={{ y: y5 }}>{renderIcons}</m.div>
+          {/* <m.div style={{ y: y3 }}>{renderRatings}</m.div> */}
+          {/* <m.div style={{ y: y5 }}>{renderIcons}</m.div> */}
         </Container>
 
         <HeroBackground />
