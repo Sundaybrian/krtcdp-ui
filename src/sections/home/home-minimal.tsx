@@ -67,39 +67,6 @@ export function HomeMinimal({ sx, ...other }: StackProps) {
     </>
   );
 
-  {
-    /* </Stack> 
-      component={m.div}
-      variants={varFade({ distance: 24 }).inRight}
-      alignItems="center"
-      justifyContent="center"
-      sx={{ height: 1, position: 'relative' }}
-    >
-      <Box
-        sx={{
-          left: 0,
-          width: 720,
-          borderRadius: 2,
-          position: 'absolute',
-          bgcolor: 'background.default',
-          boxShadow: (theme) =>
-            `-40px 40px 80px 0px ${varAlpha(theme.vars.palette.grey['500Channel'], 0.16)}`,
-          [stylesMode.dark]: {
-            boxShadow: (theme) =>
-              `-40px 40px 80px 0px ${varAlpha(theme.vars.palette.common.blackChannel, 0.16)}`,
-          },
-        }}
-      >
-        <Box
-          component="img"
-          alt="Home Chart"
-          src={`${CONFIG.site.basePath}/assets/images/home/home-chart.webp`}
-          sx={{ width: 720 }}
-        />
-      </Box>
-    </Stack> */
-  }
-
   const renderImg = (
     <>
       <SectionTitle
@@ -133,7 +100,7 @@ export function HomeMinimal({ sx, ...other }: StackProps) {
         caption=""
         title="Our"
         txtGradient="goal"
-        sx={{ mb: { xs: 5, md: 8, mt: 2 }, textAlign: { xs: 'center', md: 'left' } }}
+        sx={{ mb: { xs: 5, md: 8, mt: 4 }, textAlign: { xs: 'center', md: 'left' } }}
       />
 
       <Stack
@@ -147,11 +114,11 @@ export function HomeMinimal({ sx, ...other }: StackProps) {
           <Stack spacing={1}>
             <Typography sx={{ color: 'text.secondary' }}>
               The goal of the project is to increase productivity, profitability and sustainability
-              of agricultural cooperatives, and to consequently impact the entire agriculture/food
-              and trade value chains, spurring holistic growth across Kenya's agricultural sector.
-              The project's goal will be achieved through the creation of a single point of
-              convergence for all agro-sector stakeholders in Kenya, thereby connecting farmers with
-              the private sector actors as well as public sector services.
+              of agricultural cooperatives, and to consequently impact the entire
+              agriculture&apos;food and trade value chains, spurring holistic growth across Kenya's
+              agricultural sector. The project's goal will be achieved through the creation of a
+              single point of convergence for all agro-sector stakeholders in Kenya, thereby
+              connecting farmers with the private sector actors as well as public sector services.
             </Typography>
           </Stack>
         </Box>

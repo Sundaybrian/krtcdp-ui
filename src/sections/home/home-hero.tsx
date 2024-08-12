@@ -110,7 +110,8 @@ export function HomeHero({ sx, ...other }: StackProps) {
           [theme.breakpoints.up(lgKey)]: { fontSize: 20, lineHeight: '36px' },
         }}
       >
-        {`The goal of the project is to increase productivity, profitability and sustainability of agricultural cooperatives`}
+        The goal of the project is to increase productivity, profitability and sustainability of
+        agricultural cooperatives.
       </Typography>
     </MInview>
   );
