@@ -74,6 +74,10 @@ export function DashboardLayout({ sx, children, data }: DashboardLayoutProps) {
     return true;
   });
 
+  console.log('navData', 'here');
+
+  // useEffect(() => {}, [currentUser]);
+
   return (
     <>
       <NavMobile

@@ -49,6 +49,7 @@ export function SignOutButton({ onClose, ...other }: Props) {
       resetState();
       onClose?.();
       router.refresh();
+      window.location.reload();
     } catch (error) {
       console.error(error);
       toast.error('Unable to logout!');

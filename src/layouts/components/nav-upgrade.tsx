@@ -39,6 +39,7 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
 
       resetState();
       router.refresh();
+      window.location.reload();
     } catch (error) {
       console.error(error);
       toast.error('Unable to logout!');
