@@ -45,8 +45,9 @@ import {
 } from 'src/utils/default';
 import { useSearchCooperative } from 'src/actions/cooperative';
 import { useLocalStorage } from 'src/hooks/use-local-storage';
-import { Stepper } from '../_examples/extra/form-wizard-view/form-steps';
 import { ValueChain } from 'src/types/value-chain';
+
+import { Stepper } from '../_examples/extra/form-wizard-view/form-steps';
 
 // ----------------------------------------------------------------------
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
@@ -270,7 +271,7 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
             </Card>
           )}
 
-          {activeStep == 0 && (
+          {activeStep === 0 && (
             <Card sx={{ p: 3 }}>
               <Box
                 rowGap={3}
@@ -460,7 +461,7 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
             </Card>
           )}
 
-          {activeStep == 1 && (
+          {activeStep === 1 && (
             <Card sx={{ p: 3 }}>
               <Box
                 rowGap={3}
