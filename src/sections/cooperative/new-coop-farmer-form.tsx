@@ -29,11 +29,24 @@ import { Iconify } from 'src/components/iconify';
 import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { addCoopFarmer, addUser, getCounties, getWards } from 'src/api/services';
+import {
+  addCoopFarmer,
+  addUser,
+  getCounties,
+  getWards,
+  searchFarmValueChain,
+} from 'src/api/services';
 import { County, SubCounty, Ward } from 'src/api/data.inteface';
-import { MARITAL_STATUS_OPTIONS, TENANT_LOCAL_STORAGE } from 'src/utils/default';
+import {
+  GENDER_OPTIONS,
+  MARITAL_STATUS_OPTIONS,
+  RELATIONSHIP_OPTIONS,
+  TENANT_LOCAL_STORAGE,
+} from 'src/utils/default';
 import { useSearchCooperative } from 'src/actions/cooperative';
 import { useLocalStorage } from 'src/hooks/use-local-storage';
+import { Stepper } from '../_examples/extra/form-wizard-view/form-steps';
+import { ValueChain } from 'src/types/value-chain';
 
 // ----------------------------------------------------------------------
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
@@ -85,6 +98,8 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
   const [counties, setCounties] = useState<County[]>([]);
   const [subCounties, setSubCounties] = useState<SubCounty[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);
+  const [valueChains, setValueChains] = useState<ValueChain[]>([]);
+  const [activeStep, setActiveStep] = useState(0);
 
   const defaultValues = useMemo(
     () => ({
@@ -170,6 +185,7 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
       toast.success(currentUser ? 'Update success!' : 'User created successfully!');
       // router.push(paths.dashboard.user.list);
       console.info('DATA', data);
+      setActiveStep(0);
     } catch (error) {
       console.error(error);
       toast.error(error?.message || 'Failed to coop farmer');
@@ -204,9 +220,21 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
       });
   };
 
+  const fetchValueChains = () => {
+    searchFarmValueChain()
+      .then((data) => {
+        setValueChains(data.results);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error('Failed to fetch wards');
+      });
+  };
+
   // use effect
   useEffect(() => {
     getchCounties();
+    fetchValueChains();
   }, []);
 
   // methods
@@ -218,6 +246,8 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
     <Form methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={8}>
+          <Stepper steps={['Farmer', 'Next of kin']} activeStep={activeStep} />
+
           {!state.coopId && (
             <Card sx={{ p: 3 }}>
               <Field.Select name="coopId" label="Cooperative">
@@ -239,146 +269,322 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
               </Field.Select>
             </Card>
           )}
-          <Card sx={{ p: 3 }}>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
-            >
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+
+          {activeStep == 0 && (
+            <Card sx={{ p: 3 }}>
+              <Box
+                rowGap={3}
+                columnGap={2}
+                display="grid"
+                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
+              >
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                  <Field.Text
+                    name="firstName"
+                    label="First name"
+                    InputLabelProps={{ shrink: true }}
+                  />
+
+                  <Field.Text name="middleName" label="Middle name" />
+                </Stack>
+
+                <Field.Text name="lastName" label="Last name" InputLabelProps={{ shrink: true }} />
+
+                <Field.Text name="email" label="Email address" />
                 <Field.Text
-                  name="firstName"
-                  label="First name"
+                  name="password"
+                  label="Password"
+                  placeholder="6+ characters"
+                  type={password.value ? 'text' : 'password'}
                   InputLabelProps={{ shrink: true }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={password.onToggle} edge="end">
+                          <Iconify
+                            icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
+                          />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
 
-                <Field.Text name="middleName" label="Middle name" />
-              </Stack>
+                <Field.Phone name="mobilePhone" country="KE" label="Phone number" />
 
-              <Field.Text name="lastName" label="Last name" InputLabelProps={{ shrink: true }} />
+                <Field.Text name="coopMembershipNumber" label="Coop Membership Number" />
 
-              <Field.Text name="email" label="Email address" />
-              <Field.Text
-                name="password"
-                label="Password"
-                placeholder="6+ characters"
-                type={password.value ? 'text' : 'password'}
-                InputLabelProps={{ shrink: true }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={password.onToggle} edge="end">
-                        <Iconify
-                          icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
-                        />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <Field.Phone name="mobilePhone" country="KE" label="Phone number" />
+                <Field.DatePicker name="birthDate" label="DOB" />
 
-              <Field.DatePicker name="birthDate" label="DOB" />
+                <Field.Select name="gender" label="Gender">
+                  <MenuItem
+                    value=""
+                    onClick={() => null}
+                    sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                  >
+                    None
+                  </MenuItem>
 
-              <Field.Select name="maritalStatus" label="Marital status">
-                <MenuItem
-                  value=""
-                  onClick={() => null}
-                  sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                  <Divider sx={{ borderStyle: 'dashed' }} />
+
+                  {GENDER_OPTIONS.map((status) => (
+                    <MenuItem key={status} value={status} onClick={() => null}>
+                      {status}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
+
+                <Field.Select name="maritalStatus" label="Marital status">
+                  <MenuItem
+                    value=""
+                    onClick={() => null}
+                    sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                  >
+                    None
+                  </MenuItem>
+
+                  <Divider sx={{ borderStyle: 'dashed' }} />
+
+                  {MARITAL_STATUS_OPTIONS.map((status) => (
+                    <MenuItem key={status} value={status} onClick={() => null}>
+                      {status}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
+
+                <Field.Text name="kraPin" label="KRA PIN" />
+
+                <Field.Text name="residence" label="Residence" />
+
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                  <Field.Select name="county" label="County">
+                    <MenuItem
+                      value=""
+                      onClick={() => null}
+                      sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                    >
+                      None
+                    </MenuItem>
+
+                    <Divider sx={{ borderStyle: 'dashed' }} />
+
+                    {counties.map((county) => (
+                      <MenuItem
+                        key={county.code + county.name}
+                        value={county.name}
+                        onClick={() => {
+                          handleCountyChange(county.id);
+                        }}
+                      >
+                        {county.name}
+                      </MenuItem>
+                    ))}
+                  </Field.Select>
+
+                  <Field.Select name="subCounty" label="Sub county">
+                    <MenuItem
+                      value=""
+                      onClick={() => null}
+                      sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                    >
+                      None
+                    </MenuItem>
+
+                    <Divider sx={{ borderStyle: 'dashed' }} />
+
+                    {subCounties.map((subCounty) => (
+                      <MenuItem
+                        key={subCounty.code + subCounty.name}
+                        value={subCounty.name}
+                        onClick={() => {
+                          handleSubCountyChange(subCounty.id);
+                        }}
+                      >
+                        {subCounty.name}
+                      </MenuItem>
+                    ))}
+                  </Field.Select>
+                </Stack>
+
+                {/* <Field.Text name="ward" label="Ward" /> */}
+                <Field.Select name="ward" label="Ward">
+                  <MenuItem value="" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                    None
+                  </MenuItem>
+
+                  <Divider sx={{ borderStyle: 'dashed' }} />
+
+                  {wards.map((ward) => (
+                    <MenuItem key={ward.id + ward.name} value={ward.name}>
+                      {ward.name}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
+
+                <Field.Checkbox name="hasInhasInsurancesurance" label="Insured" />
+                <Field.Text name="insuranceProvider" label="Insurance provider" />
+                <Field.Text name="insuranceType" label="Insurance Type" />
+
+                <Field.Select name="valueChain" label="Value chain">
+                  <MenuItem
+                    value=""
+                    onClick={() => null}
+                    sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                  >
+                    None
+                  </MenuItem>
+
+                  <Divider sx={{ borderStyle: 'dashed' }} />
+
+                  {valueChains.map((chain) => (
+                    <MenuItem key={chain.id + chain.valueChainName} value={chain.valueChainName}>
+                      {chain.valueChainName}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
+              </Box>
+
+              <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setActiveStep(1);
+                  }}
                 >
-                  None
-                </MenuItem>
-
-                <Divider sx={{ borderStyle: 'dashed' }} />
-
-                {MARITAL_STATUS_OPTIONS.map((status) => (
-                  <MenuItem key={status} value={status} onClick={() => null}>
-                    {status}
-                  </MenuItem>
-                ))}
-              </Field.Select>
-
-              <Field.Text name="kraPin" label="KRA PIN" />
-
-              <Field.Text name="residence" label="Residence" />
-
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <Field.Select name="county" label="County">
-                  <MenuItem
-                    value=""
-                    onClick={() => null}
-                    sx={{ fontStyle: 'italic', color: 'text.secondary' }}
-                  >
-                    None
-                  </MenuItem>
-
-                  <Divider sx={{ borderStyle: 'dashed' }} />
-
-                  {counties.map((county) => (
-                    <MenuItem
-                      key={county.code + county.name}
-                      value={county.name}
-                      onClick={() => {
-                        handleCountyChange(county.id);
-                      }}
-                    >
-                      {county.name}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                <Field.Select name="subCounty" label="Sub county">
-                  <MenuItem
-                    value=""
-                    onClick={() => null}
-                    sx={{ fontStyle: 'italic', color: 'text.secondary' }}
-                  >
-                    None
-                  </MenuItem>
-
-                  <Divider sx={{ borderStyle: 'dashed' }} />
-
-                  {subCounties.map((subCounty) => (
-                    <MenuItem
-                      key={subCounty.code + subCounty.name}
-                      value={subCounty.name}
-                      onClick={() => {
-                        handleSubCountyChange(subCounty.id);
-                      }}
-                    >
-                      {subCounty.name}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
+                  Next
+                </Button>
+                {/* <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  {!currentUser ? 'Submit' : 'Save changes'}
+                </LoadingButton> */}
               </Stack>
+            </Card>
+          )}
 
-              {/* <Field.Text name="ward" label="Ward" /> */}
-              <Field.Select name="ward" label="Ward">
-                <MenuItem value="" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
-                  None
-                </MenuItem>
+          {activeStep == 1 && (
+            <Card sx={{ p: 3 }}>
+              <Box
+                rowGap={3}
+                columnGap={2}
+                display="grid"
+                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
+              >
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                  <Field.Text
+                    name="firstName"
+                    label="First name"
+                    InputLabelProps={{ shrink: true }}
+                  />
 
-                <Divider sx={{ borderStyle: 'dashed' }} />
+                  <Field.Text name="middleName" label="Middle name" />
+                </Stack>
 
-                {wards.map((ward) => (
-                  <MenuItem key={ward.id + ward.name} value={ward.name}>
-                    {ward.name}
+                <Field.Text name="lastName" label="Last name" InputLabelProps={{ shrink: true }} />
+
+                <Field.Phone name="mobilePhone" country="KE" label="Phone number" />
+
+                <Field.Select name="maritalStatus" label="Relationship">
+                  <MenuItem
+                    value=""
+                    onClick={() => null}
+                    sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                  >
+                    None
                   </MenuItem>
-                ))}
-              </Field.Select>
 
-              <Field.Checkbox name="hasInhasInsurancesurance" label="Insured" />
-              <Field.Text name="insuranceProvider" label="Insurance provider" />
-              <Field.Text name="insuranceType" label="Insurance Type" />
-            </Box>
+                  <Divider sx={{ borderStyle: 'dashed' }} />
 
-            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentUser ? 'Submit' : 'Save changes'}
-              </LoadingButton>
-            </Stack>
-          </Card>
+                  {RELATIONSHIP_OPTIONS.map((status) => (
+                    <MenuItem key={status} value={status} onClick={() => null}>
+                      {status}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
+
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                  <Field.Select name="county" label="County">
+                    <MenuItem
+                      value=""
+                      onClick={() => null}
+                      sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                    >
+                      None
+                    </MenuItem>
+
+                    <Divider sx={{ borderStyle: 'dashed' }} />
+
+                    {counties.map((county) => (
+                      <MenuItem
+                        key={county.code + county.name}
+                        value={county.name}
+                        onClick={() => {
+                          handleCountyChange(county.id);
+                        }}
+                      >
+                        {county.name}
+                      </MenuItem>
+                    ))}
+                  </Field.Select>
+
+                  <Field.Select name="subCounty" label="Sub county">
+                    <MenuItem
+                      value=""
+                      onClick={() => null}
+                      sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                    >
+                      None
+                    </MenuItem>
+
+                    <Divider sx={{ borderStyle: 'dashed' }} />
+
+                    {subCounties.map((subCounty) => (
+                      <MenuItem
+                        key={subCounty.code + subCounty.name}
+                        value={subCounty.name}
+                        onClick={() => {
+                          handleSubCountyChange(subCounty.id);
+                        }}
+                      >
+                        {subCounty.name}
+                      </MenuItem>
+                    ))}
+                  </Field.Select>
+                </Stack>
+
+                {/* <Field.Text name="ward" label="Ward" /> */}
+                <Field.Select name="ward" label="Ward">
+                  <MenuItem value="" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                    None
+                  </MenuItem>
+
+                  <Divider sx={{ borderStyle: 'dashed' }} />
+
+                  {wards.map((ward) => (
+                    <MenuItem key={ward.id + ward.name} value={ward.name}>
+                      {ward.name}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
+              </Box>
+
+              <Stack
+                spacing={2}
+                sx={{ mt: 3, display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setActiveStep(0);
+                  }}
+                >
+                  Prev
+                </Button>
+
+                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  {!currentUser ? 'Submit' : 'Save changes'}
+                </LoadingButton>
+              </Stack>
+            </Card>
+          )}
         </Grid>
       </Grid>
     </Form>
