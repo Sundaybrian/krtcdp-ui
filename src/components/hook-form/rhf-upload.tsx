@@ -72,7 +72,7 @@ export function RHFUpload({ name, multiple, helperText, ...other }: Props) {
       render={({ field, fieldState: { error } }) => {
         const uploadProps = {
           multiple,
-          accept: { 'image/*': [] },
+          // accept:  "*",
           error: !!error,
           helperText: error?.message ?? helperText,
         };

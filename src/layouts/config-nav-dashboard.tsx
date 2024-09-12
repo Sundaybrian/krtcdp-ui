@@ -222,6 +222,18 @@ export const navData = [
     ],
   },
   {
+    subheader: 'Bank Payment',
+    items: [
+      {
+        title: 'Payment Narratives',
+        path: paths.dashboard.payments.root,
+        icon: ICONS.invoice,
+        permission: 'view:invoice',
+        children: [{ title: 'Bank files', path: paths.dashboard.payments.root }],
+      },
+    ],
+  },
+  {
     subheader: 'Marketplace Mgt',
     items: [
       {
