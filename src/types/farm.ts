@@ -1,4 +1,4 @@
-import { CoopFarmerList } from './user';
+import type { CoopFarmerList } from './user';
 
 export type ValueChain = {
   id: number;
@@ -62,4 +62,37 @@ export type Grn = {
   deleteAt: string;
   receivedDate: string;
   farmer: CoopFarmerList;
+};
+
+export type WarehouseReceipt = {
+  id: any;
+  receiptNumber: string;
+  depositorName: string;
+  depositorContact: string;
+  depositorType: string;
+  warehouseName: string;
+  warehouseLocation: string;
+  warehouseLicense: string;
+  warehouseContact: string;
+  warehouseOwner: string;
+  commodityType: string;
+  quantity: number;
+  unitOfMeasurement: string;
+  qualityGrade: string;
+  storageStartDate: string;
+  expectedStorageDuration: number;
+  storageLocation: string;
+  conditionAtReceipt: string;
+  handlingInstructions: string;
+  storageRate: number;
+  paymentTerms: string;
+  insuranceInfo: string;
+  depositorSignature: boolean;
+  warehouseSignature: boolean;
+  termsAndConditions: string;
+  remarks: string;
+  status: 'PENDINGCONFIRMATION' | 'APPROVED' | 'REJECTED' | 'PENDING';
+  creationDate: string;
+  lastModifiedDate: string;
+  deleteAt: string;
 };

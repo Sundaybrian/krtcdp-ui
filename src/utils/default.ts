@@ -81,3 +81,20 @@ export const PERMISSIONS = [
 ];
 
 export const TENANT_LOCAL_STORAGE = 'tenant';
+
+export const UNIT_OF_MEASUREMENT = [
+  'KG',
+  'TON',
+  'LITRE',
+  'GALLON',
+  'METRIC TON',
+  'BAG',
+  'BUNDLE',
+  'CRATE',
+  'PACK',
+  'SACK',
+  'TRUCK',
+  'OTHER',
+];
+
+export const QUALITY_GRADE = ['GRADE A', 'GRADE B', 'GRADE C', 'GRADE D', 'GRADE E', 'GRADE F'];

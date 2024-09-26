@@ -126,6 +126,8 @@ export const paths = {
       coopFarmers: `${ROOTS.DASHBOARD}/cooperative/coop-farmers`,
       grn: `${ROOTS.DASHBOARD}/farmer/grn`,
       harvest: `${ROOTS.DASHBOARD}/farmer/harvest`,
+      warehouse: `${ROOTS.DASHBOARD}/farmer/warehouse`,
+      newWarehouse: `${ROOTS.DASHBOARD}/farmer/warehouse/new`,
       details: (id: string) => `${ROOTS.DASHBOARD}/cooperative/farmer/${id}`,
       detailsParam: (id: string) => `${ROOTS.DASHBOARD}/cooperative/farmer/${id}?activeTab=harvest`,
     },

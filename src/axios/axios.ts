@@ -80,6 +80,8 @@ export const endpoints = {
     searchFarms: '/api/farm/search',
     searchHarvests: '/api/harvest/search',
     searchFarmValueChain: '/api/farm/valuechain/search',
+    searchWarehouseReceipt: '/api/warehousereceipt/search',
+    newWarehouseReceipt: '/api/warehousereceipt',
     searchGrn: '/api/grn/search',
     approveHarvest: (id: number) => `/api/harvest/${id}/reject-harvest`,
     evaluateHarvest: (id: number) => `/api/harvest/${id}/evaluate`,
@@ -130,6 +132,8 @@ export const endpoints = {
   },
   invoice: {
     search: '/api/invoice/search',
+    template: '/api/invoice/download-template',
+    templateData: '/api/invoice/pending-invoice-excel',
   },
   statistics: {
     get: '/api/stats/statistics',

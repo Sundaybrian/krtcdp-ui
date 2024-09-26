@@ -1,24 +1,24 @@
-import axios, { endpoints } from 'src/axios/axios';
-import {
-  CoopFarmer,
-  CoopFarmerList,
-  Cooperative,
-  CreateUser,
+import type { InvoiceItem } from 'src/types/invoice';
+import type { CategoryData } from 'src/types/category';
+import type { PurchaseOrderItem } from 'src/types/order';
+import type { CreateCooperative } from 'src/types/cooperative';
+import type { ValueChain, NewValueChain } from 'src/types/value-chain';
+import type { Grn, Farm, Harvest, WarehouseReceipt } from 'src/types/farm';
+import type {
   IUserItem,
   NewFarmer,
-  NewStakeholder,
+  CoopFarmer,
+  CreateUser,
+  Cooperative,
   Stakeholder,
   UserAccount,
+  CoopFarmerList,
+  NewStakeholder,
 } from 'src/types/user';
-import { CreateCooperative } from 'src/types/cooperative';
-import { NewValueChain, ValueChain } from 'src/types/value-chain';
-import { CategoryData } from 'src/types/category';
 
-import { Farm, Grn, Harvest } from 'src/types/farm';
-import { PurchaseOrderItem } from 'src/types/order';
-import { InvoiceItem } from 'src/types/invoice';
+import axios, { endpoints } from 'src/axios/axios';
 
-import { County, Page, Ward } from './data.inteface';
+import type { Page, Ward, County } from './data.inteface';
 
 // Function to fetch users
 export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
@@ -589,6 +589,60 @@ export const searchInvoice = async (query = {}): Promise<Page<InvoiceItem[]>> =>
     return response.data;
   } catch (error) {
     console.error('Error fetching invoice:', error);
+    throw error;
+  }
+};
+
+// search warehouse reciepts
+export const searchWarehouseReceipts = async (query = {}): Promise<Page<WarehouseReceipt[]>> => {
+  try {
+    const response = await axios.post(
+      endpoints.farmer.searchWarehouseReceipt,
+      {
+        page: 1,
+        limit: 20,
+        ...query,
+      },
+      {
+        params: {},
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching Receipts:', error);
+    throw error;
+  }
+};
+
+// create warehouse reciept
+export const createWarehouseReceipt = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.farmer.newWarehouseReceipt, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding warehouse receipt:', error);
+    throw error;
+  }
+};
+
+// download invoice template
+export const downloadInvoiceTemplate = async () => {
+  try {
+    const response = await axios.get(endpoints.invoice.template);
+    return response.data;
+  } catch (error) {
+    console.error('Error downloading invoice template:', error);
+    throw error;
+  }
+};
+
+// download invoice template data
+export const downloadInvoiceTemplateData = async () => {
+  try {
+    const response = await axios.get(endpoints.invoice.templateData);
+    return response.data;
+  } catch (error) {
+    console.error('Error downloading invoice template data:', error);
     throw error;
   }
 };

@@ -6,18 +6,15 @@ import type { UseSetStateReturn } from 'src/hooks/use-set-state';
 import { useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
-import Select from '@mui/material/Select';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
-import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { formHelperTextClasses } from '@mui/material/FormHelperText';
+
+import { downloadInvoiceTemplateData } from 'src/api/services';
 
 import { Iconify } from 'src/components/iconify';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
@@ -70,6 +67,18 @@ export function InvoiceTableToolbar({ filters, options, dateError, onResetPage }
     },
     [filters, onResetPage]
   );
+
+  const handleDownloadPendindInvoice = useCallback(() => {
+    downloadInvoiceTemplateData().then((res) => {
+      console.log(res);
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'pending-invoice.xlsx');
+      document.body.appendChild(link);
+      link.click();
+    });
+  }, []);
 
   return (
     <>
@@ -161,22 +170,23 @@ export function InvoiceTableToolbar({ filters, options, dateError, onResetPage }
       >
         <MenuList>
           <MenuList>
-            <MenuItem
+            {/* <MenuItem
               onClick={() => {
                 popover.onClose();
               }}
             >
               <Iconify icon="solar:printer-minimalistic-bold" />
               Print
-            </MenuItem>
+            </MenuItem> */}
 
             <MenuItem
               onClick={() => {
                 popover.onClose();
+                handleDownloadPendindInvoice();
               }}
             >
               <Iconify icon="solar:import-bold" />
-              Import
+              Download Pending
             </MenuItem>
 
             <MenuItem
