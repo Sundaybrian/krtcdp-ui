@@ -133,7 +133,7 @@ export const endpoints = {
   invoice: {
     search: '/api/invoice/search',
     template: '/api/invoice/download-template',
-    templateData: '/api/invoice/pending-invoice-excel',
+    templateData: (coopId: number) => `/api/invoice/pending-invoice-excel?cooperativeId=${coopId}`,
   },
   statistics: {
     get: '/api/stats/statistics',

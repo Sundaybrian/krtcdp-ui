@@ -14,6 +14,10 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { formHelperTextClasses } from '@mui/material/FormHelperText';
 
+import { useLocalStorage } from 'src/hooks/use-local-storage';
+
+import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
+
 import { downloadInvoiceTemplateData } from 'src/api/services';
 
 import { Iconify } from 'src/components/iconify';
@@ -32,6 +36,7 @@ type Props = {
 
 export function InvoiceTableToolbar({ filters, options, dateError, onResetPage }: Props) {
   const popover = usePopover();
+  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,7 +74,7 @@ export function InvoiceTableToolbar({ filters, options, dateError, onResetPage }
   );
 
   const handleDownloadPendindInvoice = useCallback(() => {
-    downloadInvoiceTemplateData().then((res) => {
+    downloadInvoiceTemplateData(state.coopId).then((res) => {
       console.log(res);
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement('a');
@@ -78,7 +83,7 @@ export function InvoiceTableToolbar({ filters, options, dateError, onResetPage }
       document.body.appendChild(link);
       link.click();
     });
-  }, []);
+  }, [state.coopId]);
 
   return (
     <>

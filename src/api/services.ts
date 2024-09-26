@@ -637,9 +637,9 @@ export const downloadInvoiceTemplate = async () => {
 };
 
 // download invoice template data
-export const downloadInvoiceTemplateData = async () => {
+export const downloadInvoiceTemplateData = async (id: number) => {
   try {
-    const response = await axios.get(endpoints.invoice.templateData);
+    const response = await axios.get(endpoints.invoice.templateData(id));
     return response.data;
   } catch (error) {
     console.error('Error downloading invoice template data:', error);
