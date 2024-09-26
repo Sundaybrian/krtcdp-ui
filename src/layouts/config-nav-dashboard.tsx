@@ -108,7 +108,7 @@ export const navData = [
           { title: 'Harvest', path: paths.dashboard.farner.harvest },
           { title: 'GRN', path: paths.dashboard.farner.grn },
           { title: 'Invoice', path: paths.dashboard.invoice.root },
-          { title: 'Warehouse Reciept', path: paths.dashboard.farner.warehouse },
+          { title: 'Warehouse Receipt', path: paths.dashboard.farner.warehouse },
         ],
       },
       {
