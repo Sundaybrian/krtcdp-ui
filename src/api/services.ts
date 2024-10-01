@@ -12,6 +12,7 @@ import type {
   Cooperative,
   Stakeholder,
   UserAccount,
+  CreateUnion,
   CoopFarmerList,
   NewStakeholder,
 } from 'src/types/user';
@@ -643,6 +644,56 @@ export const downloadInvoiceTemplateData = async (id: number) => {
     return response.data;
   } catch (error) {
     console.error('Error downloading invoice template data:', error);
+    throw error;
+  }
+};
+
+// create coop union
+export const createUnion = async (data: CreateUnion) => {
+  try {
+    const response = await axios.post(endpoints.cooperative.newUnion, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding union:', error);
+    throw error;
+  }
+};
+
+// patch a coop union
+export const updateUnion = async (id: number, data: any) => {
+  try {
+    const response = await axios.patch(`${endpoints.cooperative.updateUnion(id)}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating union:', error);
+    throw error;
+  }
+};
+
+// asign admin to union
+export const assignAdminToUnion = async (id: number, data: { userId: number }) => {
+  try {
+    const response = await axios.post(
+      `${endpoints.cooperative.assignAdminToUnion}/${id}/add-admin`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error adding union:', error);
+    throw error;
+  }
+};
+
+// coop join union
+export const coopJoinUnion = async (id: number, data: { cooperativeId: number }) => {
+  try {
+    const response = await axios.post(
+      `${endpoints.cooperative.coopJoinUnion}/${id}/assign-cooperative`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error joining union:', error);
     throw error;
   }
 };

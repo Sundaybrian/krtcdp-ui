@@ -109,6 +109,12 @@ export const endpoints = {
     approveFarmer: '/api/cooperative',
     searchCoopFarmer: '/api/cooperative/search-coop-farmers',
     update: (id: number) => `/api/cooperative/${id}`,
+    // union
+    newUnion: '/api/coop-unions',
+    searchUnion: '/api/coop-unions/search',
+    updateUnion: (id: number) => `/api/coop-unions/${id}`,
+    assignAdminToUnion: '/api/coop-unions',
+    coopJoinUnion: '/api/coop-unions',
   },
   valuechain: {
     new: '/api/valuechain',

@@ -52,6 +52,7 @@ export const PERMISSIONS = [
       'view:order',
       'view:category',
       'view:users',
+      'view:myUnions',
     ],
   },
   {

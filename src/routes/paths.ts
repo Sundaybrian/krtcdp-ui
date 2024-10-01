@@ -104,6 +104,7 @@ export const paths = {
     general: {
       app: `${ROOTS.DASHBOARD}/app`,
       ecommerce: `${ROOTS.DASHBOARD}/ecommerce`,
+      coopUnions: `${ROOTS.DASHBOARD}/coop-union`,
       analytics: `${ROOTS.DASHBOARD}/analytics`,
       banking: `${ROOTS.DASHBOARD}/banking`,
       booking: `${ROOTS.DASHBOARD}/booking`,
@@ -119,6 +120,8 @@ export const paths = {
       coopFarmers: `${ROOTS.DASHBOARD}/cooperative/coop-farmers`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/cooperative/${id}`,
       details: (id: string) => `${ROOTS.DASHBOARD}/cooperative/farmer/${id}`,
+      union: `${ROOTS.DASHBOARD}/cooperative/union`,
+      newUnion: `${ROOTS.DASHBOARD}/cooperative/union/new`,
     },
     farner: {
       root: `${ROOTS.DASHBOARD}/cooperative/coop-farmers`,

@@ -1,48 +1,38 @@
 import type { IUserItem } from 'src/types/user';
 
 import { z as zod } from 'zod';
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
-import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
-import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import { Chip, Divider, MenuItem } from '@mui/material';
 
 // import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { fData } from 'src/utils/format-number';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
+
+import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
+
+import { useSearchAdmins } from 'src/actions/user';
+import { assignAdminToCoop, assignAdminToUnion } from 'src/api/services';
+import { useSearchCooperative, useSearchCooperativeUnions } from 'src/actions/cooperative';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
-
-import { Chip, Divider, InputAdornment, MenuItem } from '@mui/material';
-import { Iconify } from 'src/components/iconify';
-import IconButton from '@mui/material/IconButton';
-import { useBoolean } from 'src/hooks/use-boolean';
-
-import { addUser, assignAdminToCoop, createCooperative, getCounties } from 'src/api/services';
-import { County, SubCounty } from 'src/api/data.inteface';
-import { INSURANCE_TYPE_OPTIONS, TENANT_LOCAL_STORAGE } from 'src/utils/default';
-import { useSearchCooperative } from 'src/actions/cooperative';
-import { useSearchAdmins } from 'src/actions/user';
-import { PRODUCT_COLOR_NAME_OPTIONS, PRODUCT_CATEGORY_GROUP_OPTIONS } from 'src/_mock';
-import { useLocalStorage } from 'src/hooks/use-local-storage';
+import { Form, Field } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 
 export const NewUserSchema = zod.object({
   admins: zod.array(zod.any()),
   coopId: zod.any(),
+  unionId: zod.any(),
 });
 
 // ----------------------------------------------------------------------
@@ -54,6 +44,11 @@ type Props = {
 export function AssignAdminNewEditForm({ selectedAdmin }: Props) {
   const router = useRouter();
   const { searchResults } = useSearchCooperative();
+  const unionData = useSearchCooperativeUnions();
+  const [selectedEntity, setSelectedEntity] = useState<any>({
+    coop: true,
+    coopUnion: false,
+  });
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
   const { userResults } = useSearchAdmins({ userType: 'COOPERATIVE_ADMIN' });
@@ -85,7 +80,11 @@ export function AssignAdminNewEditForm({ selectedAdmin }: Props) {
     };
 
     try {
-      await assignAdminToCoop(state.coopId || data.coopId, submitData);
+      if (selectedEntity.coop) {
+        await assignAdminToCoop(state.coopId || data.coopId, submitData);
+      } else {
+        await assignAdminToUnion(data.unionId, { userId: data.admins[0] });
+      }
       reset();
       toast.success(selectedAdmin ? 'Update success!' : 'Admin assigned successfully!');
       // router.push(paths.dashboard.user.list);
@@ -100,41 +99,109 @@ export function AssignAdminNewEditForm({ selectedAdmin }: Props) {
     console.log('id', id);
   };
 
+  const handleEntityChange = (status: 'active') => {
+    setSelectedEntity({
+      coop: !selectedEntity.coop,
+      coopUnion: !!selectedEntity.coop,
+    });
+  };
+
+  const handleUnionEntityChange = (status: 'active') => {
+    setSelectedEntity({
+      coop: !!selectedEntity.coopUnion,
+      coopUnion: !selectedEntity.coopUnion,
+    });
+  };
+
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
+        <Grid xs={12} md={6}>
           <Card sx={{ p: 3 }}>
             <Box
               rowGap={3}
               columnGap={2}
               display="grid"
-              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
+              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
             >
               {!state.coopId && (
-                <Field.Select name="coopId" label="Cooperative">
-                  <MenuItem
-                    value=""
-                    onClick={() => null}
-                    sx={{ fontStyle: 'italic', color: 'text.secondary' }}
-                  >
-                    None
-                  </MenuItem>
+                <>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                    <Card sx={{ height: 160, width: 220 }}>
+                      <Label color="success">Cooperative Admin</Label>
+                      <Box sx={{ padding: 4, textAlign: 'center' }}>
+                        <Field.Switch
+                          checked={selectedEntity.coop}
+                          onClick={() => {
+                            handleEntityChange('active');
+                          }}
+                          label=""
+                          name="cooperative"
+                        />
+                      </Box>
+                    </Card>
 
-                  <Divider sx={{ borderStyle: 'dashed' }} />
+                    <Card sx={{ height: 160, width: 220 }}>
+                      <Label color="error">Cooperative Union Admin</Label>
+                      <Box sx={{ padding: 4, textAlign: 'center' }}>
+                        <Field.Switch
+                          checked={selectedEntity.coopUnion}
+                          onClick={() => {
+                            handleUnionEntityChange('active');
+                          }}
+                          label=""
+                          name="cooperativeUnion"
+                        />
+                      </Box>
+                    </Card>
+                  </Stack>
 
-                  {searchResults.map((coop) => (
-                    <MenuItem
-                      key={coop.mobilePhone}
-                      value={coop.id}
-                      onClick={() => {
-                        handleChange(coop.id);
-                      }}
-                    >
-                      {coop.groupName}--{coop.incorporationNumber}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
+                  {selectedEntity.coop && (
+                    <Field.Select name="coopId" label="Cooperative">
+                      <MenuItem
+                        value=""
+                        onClick={() => null}
+                        sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                      >
+                        None
+                      </MenuItem>
+
+                      <Divider sx={{ borderStyle: 'dashed' }} />
+
+                      {searchResults.map((coop) => (
+                        <MenuItem
+                          key={coop.mobilePhone}
+                          value={coop.id}
+                          onClick={() => {
+                            handleChange(coop.id);
+                          }}
+                        >
+                          {coop.groupName}--{coop.incorporationNumber}
+                        </MenuItem>
+                      ))}
+                    </Field.Select>
+                  )}
+
+                  {selectedEntity.coopUnion && (
+                    <Field.Select name="unionId" label="Cooperative Union">
+                      <MenuItem
+                        value=""
+                        onClick={() => null}
+                        sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                      >
+                        None
+                      </MenuItem>
+
+                      <Divider sx={{ borderStyle: 'dashed' }} />
+
+                      {unionData.searchResults.map((union) => (
+                        <MenuItem key={union.name + union.id} value={union.id} onClick={() => {}}>
+                          {union.name}--{union.location}
+                        </MenuItem>
+                      ))}
+                    </Field.Select>
+                  )}
+                </>
               )}
 
               <Field.Autocomplete

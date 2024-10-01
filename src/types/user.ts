@@ -275,3 +275,14 @@ export type IUserAccountBillingHistory = {
   invoiceNumber: string;
   createdAt: IDateValue;
 };
+
+export type CreateUnion = {
+  id?: number;
+  name: string;
+  location: string;
+  registrationDate: string;
+  totalCooperatives: string;
+  contactEmail: string;
+  phoneNumber: string;
+  address: string;
+};
