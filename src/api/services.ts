@@ -697,3 +697,27 @@ export const coopJoinUnion = async (id: number, data: { cooperativeId: number })
     throw error;
   }
 };
+
+// unlink coop admin  from union
+export const unlinkCoopAdminFromUnion = async (unionId: number, userId: number) => {
+  try {
+    const response = await axios.delete(
+      endpoints.cooperative.unlinkAdminFromUnion(unionId, userId)
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error unlinking coop admin:', error);
+    throw error;
+  }
+};
+
+// get cooperative by union id
+export const getCooperativeByUnionId = async (id: number): Promise<Array<Cooperative>> => {
+  try {
+    const response = await axios.get(endpoints.cooperative.getCooperativeByUnionId(id));
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching cooperative:', error);
+    throw error;
+  }
+};

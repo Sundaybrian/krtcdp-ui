@@ -1,12 +1,10 @@
-import type { IProductItem } from 'src/types/product';
+import type { IUserItem } from 'src/types/user';
+import type { Page } from 'src/api/data.inteface';
 
 import useSWR from 'swr';
 import { useMemo } from 'react';
 
-import { fetcher, endpoints } from 'src/axios/axios';
-import { Page } from 'src/api/data.inteface';
-import { ICooperative } from 'src/types/cooperative';
-import { IUserAccount, IUserItem } from 'src/types/user';
+import { creator, endpoints } from 'src/axios/axios';
 
 // ----------------------------------------------------------------------
 
@@ -19,8 +17,7 @@ const swrOptions = {
 // ----------------------------------------------------------------------
 export function useSearchAdmins(query: any = {}) {
   const url = query ? [endpoints.users.search, { params: { limit: 1000, page: 1, ...query } }] : '';
-
-  const { data, isLoading, error, isValidating } = useSWR<Page<IUserItem[]>>(url, fetcher, {
+  const { data, isLoading, error, isValidating } = useSWR<Page<IUserItem[]>>(url, creator, {
     ...swrOptions,
     keepPreviousData: true,
   });

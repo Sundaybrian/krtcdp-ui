@@ -19,6 +19,7 @@ export const MARITAL_STATUS_OPTIONS = ['single', 'married', 'divorced', 'widowed
 export const GENDER_OPTIONS = ['Male', 'Female', 'Other'];
 export const RELATIONSHIP_OPTIONS = ['Parent', 'Sibling', 'Friend', 'Spouse', 'Child', 'Other'];
 export const INSURANCE_TYPE_OPTIONS = ['weather index', 'individual indemnity', 'area yield index'];
+export const USER_TYPES_FLAT = ['COOPERATIVE_ADMIN', 'SYSTEM_ADMIN', 'COOPERATIVE_UNION_ADMIN'];
 
 export const PERMISSIONS = [
   {
@@ -78,6 +79,22 @@ export const PERMISSIONS = [
   {
     role: 'POST_HARVEST_PROVIDER',
     permissions: ['view:dashboard'],
+  },
+  {
+    role: 'COOPERATIVE_UNION_ADMIN',
+    permissions: [
+      'view:dashboard',
+      'view:farmer',
+      'view:product',
+      'view:category',
+      'view:county',
+      'view:valuechain',
+      'view:invoice',
+      'view:order',
+      'view:category',
+      'view:users',
+      'view:myCoops',
+    ],
   },
 ];
 

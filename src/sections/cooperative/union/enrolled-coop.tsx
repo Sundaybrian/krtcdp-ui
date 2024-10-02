@@ -10,16 +10,16 @@ type Props = CardProps & {
   title: string;
   name: string;
   location: string;
-  totalCooperatives: number;
+  totalUsers: number;
   phoneNumber: string;
 };
 
-export function JoinedCoopUnions({
+export function EnrolledCoop({
   sx,
   title,
   name,
   location,
-  totalCooperatives,
+  totalUsers,
   phoneNumber,
   ...other
 }: Props) {
@@ -41,15 +41,15 @@ export function JoinedCoopUnions({
 
         {row('Location', location)}
         {row('Contact Phone', phoneNumber)}
-        {row('Total Cooperatives', totalCooperatives)}
+        {row('Total Users', totalUsers)}
 
         <Box sx={{ gap: 2, display: 'flex' }}>
           <Button fullWidth variant="contained">
-            Report
+            Remove
           </Button>
 
           <Button fullWidth variant="contained" color="error">
-            Leave
+            Admit
           </Button>
         </Box>
       </Box>

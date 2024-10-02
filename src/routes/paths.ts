@@ -105,6 +105,7 @@ export const paths = {
       app: `${ROOTS.DASHBOARD}/app`,
       ecommerce: `${ROOTS.DASHBOARD}/ecommerce`,
       coopUnions: `${ROOTS.DASHBOARD}/coop-union`,
+      myCoops: `${ROOTS.DASHBOARD}/my-cooperative`,
       analytics: `${ROOTS.DASHBOARD}/analytics`,
       banking: `${ROOTS.DASHBOARD}/banking`,
       booking: `${ROOTS.DASHBOARD}/booking`,

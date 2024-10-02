@@ -215,6 +215,7 @@ export type Cooperative = {
   enterpriseCovered: string;
   insuranceType: string;
   hasInsurance: boolean;
+  admins?: IUserItem[];
 };
 
 export type IUserItem = {
@@ -224,7 +225,14 @@ export type IUserItem = {
   lastName: string;
   middleName: string;
   accountState: 'active' | 'inactive' | 'pending' | 'banned';
-  userType: 'SYSTEM_ADMIN' | 'ADMIN' | 'SUPPORT' | 'USER' | 'FARMER';
+  userType:
+    | 'SYSTEM_ADMIN'
+    | 'ADMIN'
+    | 'SUPPORT'
+    | 'USER'
+    | 'FARMER'
+    | 'COOPERATIVE_ADMIN'
+    | 'COOPERATIVE_UNION_ADMIN';
   email: string;
   mobilePhone: string;
   birthDate: string;
@@ -239,6 +247,7 @@ export type IUserItem = {
   isSupport: boolean;
   acceptTerms: boolean;
   avatarUrl: string;
+  coopUnionId?: number;
 };
 
 export type IUserAccount = {
@@ -267,6 +276,7 @@ export type UserAccount = {
   userType: 'SYSTEM_ADMIN' | 'ADMIN' | 'SUPPORT' | 'USER' | 'FARMER';
   verified: boolean;
   coopId?: number;
+  coopUnionId?: number;
 };
 
 export type IUserAccountBillingHistory = {

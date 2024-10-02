@@ -34,7 +34,7 @@ export const creator = async (args: string | [string, AxiosRequestConfig]) => {
   try {
     const [url, config] = Array.isArray(args) ? args : [args];
 
-    const res = await axiosInstance.post(url, { limit: 10, page: 1 }, { ...config });
+    const res = await axiosInstance.post(url, { ...config?.params }, { params: {} });
 
     return res.data;
   } catch (error) {
@@ -115,6 +115,9 @@ export const endpoints = {
     updateUnion: (id: number) => `/api/coop-unions/${id}`,
     assignAdminToUnion: '/api/coop-unions',
     coopJoinUnion: '/api/coop-unions',
+    unlinkAdminFromUnion: (unionId: number, adminId: number) =>
+      `/api/coop-unions${unionId}/remove-admin/${adminId}`,
+    getCooperativeByUnionId: (unionId: number) => `/api/coop-unions/${unionId}/cooperatives`,
   },
   valuechain: {
     new: '/api/valuechain',

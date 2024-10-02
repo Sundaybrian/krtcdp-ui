@@ -1,7 +1,8 @@
 'use client';
 
+import type { IUserItem } from 'src/types/user';
+import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
-import type { IProductItem, IProductTableFilters } from 'src/types/product';
 import type {
   GridSlots,
   GridColDef,
@@ -31,32 +32,30 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
+
+import { USER_TYPES_FLAT, TENANT_LOCAL_STORAGE } from 'src/utils/default';
 
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
+import { useSearchAdmins } from 'src/actions/user';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { unlinkCoopAdmin, unlinkCoopAdminFromUnion } from 'src/api/services';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { useSearchCooperative, useSearchCooperativeFarmers } from 'src/actions/cooperative';
-import { INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
-import { searchCoopFarmers, unlinkCoopAdmin } from 'src/api/services';
-import { IUserItem } from 'src/types/user';
-import { useSearchAdmins } from 'src/actions/user';
 
 import { CooperativeTableToolbar } from '../cooperative-table-toolbar';
 import { CooperativeTableFiltersResult } from '../cooperative-table-filters-result';
 import {
+  RenderGeneric,
+  RenderCellDate,
   RenderCellPrice,
   RenderCellPublish,
   RenderCellProduct,
   RenderCellCreatedAt,
-  RenderGeneric,
-  RenderHasInsurance,
-  RenderInsuranceProvidere,
-  RenderCellDate,
 } from '../coop-admin-table-row';
 
 // ----------------------------------------------------------------------
@@ -77,9 +76,19 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 export function CooperativeAdminListView() {
   const confirmRows = useBoolean();
+  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
+
+  const userSearch = state.coopId
+    ? {
+        coopId: Number(state.coopId),
+      }
+    : {};
 
   const router = useRouter();
-  const { userResults, useerLoading } = useSearchAdmins({ userType: 'COOPERATIVE_ADMIN' });
+  const { userResults, useerLoading } = useSearchAdmins({
+    userType: ['COOPERATIVE_ADMIN', 'COOPERATIVE_UNION_ADMIN', 'SYSTEM_ADMIN'],
+    ...userSearch,
+  });
 
   const filters = useSetState<IProductTableFilters>({ publish: [], stock: [] });
 
@@ -94,9 +103,9 @@ export function CooperativeAdminListView() {
 
   useEffect(() => {
     if (userResults.length) {
-      setTableData(userResults.filter((user) => user.coopId));
+      setTableData(userResults);
     }
-  }, [userResults]);
+  }, [userResults, state.coopId]);
 
   const canReset = filters.state.publish.length > 0 || filters.state.stock.length > 0;
 
@@ -108,8 +117,12 @@ export function CooperativeAdminListView() {
       const data = tableData.find((row) => row.id === id)!;
 
       try {
+        if (data.userType === 'COOPERATIVE_ADMIN') {
+          await unlinkCoopAdmin(data.coopId!, data.id);
+        } else {
+          await unlinkCoopAdminFromUnion(data.coopUnionId!, data.id);
+        }
         toast.success('Admin unlink success!');
-        await unlinkCoopAdmin(data.coopId!, data.id);
 
         setTableData(deleteRow);
       } catch (error) {
@@ -179,7 +192,7 @@ export function CooperativeAdminListView() {
       headerName: 'User Type',
       width: 160,
       type: 'singleSelect',
-      valueOptions: INSURANCE_TYPE_OPTIONS,
+      valueOptions: USER_TYPES_FLAT,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
     {

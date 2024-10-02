@@ -1,6 +1,6 @@
 'use client';
 
-import type { ICooperative } from 'src/types/cooperative';
+import type { CreateUnion } from 'src/types/user';
 import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
 import type {
@@ -84,7 +84,7 @@ export function UnionListView() {
 
   const filters = useSetState<IProductTableFilters>({ publish: [], stock: [] });
 
-  const [tableData, setTableData] = useState<ICooperative[]>([]);
+  const [tableData, setTableData] = useState<CreateUnion[]>([]);
 
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>([]);
 
@@ -104,7 +104,7 @@ export function UnionListView() {
   const dataFiltered = applyFilter({ inputData: tableData, filters: filters.state });
 
   const handleDeleteRow = useCallback(
-    (id: string) => {
+    (id: any) => {
       const deleteRow = tableData.filter((row) => row.id !== id);
 
       toast.success('Delete success!');
@@ -115,7 +115,7 @@ export function UnionListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
+    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id!));
 
     toast.success('Delete success!');
 
@@ -402,7 +402,7 @@ function CustomToolbar({
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: ICooperative[];
+  inputData: CreateUnion[];
   filters: IProductTableFilters;
 };
 
@@ -410,11 +410,11 @@ function applyFilter({ inputData, filters }: ApplyFilterProps) {
   const { stock, publish } = filters;
 
   if (stock.length) {
-    inputData = inputData.filter((product) => stock.includes(product.groupName));
+    inputData = inputData.filter((product) => stock.includes(product.name));
   }
 
   if (publish.length) {
-    inputData = inputData.filter((product) => publish.includes(product.residence));
+    inputData = inputData.filter((product) => publish.includes(product.address));
   }
 
   return inputData;
