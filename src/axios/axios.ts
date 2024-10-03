@@ -83,6 +83,8 @@ export const endpoints = {
     searchWarehouseReceipt: '/api/warehousereceipt/search',
     newWarehouseReceipt: '/api/warehousereceipt',
     searchGrn: '/api/grn/search',
+    searchExpense: '/api/farmmanagementactivity/search',
+    newExpense: (id: number) => `/api/farmmanagementactivity/${id}/input`,
     approveHarvest: (id: number) => `/api/harvest/${id}/reject-harvest`,
     evaluateHarvest: (id: number) => `/api/harvest/${id}/evaluate`,
     rejectJoin: (userId: number, coopId: number) =>
@@ -142,7 +144,7 @@ export const endpoints = {
   invoice: {
     search: '/api/invoice/search',
     template: '/api/invoice/download-template',
-    templateData: (coopId: number) => `/api/invoice/pending-invoice-excel?cooperativeId=${coopId}`,
+    templateData: (coopId: number) => `/api/invoice/pending-invoices-excel/download`,
   },
   statistics: {
     get: '/api/stats/statistics',

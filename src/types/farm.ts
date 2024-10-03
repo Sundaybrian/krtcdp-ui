@@ -7,6 +7,18 @@ export type ValueChain = {
   valueChainType: string;
 };
 
+export type Partition = {
+  id: number;
+  anticipatedHarvestDate: string;
+  creationDate: string;
+  intendedUseOfHarvest: string;
+  areaInAcres: number;
+  farmId: number;
+  valueChainType: string;
+  valueChainName: string;
+  season: string;
+};
+
 export type Farm = {
   valueChains: ValueChain[];
   latitude: number;
@@ -28,6 +40,7 @@ export type Farm = {
   hasInsurance: boolean;
   insuranceProvider: string;
   insuranceType: string;
+  partitions?: Partition[];
 };
 
 export type Harvest = {
@@ -95,4 +108,28 @@ export type WarehouseReceipt = {
   creationDate: string;
   lastModifiedDate: string;
   deleteAt: string;
+};
+
+export type Expense = {
+  id: any;
+  partitionId: number;
+  activityProcess: string;
+  target: any;
+  activityType: any;
+  imageUrl: any;
+  expenseAmount: number;
+  notes: string;
+  creationDate: string;
+  lastModifiedDate: string;
+  deleteAt: string;
+};
+
+export type CreateExpense = {
+  partitionId: number;
+  activityProcess: string;
+  target: string;
+  activityType: any;
+  imageUrl?: any;
+  expenseAmount: any;
+  notes?: string;
 };

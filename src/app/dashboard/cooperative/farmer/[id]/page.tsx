@@ -13,43 +13,40 @@
 
 'use client';
 
+import type { CoopFarmerList } from 'src/types/user';
+import type { Expense, Harvest } from 'src/types/farm';
+import type { ValueChain } from 'src/types/value-chain';
+
+import { toast } from 'sonner';
+import { useState, useEffect } from 'react';
+
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 
 import { paths } from 'src/routes/paths';
 
 import { useTabs } from 'src/hooks/use-tabs';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
 
+import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
+
+import { _userPayment } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _userAbout, _userPlans, _userPayment, _userInvoices, _userAddressBook } from 'src/_mock';
+import {
+  searchFarms,
+  getFarmerById,
+  searchHarvests,
+  searchFarmExpense,
+  searchFarmValueChain,
+} from 'src/api/services';
 
 import { Iconify } from 'src/components/iconify';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { AccountBilling } from 'src/sections/account/account-billing';
-import { AccountChangePassword } from 'src/sections/account/account-change-password';
-import { AccountGeneral } from 'src/sections/account/account-general';
-import { AccountNotifications } from 'src/sections/account/account-notifications';
-import { AccountSocialLinks } from 'src/sections/account/account-social-links';
-import { useEffect, useState } from 'react';
-import {
-  getFarmerById,
-  getUserById,
-  searchFarmValueChain,
-  searchFarms,
-  searchHarvests,
-} from 'src/api/services';
-import { CoopFarmerList, IUserItem, UserAccount } from 'src/types/user';
-import { FarmerAccountGeneral } from 'src/sections/farmer/account-general';
-import { useSearchFarms } from 'src/actions/farm';
-import { NotFoundView } from 'src/sections/error';
-import { Farms } from 'src/sections/farmer/farm';
-import { Harvest } from 'src/types/farm';
-import { FarmerHarvest } from 'src/sections/farmer/harvest';
-import { useLocalStorage } from 'src/hooks/use-local-storage';
-import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
 import { EmptyContent } from 'src/components/empty-content';
-import { ValueChain } from 'src/types/value-chain';
-import { toast } from 'sonner';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
+import { Farms } from 'src/sections/farmer/farm';
+import { FarmerHarvest } from 'src/sections/farmer/harvest';
+import { FarmerAccountGeneral } from 'src/sections/farmer/account-general';
 
 // ----------------------------------------------------------------------
 
@@ -82,6 +79,7 @@ export default function FarmerAccountView({ params, searchParams }: Props) {
   const [harvests, setHarvests] = useState<Harvest[]>([]);
   const [valueChains, setFarmValueChain] = useState<ValueChain[]>([]);
   const [selectedFarm, setSelectedFarm] = useState<number>();
+  const [farmExpenses, setFarmExpenses] = useState<Expense[]>([]);
 
   const getFarms = () => {
     searchFarms({ userId: Number(id) })
@@ -98,7 +96,6 @@ export default function FarmerAccountView({ params, searchParams }: Props) {
     searchHarvests({ cooperativeId: Number(state.coopId), farmerId: Number(id) })
       .then((res) => {
         setHarvests(res.results);
-        console.log('res', res);
       })
       .catch((err) => {
         console.log('err', err);
@@ -109,13 +106,22 @@ export default function FarmerAccountView({ params, searchParams }: Props) {
   const getFarmValueChain = () => {
     searchFarmValueChain({ farmId: selectedFarm })
       .then((res) => {
-        console.log(res, 'ValueChain');
-
         setFarmValueChain(res.results);
       })
       .catch((err) => {
         console.log('err', err);
         toast.error('Failed to fetch value chain');
+      });
+  };
+
+  const getFarmExpenses = () => {
+    searchFarmExpense({ farmId: selectedFarm, activityProcess: 'INPUT' })
+      .then((res) => {
+        setFarmExpenses(res.results);
+      })
+      .catch((err) => {
+        console.log('err', err);
+        toast.error('Failed to fetch expenses');
       });
   };
 
@@ -136,6 +142,7 @@ export default function FarmerAccountView({ params, searchParams }: Props) {
 
   useEffect(() => {
     getFarmValueChain();
+    getFarmExpenses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFarm]);
 
@@ -169,7 +176,7 @@ export default function FarmerAccountView({ params, searchParams }: Props) {
           }}
           cards={_userPayment}
           valueChains={valueChains}
-          addressBook={_userAddressBook}
+          expenses={farmExpenses}
         />
       )}
 

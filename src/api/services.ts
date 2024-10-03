@@ -3,7 +3,7 @@ import type { CategoryData } from 'src/types/category';
 import type { PurchaseOrderItem } from 'src/types/order';
 import type { CreateCooperative } from 'src/types/cooperative';
 import type { ValueChain, NewValueChain } from 'src/types/value-chain';
-import type { Grn, Farm, Harvest, WarehouseReceipt } from 'src/types/farm';
+import type { Grn, Farm, Harvest, Expense, CreateExpense, WarehouseReceipt } from 'src/types/farm';
 import type {
   IUserItem,
   NewFarmer,
@@ -718,6 +718,38 @@ export const getCooperativeByUnionId = async (id: number): Promise<Array<Coopera
     return response.data;
   } catch (error) {
     console.error('Error fetching cooperative:', error);
+    throw error;
+  }
+};
+
+// create farm expense
+export const createFarmExpense = async (id: number, data: CreateExpense) => {
+  try {
+    const response = await axios.post(endpoints.farmer.newExpense(id), data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding farm expense:', error);
+    throw error;
+  }
+};
+
+// search farm expense
+export const searchFarmExpense = async (query = {}): Promise<Page<Expense[]>> => {
+  try {
+    const response = await axios.post(
+      endpoints.farmer.searchExpense,
+      {
+        page: 1,
+        limit: 20,
+        ...query,
+      },
+      {
+        params: {},
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching farm expense:', error);
     throw error;
   }
 };

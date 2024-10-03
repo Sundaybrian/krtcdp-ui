@@ -1,6 +1,7 @@
-import type { IPaymentCard, IAddressItem } from 'src/types/common';
+import type { Farm, Expense } from 'src/types/farm';
+import type { IPaymentCard } from 'src/types/common';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -15,32 +16,27 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
-import { Farm } from 'src/types/farm';
 
-import { AddressListDialog } from '../address';
 import { MapViewDialog } from './map';
+import { ExpenseListDialog } from './expenses';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   cardList: IPaymentCard[];
-  addressBook: IAddressItem[];
+  expenses: Expense[];
   farms: Farm[];
   onSelectFarm: (farmId: number) => void;
 };
 
-export function FarmView({ cardList, addressBook, farms, onSelectFarm }: Props) {
+export function FarmView({ cardList, expenses, farms, onSelectFarm }: Props) {
   const openAddress = useBoolean();
 
   const openCards = useBoolean();
 
-  const primaryAddress = addressBook.filter((address) => address.primary)[0];
-
   const primaryCard = cardList.filter((card) => card.primary)[0];
 
   const [selectedFarm, setSelectedFarm] = useState<Farm>(farms[0]);
-
-  const [selectedAddress, setSelectedAddress] = useState<IAddressItem | null>(primaryAddress);
 
   const [selectedCard, setSelectedCard] = useState<IPaymentCard | null>(primaryCard);
 
@@ -52,10 +48,6 @@ export function FarmView({ cardList, addressBook, farms, onSelectFarm }: Props) 
     },
     [farms, onSelectFarm]
   );
-
-  const handleSelectAddress = useCallback((newValue: IAddressItem | null) => {
-    setSelectedAddress(newValue);
-  }, []);
 
   const handleSelectCard = useCallback((newValue: IPaymentCard | null) => {
     setSelectedCard(newValue);
@@ -183,8 +175,10 @@ export function FarmView({ cardList, addressBook, farms, onSelectFarm }: Props) 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3 }}>
-          {/* <Button variant="outlined">Cancel plan</Button>
-          <Button variant="contained">Upgrade plan</Button> */}
+          {/* <Button variant="outlined">Cancel plan</Button> */}
+          <Button onClick={openAddress.onTrue} variant="contained">
+            Add expense
+          </Button>
         </Stack>
       </Card>
 
@@ -196,21 +190,12 @@ export function FarmView({ cardList, addressBook, farms, onSelectFarm }: Props) 
         onSelect={handleSelectCard}
       />
 
-      <AddressListDialog
-        list={addressBook}
+      <ExpenseListDialog
+        farmId={selectedFarm.id}
+        expenses={expenses}
+        list={selectedFarm.partitions || []}
         open={openAddress.value}
         onClose={openAddress.onFalse}
-        selected={(selectedId: string) => selectedAddress?.id === selectedId}
-        onSelect={handleSelectAddress}
-        action={
-          <Button
-            size="small"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-            sx={{ alignSelf: 'flex-end' }}
-          >
-            New
-          </Button>
-        }
       />
     </>
   );
