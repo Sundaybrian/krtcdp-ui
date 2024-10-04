@@ -1,51 +1,41 @@
 import type { IUserItem } from 'src/types/user';
+import type { ValueChain } from 'src/types/value-chain';
+import type { Ward, County, SubCounty } from 'src/api/data.inteface';
 
 import { z as zod } from 'zod';
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useMemo, useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
-import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import { Divider, MenuItem, InputAdornment } from '@mui/material';
 
 // import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { fData } from 'src/utils/format-number';
-
-import { Label } from 'src/components/label';
-import { toast } from 'src/components/snackbar';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import { Divider, InputAdornment, MenuItem } from '@mui/material';
-import { Iconify } from 'src/components/iconify';
-import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
 
-import {
-  addCoopFarmer,
-  addUser,
-  getCounties,
-  getWards,
-  searchFarmValueChain,
-} from 'src/api/services';
-import { County, SubCounty, Ward } from 'src/api/data.inteface';
 import {
   GENDER_OPTIONS,
-  MARITAL_STATUS_OPTIONS,
   RELATIONSHIP_OPTIONS,
   TENANT_LOCAL_STORAGE,
+  MARITAL_STATUS_OPTIONS,
 } from 'src/utils/default';
+
 import { useSearchCooperative } from 'src/actions/cooperative';
-import { useLocalStorage } from 'src/hooks/use-local-storage';
-import { ValueChain } from 'src/types/value-chain';
+import { getWards, getCounties, addCoopFarmer, searchFarmValueChain } from 'src/api/services';
+
+import { toast } from 'src/components/snackbar';
+import { Iconify } from 'src/components/iconify';
+import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 import { Stepper } from '../_examples/extra/form-wizard-view/form-steps';
 
@@ -113,7 +103,7 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
       password: '',
       birthDate: '',
       maritalStatus: 'single',
-      kraPin: '',
+      kraPin: Math.random().toString(36).substring(7),
       userState: 'A',
       residence: '',
       county: '',
@@ -352,8 +342,6 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
                     </MenuItem>
                   ))}
                 </Field.Select>
-
-                <Field.Text name="kraPin" label="KRA PIN" />
 
                 <Field.Text name="residence" label="Residence" />
 

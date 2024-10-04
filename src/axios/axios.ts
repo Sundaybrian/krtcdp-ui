@@ -149,4 +149,7 @@ export const endpoints = {
   statistics: {
     get: '/api/stats/statistics',
   },
+  notification: {
+    search: '/api/brodcastmessage/search',
+  },
 };

@@ -1,6 +1,7 @@
 import type { InvoiceItem } from 'src/types/invoice';
 import type { CategoryData } from 'src/types/category';
 import type { PurchaseOrderItem } from 'src/types/order';
+import type { INotification } from 'src/types/notification';
 import type { CreateCooperative } from 'src/types/cooperative';
 import type { ValueChain, NewValueChain } from 'src/types/value-chain';
 import type { Grn, Farm, Harvest, Expense, CreateExpense, WarehouseReceipt } from 'src/types/farm';
@@ -24,7 +25,7 @@ import type { Page, Ward, County } from './data.inteface';
 // Function to fetch users
 export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
   try {
-    const response = await axios.get(endpoints.users.search, {
+    const response = await axios.post(endpoints.users.search, {
       params: {
         page: 1,
         limit: 200,
@@ -750,6 +751,21 @@ export const searchFarmExpense = async (query = {}): Promise<Page<Expense[]>> =>
     return response.data;
   } catch (error) {
     console.error('Error fetching farm expense:', error);
+    throw error;
+  }
+};
+
+// get notifications
+export const searchNotifications = async (query = {}): Promise<Page<INotification[]>> => {
+  try {
+    const response = await axios.post(endpoints.notification.search, {
+      page: 1,
+      limit: 200,
+      ...query,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
     throw error;
   }
 };

@@ -1,9 +1,10 @@
 'use client';
 
+import type { INotification } from 'src/types/notification';
 import type { IconButtonProps } from '@mui/material/IconButton';
 
 import { m } from 'framer-motion';
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -18,46 +19,64 @@ import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { searchNotifications } from 'src/api/services';
+
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { varHover } from 'src/components/animate';
 import { Scrollbar } from 'src/components/scrollbar';
 import { CustomTabs } from 'src/components/custom-tabs';
 
-import { NotificationItem } from './notification-item';
+import useAuthUser from 'src/auth/hooks/use-auth-user';
 
-import type { NotificationItemProps } from './notification-item';
+import { NotificationItem } from './notification-item';
 
 // ----------------------------------------------------------------------
 
 const TABS = [
   { value: 'all', label: 'All', count: 22 },
   { value: 'unread', label: 'Unread', count: 12 },
-  { value: 'archived', label: 'Archived', count: 10 },
+  // { value: 'archived', label: 'Archived', count: 10 },
 ];
 
 // ----------------------------------------------------------------------
 
 export type NotificationsDrawerProps = IconButtonProps & {
-  data?: NotificationItemProps[];
+  data?: any[];
 };
 
 export function NotificationsDrawer({ data = [], sx, ...other }: NotificationsDrawerProps) {
   const drawer = useBoolean();
 
   const [currentTab, setCurrentTab] = useState('all');
-
+  const { id } = useAuthUser();
   const handleChangeTab = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setCurrentTab(newValue);
   }, []);
 
-  const [notifications, setNotifications] = useState(data);
+  const [notifications, setNotifications] = useState<INotification[]>([]);
 
-  const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
+  const totalUnRead = notifications.filter((item) => item.isRead === false).length;
 
   const handleMarkAllAsRead = () => {
     setNotifications(notifications.map((notification) => ({ ...notification, isUnRead: false })));
   };
+
+  //
+
+  useEffect(() => {
+    searchNotifications({ targetUserId: id })
+      .then((response) => {
+        setNotifications(
+          response.results.sort(
+            (a, b) => new Date(b.creationDate).valueOf() - new Date(a.creationDate).valueOf()
+          )
+        );
+      })
+      .catch((error) => {
+        console.error('Failed to fetch:', error);
+      });
+  }, [id]);
 
   const renderHead = (
     <Stack direction="row" alignItems="center" sx={{ py: 2, pl: 2.5, pr: 1, minHeight: 68 }}>
@@ -100,7 +119,7 @@ export function NotificationsDrawer({ data = [], sx, ...other }: NotificationsDr
                 'default'
               }
             >
-              {tab.count}
+              {tab.value === 'all' ? notifications.length : totalUnRead}
             </Label>
           }
         />
@@ -118,6 +137,15 @@ export function NotificationsDrawer({ data = [], sx, ...other }: NotificationsDr
         ))}
       </Box>
     </Scrollbar>
+  );
+
+  const renderEmpty = (
+    <Box sx={{ py: 5, textAlign: 'center' }}>
+      <Stack spacing={2} alignItems="center">
+        <Iconify icon="fluent:mail-28-filled" width={120} height={120} />
+        <Typography variant="h6">No notifications</Typography>
+      </Stack>
+    </Box>
   );
 
   return (
@@ -158,13 +186,16 @@ export function NotificationsDrawer({ data = [], sx, ...other }: NotificationsDr
 
         {renderTabs}
 
-        {renderList}
+        {notifications.length > 0 && renderList}
+        {!notifications.length && renderEmpty}
 
-        <Box sx={{ p: 1 }}>
-          <Button fullWidth size="large">
-            View all
-          </Button>
-        </Box>
+        {notifications.length > 0 && (
+          <Box sx={{ p: 1 }}>
+            <Button fullWidth size="large">
+              View all
+            </Button>
+          </Box>
+        )}
       </Drawer>
     </>
   );

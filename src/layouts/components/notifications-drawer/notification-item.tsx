@@ -1,3 +1,5 @@
+import type { INotification } from 'src/types/notification';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -16,21 +18,11 @@ import { FileThumbnail } from 'src/components/file-thumbnail';
 
 // ----------------------------------------------------------------------
 
-export type NotificationItemProps = {
-  id: string;
-  type: string;
-  title: string;
-  category: string;
-  isUnRead: boolean;
-  avatarUrl: string | null;
-  createdAt: string | number | null;
-};
-
-export function NotificationItem({ notification }: { notification: NotificationItemProps }) {
+export function NotificationItem({ notification }: { notification: INotification }) {
   const renderAvatar = (
     <ListItemAvatar>
-      {notification.avatarUrl ? (
-        <Avatar src={notification.avatarUrl} sx={{ bgcolor: 'background.neutral' }} />
+      {notification.profileUrl ? (
+        <Avatar src={notification.profileUrl} sx={{ bgcolor: 'background.neutral' }} />
       ) : (
         <Stack
           alignItems="center"
@@ -39,7 +31,7 @@ export function NotificationItem({ notification }: { notification: NotificationI
         >
           <Box
             component="img"
-            src={`${CONFIG.site.basePath}/assets/icons/notification/${(notification.type === 'order' && 'ic-order') || (notification.type === 'chat' && 'ic-chat') || (notification.type === 'mail' && 'ic-mail') || (notification.type === 'delivery' && 'ic-delivery')}.svg`}
+            src={`${CONFIG.site.basePath}/assets/icons/notification/ic-mail.svg`}
             sx={{ width: 24, height: 24 }}
           />
         </Stack>
@@ -53,8 +45,6 @@ export function NotificationItem({ notification }: { notification: NotificationI
       primary={reader(notification.title)}
       secondary={
         <Stack
-          direction="row"
-          alignItems="center"
           sx={{ typography: 'caption', color: 'text.disabled' }}
           divider={
             <Box
@@ -68,14 +58,26 @@ export function NotificationItem({ notification }: { notification: NotificationI
             />
           }
         >
-          {fToNow(notification.createdAt)}
-          {notification.category}
+          <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+            {fToNow(notification.creationDate)}
+            <Label color="default">Farming</Label>
+          </Box>
+
+          <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Typography variant="body2" sx={{ color: 'text.primary' }}>
+              {notification.message}
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.primary' }}>
+              <i>from</i>~~
+              {notification.from}
+            </Typography>
+          </Box>
         </Stack>
       }
     />
   );
 
-  const renderUnReadBadge = notification.isUnRead && (
+  const renderUnReadBadge = !notification.isRead && (
     <Box
       sx={{
         top: 26,
@@ -212,11 +214,11 @@ export function NotificationItem({ notification }: { notification: NotificationI
 
       <Stack sx={{ flexGrow: 1 }}>
         {renderText}
-        {notification.type === 'friend' && friendAction}
-        {notification.type === 'project' && projectAction}
-        {notification.type === 'file' && fileAction}
-        {notification.type === 'tags' && tagsAction}
-        {notification.type === 'payment' && paymentAction}
+        {/* {notification.type === 'friend' && friendAction} */}
+        {/* {notification.type === 'project' && projectAction} */}
+        {/* {notification.type === 'file' && fileAction} */}
+        {/* {notification.type === 'tags' && tagsAction} */}
+        {/* {notification.type === 'payment' && paymentAction} */}
       </Stack>
     </ListItemButton>
   );
