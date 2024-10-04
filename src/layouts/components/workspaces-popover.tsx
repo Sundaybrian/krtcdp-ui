@@ -117,9 +117,9 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
       county: coop?.county,
     });
 
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
+    // setTimeout(() => {
+    //   window.location.reload();
+    // }, 1000);
   };
 
   useEffect(() => {
@@ -128,13 +128,6 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
-
-  useEffect(() => {
-    if (state.coopId) {
-      getAdminCooperative();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.coopId]);
 
   return (
     <>
