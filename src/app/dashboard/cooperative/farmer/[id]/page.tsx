@@ -58,7 +58,7 @@ const TABS = [
     label: 'Harvests',
     icon: <Iconify icon="solar:snowflake-bold" width={24} />,
   },
-  // { value: 'security', label: 'Security', icon: <Iconify icon="ic:round-vpn-key" width={24} /> },
+  // { value: 'Task', label: 'Tasks', icon: <Iconify icon="ic:round-vpn-key" width={24} /> },
 ];
 
 // ----------------------------------------------------------------------

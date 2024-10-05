@@ -1,3 +1,4 @@
+import type { ItaskNew } from 'src/types/task';
 import type { InvoiceItem } from 'src/types/invoice';
 import type { CategoryData } from 'src/types/category';
 import type { PurchaseOrderItem } from 'src/types/order';
@@ -766,6 +767,28 @@ export const searchNotifications = async (query = {}): Promise<Page<INotificatio
     return response.data;
   } catch (error) {
     console.error('Error fetching notifications:', error);
+    throw error;
+  }
+};
+
+// create notification
+export const createNotification = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.notification.new, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding notification:', error);
+    throw error;
+  }
+};
+
+// create task
+export const createTask = async (data: ItaskNew) => {
+  try {
+    const response = await axios.post(endpoints.task.new, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding task:', error);
     throw error;
   }
 };

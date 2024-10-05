@@ -116,3 +116,5 @@ export const UNIT_OF_MEASUREMENT = [
 ];
 
 export const QUALITY_GRADE = ['GRADE A', 'GRADE B', 'GRADE C', 'GRADE D', 'GRADE E', 'GRADE F'];
+
+export const TASKTYPES = ['GENERAL', 'MILK_PICK', 'DELIVERY', 'INSPECTION', 'OTHER'];

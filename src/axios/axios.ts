@@ -151,5 +151,10 @@ export const endpoints = {
   },
   notification: {
     search: '/api/brodcastmessage/search',
+    new: '/api/brodcastmessage',
+  },
+  task: {
+    search: '/api/task/search',
+    new: '/api/task',
   },
 };

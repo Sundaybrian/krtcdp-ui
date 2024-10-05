@@ -115,11 +115,11 @@ export const navData = [
         children: [
           { title: 'New farmer', path: paths.dashboard.farner.newCoopFarmer },
           { title: 'Farmers', path: paths.dashboard.farner.coopFarmers },
-          // { title: 'Farms', path: paths.dashboard.farner.coopFarmers },
           { title: 'Harvest', path: paths.dashboard.farner.harvest },
           { title: 'GRN', path: paths.dashboard.farner.grn },
           { title: 'Invoice', path: paths.dashboard.invoice.root },
           { title: 'Warehouse Receipt', path: paths.dashboard.farner.warehouse },
+          { title: 'Tasks', path: paths.dashboard.farner.tasks, icon: ICONS.analytics },
         ],
       },
       {
@@ -306,6 +306,18 @@ export const navData = [
       //     { title: 'New Payment Channel', path: paths.dashboard.category.new },
       //   ],
       // },
+    ],
+  },
+  {
+    subheader: 'Communication',
+    items: [
+      {
+        title: 'Notification',
+        path: paths.dashboard.notification.root,
+        icon: ICONS.invoice,
+        permission: 'view:invoice',
+        children: [{ title: 'Notifications', path: paths.dashboard.notification.root }],
+      },
     ],
   },
   /**

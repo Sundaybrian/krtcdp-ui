@@ -132,6 +132,8 @@ export const paths = {
       harvest: `${ROOTS.DASHBOARD}/farmer/harvest`,
       warehouse: `${ROOTS.DASHBOARD}/farmer/warehouse`,
       newWarehouse: `${ROOTS.DASHBOARD}/farmer/warehouse/new`,
+      tasks: `${ROOTS.DASHBOARD}/farmer/tasks`,
+      newTask: `${ROOTS.DASHBOARD}/farmer/tasks/new`,
       details: (id: string) => `${ROOTS.DASHBOARD}/cooperative/farmer/${id}`,
       detailsParam: (id: string) => `${ROOTS.DASHBOARD}/cooperative/farmer/${id}?activeTab=harvest`,
     },
@@ -194,6 +196,10 @@ export const paths = {
     payments: {
       root: `${ROOTS.DASHBOARD}/payments`,
       new: `${ROOTS.DASHBOARD}/payments/new`,
+    },
+    notification: {
+      root: `${ROOTS.DASHBOARD}/notifications`,
+      new: `${ROOTS.DASHBOARD}/notifications/new`,
     },
     post: {
       root: `${ROOTS.DASHBOARD}/post`,
