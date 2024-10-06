@@ -112,11 +112,23 @@ export function InvoiceTableRow({
                   balancePopOver.onClose();
                 }}
               >
-                <Label color="info">
+                <Label color="default">
                   Outstanding: {fCurrency(row?.farmerBalance?.outstandingBalance || 0)}
                 </Label>
-                <Label color="info">Owed: {fCurrency(row?.farmerBalance?.totalOwed || 0)}</Label>
-                <Label color="info">Paid:{fCurrency(row?.farmerBalance?.totalPaid || 0)}</Label>
+                <ListItemText
+                  primary={
+                    <Label color="success">
+                      Paid: {fCurrency(row?.farmerBalance?.totalPaid || 0)}
+                    </Label>
+                  }
+                  secondary={
+                    <Label color="error">
+                      Owed: {fCurrency(row?.farmerBalance?.totalOwed || 0)}
+                    </Label>
+                  }
+                  primaryTypographyProps={{ typography: 'body2', noWrap: true }}
+                  secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
+                />
               </MenuItem>
             </MenuList>
           </CustomPopover>

@@ -128,10 +128,8 @@ export function DeductionListView() {
   const getTotalOwed = () => sumBy(tableData, (invoice) => invoice?.farmerBalance?.totalOwed || 0);
 
   const getTotalAmount = () =>
-    sumBy(tableData, (invoice) => invoice?.farmerBalance?.outstandingBalance);
-
-  const getPercentByStatus = (status: string) =>
-    (getInvoiceLength(status) / tableData.length) * 100;
+    sumBy(tableData, (invoice) => invoice?.farmerBalance?.totalPaid) +
+    sumBy(tableData, (invoice) => invoice?.farmerBalance?.totalOwed);
 
   const getPercentByOwed = () => (getTotalPaid() / getTotalAmount()) * 100;
 
@@ -240,7 +238,10 @@ export function DeductionListView() {
                 title="Total"
                 total={tableData.length}
                 percent={100}
-                price={sumBy(tableData, (invoice) => invoice.amount)}
+                price={
+                  sumBy(tableData, (invoice) => invoice?.farmerBalance?.totalPaid) +
+                  sumBy(tableData, (invoice) => invoice?.farmerBalance?.totalOwed)
+                }
                 icon="solar:bill-list-bold-duotone"
                 color={theme.vars.palette.info.main}
               />

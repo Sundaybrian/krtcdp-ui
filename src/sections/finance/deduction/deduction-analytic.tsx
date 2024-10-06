@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { fShortenNumber } from 'src/utils/format-number';
+import { fCurrency, fShortenNumber } from 'src/utils/format-number';
 
 import { varAlpha } from 'src/theme/styles';
 
@@ -62,7 +62,7 @@ export function InvoiceAnalytic({ title, total, icon, color, percent, price }: P
           {total && fShortenNumber(total)}
         </Box>
 
-        {/* <Typography variant="subtitle2">{fCurrency(price)}</Typography> */}
+        <Typography variant="subtitle2">{fCurrency(price)}</Typography>
       </Stack>
     </Stack>
   );
