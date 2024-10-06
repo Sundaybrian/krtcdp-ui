@@ -28,11 +28,9 @@ import type { Page, Ward, County } from './data.inteface';
 export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
   try {
     const response = await axios.post(endpoints.users.search, {
-      params: {
-        page: 1,
-        limit: 200,
-        ...query,
-      },
+      page: 1,
+      limit: 200,
+      ...query,
     });
     return response.data;
   } catch (error) {
@@ -803,6 +801,17 @@ export const applyCheckOffDeduction = async (data: IcheckoffTransactionApply) =>
     return response.data;
   } catch (error) {
     console.error('Error applying check off:', error);
+    throw error;
+  }
+};
+
+// create next of kin
+export const createNextOfKin = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.farmer.newNextOfKin, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding next of kin:', error);
     throw error;
   }
 };

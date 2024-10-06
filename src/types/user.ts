@@ -181,6 +181,7 @@ export type NewStakeholder = {
   subCounty: string;
   ward: string;
   supplyChainId?: 0;
+  valueChainType: string;
 };
 
 export type Stakeholder = {

@@ -2,7 +2,7 @@
 
 import type { IUserItem, IUserTableFilters } from 'src/types/user';
 
-import { useState, useCallback, use, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -22,8 +22,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
 import { varAlpha } from 'src/theme/styles';
+import { USER_STATUS_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import { getUsers, getUserTypes } from 'src/api/services';
 
 import { Label } from 'src/components/label';
@@ -66,8 +66,6 @@ const TABLE_HEAD = [
 // ----------------------------------------------------------------------
 
 export function UserListView() {
-  const table = useTable();
-
   const router = useRouter();
 
   const confirm = useBoolean();
@@ -87,6 +85,8 @@ export function UserListView() {
 
     setDataFiltered(filteredData);
   };
+
+  const table = useTable({ defaultOrderBy: 'creationDate', defaultOrder: 'desc' });
 
   const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 
@@ -144,8 +144,6 @@ export function UserListView() {
     getUsers()
       .then((data) => {
         setTableData(data.results);
-        console.log('Users:', data);
-
         applyNewFilter(data.results);
       })
       .catch((error) => {

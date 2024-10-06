@@ -1,7 +1,8 @@
 import type { IUserItem } from 'src/types/user';
+import type { Ward, County, SubCounty } from 'src/api/data.inteface';
 
 import { z as zod } from 'zod';
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
@@ -13,27 +14,27 @@ import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import { Divider, MenuItem, InputAdornment } from '@mui/material';
 
 // import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { useBoolean } from 'src/hooks/use-boolean';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
+
 import { fData } from 'src/utils/format-number';
+import { TENANT_LOCAL_STORAGE, MARITAL_STATUS_OPTIONS } from 'src/utils/default';
+
+import { useSearchCooperative } from 'src/actions/cooperative';
+import { addUser, getWards, getCounties, getUserTypes, assignAdminToCoop } from 'src/api/services';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import { Divider, InputAdornment, MenuItem } from '@mui/material';
 import { Iconify } from 'src/components/iconify';
-import IconButton from '@mui/material/IconButton';
-import { useBoolean } from 'src/hooks/use-boolean';
-
-import { addUser, assignAdminToCoop, getCounties, getUserTypes, getWards } from 'src/api/services';
-import { County, SubCounty, Ward } from 'src/api/data.inteface';
-import { MARITAL_STATUS_OPTIONS, TENANT_LOCAL_STORAGE } from 'src/utils/default';
-import { useLocalStorage } from 'src/hooks/use-local-storage';
-import { useSearchCooperative } from 'src/actions/cooperative';
+import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
@@ -60,7 +61,6 @@ export const NewUserSchema = zod.object({
   county: zod.string().min(1, { message: 'County is required!' }),
   maritalStatus: zod.string().min(1, { message: 'Marital Status is required!' }),
   subCounty: zod.string().min(1, { message: 'Sub county is required!' }),
-  kraPin: zod.string(),
   // Not required
   acceptTerms: zod.boolean(),
   isAdministrator: zod.boolean(),
@@ -68,6 +68,7 @@ export const NewUserSchema = zod.object({
   isSupport: zod.boolean(),
   userType: zod.string(),
   coopId: zod.any(),
+  kraPin: zod.string().default(Math.random().toString(36).substring(7)),
   // avatarUrl: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
 });
 
@@ -99,7 +100,7 @@ export function UserNewEditForm({ currentUser }: Props) {
       password: '',
       birthDate: '2024-07-17T08:14:18.190Z',
       maritalStatus: 'single',
-      kraPin: '',
+      kraPin: Math.random().toString(36).substring(7),
       userState: 'active',
       residence: '',
       county: '',
@@ -375,7 +376,7 @@ export function UserNewEditForm({ currentUser }: Props) {
                 ))}
               </Field.Select>
 
-              <Field.Text name="kraPin" label="KRA PIN" />
+              {/* <Field.Text name="kraPin" label="KRA PIN" /> */}
 
               <Field.Text name="residence" label="Residence" />
 

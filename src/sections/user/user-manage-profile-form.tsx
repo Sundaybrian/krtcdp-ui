@@ -1,32 +1,34 @@
 import type { Stakeholder } from 'src/types/user';
+import type { County, SubCounty } from 'src/api/data.inteface';
 
 import { z as zod } from 'zod';
-import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useMemo, useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
+import { Divider } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import MenuItem from '@mui/material/MenuItem';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
-import { Divider } from '@mui/material';
 import DialogContent from '@mui/material/DialogContent';
 
-import { toast } from 'src/components/snackbar';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import { MARITAL_STATUS_OPTIONS, USER_TYPES } from 'src/utils/default';
+import { VALUE_CHAIN_TYPES, MARITAL_STATUS_OPTIONS } from 'src/utils/default';
+
 import {
+  getCounties,
   createFarmer,
   createStakeholder,
-  getCounties,
   getStakeholderTypes,
 } from 'src/api/services';
-import { County, SubCounty } from 'src/api/data.inteface';
+
+import { toast } from 'src/components/snackbar';
+import { Form, Field } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -47,6 +49,8 @@ export const UserQuickEditSchema = zod.object({
   insuranceProvider: zod.string(),
   insuranceType: zod.string(),
   hasInsurance: zod.boolean(),
+  valueChainType: zod.string().min(1, { message: 'Value chain type is required!' }),
+  memberNumber: zod.string().min(1, { message: 'Member number is required!' }),
 });
 
 const FarmerSchema = zod.object({
@@ -54,6 +58,7 @@ const FarmerSchema = zod.object({
   insuranceProvider: zod.string(),
   insuranceType: zod.string(),
   hasInsurance: zod.boolean(),
+  memberNumber: zod.string().min(1, { message: 'Member number is required!' }),
 });
 
 const NonFarmerSchema = zod.object({
@@ -66,6 +71,7 @@ const NonFarmerSchema = zod.object({
   county: zod.string().min(1, { message: 'County is required!' }),
   subCounty: zod.string().min(1, { message: 'Sub county is required!' }),
   type: zod.string().min(1, { message: 'Type is required!' }),
+  valueChainType: zod.string().min(1, { message: 'Value chain type is required!' }),
 });
 
 // ----------------------------------------------------------------------
@@ -96,6 +102,7 @@ export function UserManageProfileForm({ currentUser, open, onClose }: Props) {
       subCounty: currentUser.subCounty || '',
       ward: currentUser.ward || '',
       type: currentUser.type || '',
+      valueChainType: currentUser.valueChainType || '',
     }),
     [currentUser]
   );
@@ -135,6 +142,7 @@ export function UserManageProfileForm({ currentUser, open, onClose }: Props) {
         county: data.county,
         subCounty: data.subCounty,
         ward: data.ward,
+        valueChainType: data.valueChainType,
       });
     }
 
@@ -235,7 +243,15 @@ export function UserManageProfileForm({ currentUser, open, onClose }: Props) {
                 </MenuItem>
               ))}
             </Field.Select>
-            <Box sx={{ display: { xs: 'none', sm: 'block' } }} />
+
+            <Field.Select name="valueChainType" label="Value Chain">
+              {VALUE_CHAIN_TYPES.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+            </Field.Select>
+
             {values.type === 'FARMER' && (
               <>
                 <Field.Select name="maritalStatus" label="Marital status">
@@ -259,6 +275,7 @@ export function UserManageProfileForm({ currentUser, open, onClose }: Props) {
                 <Field.Checkbox name="hasInsurance" label="Insured" />
                 <Field.Text name="insuranceProvider" label="Insurance provider" />
                 <Field.Text name="insuranceType" label="Insurance Type" />
+                <Field.Text name="memberNumber" label="Member number" />
               </>
             )}
 

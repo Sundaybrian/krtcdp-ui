@@ -31,7 +31,13 @@ import {
 } from 'src/utils/default';
 
 import { useSearchCooperative } from 'src/actions/cooperative';
-import { getWards, getCounties, addCoopFarmer, searchFarmValueChain } from 'src/api/services';
+import {
+  getWards,
+  getCounties,
+  addCoopFarmer,
+  createNextOfKin,
+  searchFarmValueChain,
+} from 'src/api/services';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -46,7 +52,7 @@ export const NewUserSchema = zod.object({
   coopId: zod.any(),
   firstName: zod.string().min(1, { message: 'First name is required!' }),
   lastName: zod.string().min(1, { message: 'Last name is required!' }),
-  middleName: zod.string().min(1, { message: 'Middle name is required!' }),
+  middleName: zod.string(),
   email: zod
     .string()
     .min(1, { message: 'Email is required!' })
@@ -72,6 +78,11 @@ export const NewUserSchema = zod.object({
   hasInsurance: zod.boolean(),
   insuranceProvider: zod.string(),
   insuranceType: zod.string(),
+  nokFirstName: zod.string(),
+  nokLastName: zod.string(),
+  relationship: zod.string(),
+  contactNumber: zod.string(),
+  memberNumber: zod.string(),
 });
 
 // ----------------------------------------------------------------------
@@ -115,6 +126,11 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
       hasInsurance: false,
       insuranceProvider: '',
       insuranceType: '',
+      relationship: '',
+      contactNumber: '',
+      nokFirstName: '',
+      nokLastName: '',
+      memberNumber: '',
     }),
     [currentUser]
   );
@@ -163,18 +179,31 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
         hasInsurance: data.hasInsurance,
         insuranceProvider: data.insuranceProvider,
         insuranceType: data.insuranceType,
+        memberNumber: data.memberNumber,
       },
+    };
+
+    const nextOfKin = {
+      name: `${data.firstName} ${data.lastName}`,
+      relationship: data.relationship,
+      contactNumber: data.contactNumber,
+      userId: 0,
     };
 
     try {
       if (!state.coopId && !data.coopId) {
         toast.error('Failed to create coop farmer');
       }
-      await addCoopFarmer(state.coopId || data.coopId, submitData);
+      const response = await addCoopFarmer(state.coopId || data.coopId, submitData);
 
       reset();
       toast.success(currentUser ? 'Update success!' : 'User created successfully!');
-      // router.push(paths.dashboard.user.list);
+
+      // create nok
+      if (!currentUser?.id) {
+        nextOfKin.userId = response.user.id;
+        createNextOfKin(nextOfKin);
+      }
       console.info('DATA', data);
       setActiveStep(0);
     } catch (error) {
@@ -303,7 +332,7 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
 
                 <Field.Phone name="mobilePhone" country="KE" label="Phone number" />
 
-                <Field.Text name="coopMembershipNumber" label="Coop Membership Number" />
+                <Field.Text name="memberNumber" label="Coop Membership Number" />
 
                 <Field.DatePicker name="birthDate" label="DOB" />
 
@@ -459,19 +488,17 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
               >
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                   <Field.Text
-                    name="firstName"
+                    name="nokFirstName"
                     label="First name"
                     InputLabelProps={{ shrink: true }}
                   />
 
-                  <Field.Text name="middleName" label="Middle name" />
+                  <Field.Text name="nokLastName" label="Middle name" />
                 </Stack>
 
-                <Field.Text name="lastName" label="Last name" InputLabelProps={{ shrink: true }} />
+                <Field.Phone name="contactNumber" country="KE" label="Phone number" />
 
-                <Field.Phone name="mobilePhone" country="KE" label="Phone number" />
-
-                <Field.Select name="maritalStatus" label="Relationship">
+                <Field.Select name="relationship" label="Relationship">
                   <MenuItem
                     value=""
                     onClick={() => null}
@@ -485,71 +512,6 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
                   {RELATIONSHIP_OPTIONS.map((status) => (
                     <MenuItem key={status} value={status} onClick={() => null}>
                       {status}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                  <Field.Select name="county" label="County">
-                    <MenuItem
-                      value=""
-                      onClick={() => null}
-                      sx={{ fontStyle: 'italic', color: 'text.secondary' }}
-                    >
-                      None
-                    </MenuItem>
-
-                    <Divider sx={{ borderStyle: 'dashed' }} />
-
-                    {counties.map((county) => (
-                      <MenuItem
-                        key={county.code + county.name}
-                        value={county.name}
-                        onClick={() => {
-                          handleCountyChange(county.id);
-                        }}
-                      >
-                        {county.name}
-                      </MenuItem>
-                    ))}
-                  </Field.Select>
-
-                  <Field.Select name="subCounty" label="Sub county">
-                    <MenuItem
-                      value=""
-                      onClick={() => null}
-                      sx={{ fontStyle: 'italic', color: 'text.secondary' }}
-                    >
-                      None
-                    </MenuItem>
-
-                    <Divider sx={{ borderStyle: 'dashed' }} />
-
-                    {subCounties.map((subCounty) => (
-                      <MenuItem
-                        key={subCounty.code + subCounty.name}
-                        value={subCounty.name}
-                        onClick={() => {
-                          handleSubCountyChange(subCounty.id);
-                        }}
-                      >
-                        {subCounty.name}
-                      </MenuItem>
-                    ))}
-                  </Field.Select>
-                </Stack>
-
-                {/* <Field.Text name="ward" label="Ward" /> */}
-                <Field.Select name="ward" label="Ward">
-                  <MenuItem value="" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
-                    None
-                  </MenuItem>
-
-                  <Divider sx={{ borderStyle: 'dashed' }} />
-
-                  {wards.map((ward) => (
-                    <MenuItem key={ward.id + ward.name} value={ward.name}>
-                      {ward.name}
                     </MenuItem>
                   ))}
                 </Field.Select>

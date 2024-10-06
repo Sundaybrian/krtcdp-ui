@@ -84,6 +84,7 @@ export const endpoints = {
     newWarehouseReceipt: '/api/warehousereceipt',
     searchGrn: '/api/grn/search',
     searchExpense: '/api/farmmanagementactivity/search',
+    newNextOfKin: '/api/nextofkin',
     newExpense: (id: number) => `/api/farmmanagementactivity/${id}/input`,
     approveHarvest: (id: number) => `/api/harvest/${id}/reject-harvest`,
     evaluateHarvest: (id: number) => `/api/harvest/${id}/evaluate`,
