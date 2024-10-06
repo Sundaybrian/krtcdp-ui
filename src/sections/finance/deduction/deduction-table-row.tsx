@@ -79,7 +79,7 @@ export function InvoiceTableRow({
                   onClick={onViewRow}
                   sx={{ color: 'text.disabled', cursor: 'pointer' }}
                 >
-                  {row.id}
+                  {row?.user?.mobilePhone}
                 </Link>
               }
             />

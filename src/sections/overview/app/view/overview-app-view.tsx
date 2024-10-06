@@ -1,30 +1,22 @@
 'use client';
 
-import Box from '@mui/material/Box';
+import type { Istats } from 'src/actions/stats';
+
 import Button from '@mui/material/Button';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 
-import { DashboardContent } from 'src/layouts/dashboard';
-import { SeoIllustration } from 'src/assets/illustrations';
-import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled } from 'src/_mock';
-
-import { svgColorClasses } from 'src/components/svg-color';
-
-import useAuthUser from 'src/auth/hooks/use-auth-user';
-import { Istats, useGetStatistcis } from 'src/actions/stats';
 import { paths } from 'src/routes/paths';
 
-import { AppWidget } from '../app-widget';
+import { useGetStatistcis } from 'src/actions/stats';
+import { DashboardContent } from 'src/layouts/dashboard';
+import { SeoIllustration } from 'src/assets/illustrations';
+
+import useAuthUser from 'src/auth/hooks/use-auth-user';
+
 import { AppWelcome } from '../app-welcome';
-import { AppFeatured } from '../app-featured';
-import { AppNewInvoice } from '../app-new-invoice';
-import { AppTopAuthors } from '../app-top-authors';
-import { AppTopRelated } from '../app-top-related';
-import { AppAreaInstalled } from '../app-area-installed';
 import { AppWidgetSummary } from '../app-widget-summary';
 import { AppCurrentDownload } from '../app-current-download';
-import { AppTopInstalledCountries } from '../app-top-installed-countries';
 
 // ----------------------------------------------------------------------
 
@@ -144,7 +136,7 @@ export function OverviewAppView() {
 
         <Grid xs={12} md={4}>
           <AppWidgetSummary
-            title="Total Amins"
+            title="Total Admins"
             href={paths.dashboard.user.root}
             percent={-0.1}
             total={
