@@ -25,6 +25,7 @@ import { Iconify } from 'src/components/iconify';
 import { InvoicePDF } from './invoice-pdf';
 
 // ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
 type Props = {
   invoice?: IInvoice;
