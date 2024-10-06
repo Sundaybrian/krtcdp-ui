@@ -5,6 +5,7 @@ import type { PurchaseOrderItem } from 'src/types/order';
 import type { INotification } from 'src/types/notification';
 import type { CreateCooperative } from 'src/types/cooperative';
 import type { ValueChain, NewValueChain } from 'src/types/value-chain';
+import type { IcheckoffTransactionApply } from 'src/types/transaction';
 import type { Grn, Farm, Harvest, Expense, CreateExpense, WarehouseReceipt } from 'src/types/farm';
 import type {
   IUserItem,
@@ -642,8 +643,10 @@ export const downloadInvoiceTemplate = async () => {
 // download invoice template data
 export const downloadInvoiceTemplateData = async (id: number) => {
   try {
-    const response = await axios.get(endpoints.invoice.templateData(id));
-    return response.data;
+    const response = await axios.get(endpoints.invoice.templateData(id), {
+      responseType: 'blob',
+    });
+    return response;
   } catch (error) {
     console.error('Error downloading invoice template data:', error);
     throw error;
@@ -789,6 +792,17 @@ export const createTask = async (data: ItaskNew) => {
     return response.data;
   } catch (error) {
     console.error('Error adding task:', error);
+    throw error;
+  }
+};
+
+// apply check off deduction
+export const applyCheckOffDeduction = async (data: IcheckoffTransactionApply) => {
+  try {
+    const response = await axios.post(endpoints.invoice.applyCheckOffDeduction, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error applying check off:', error);
     throw error;
   }
 };

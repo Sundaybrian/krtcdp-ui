@@ -56,7 +56,7 @@ export function TaskForm({ selectedAdmin }: Props) {
       farmerId: [],
       title: '',
       description: '',
-      assignedToId: '',
+      assignedToId: {},
       taskType: '',
       cooperativeId: state.coopId,
       dueDate: '',

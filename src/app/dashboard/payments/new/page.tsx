@@ -1,6 +1,6 @@
 import { CONFIG } from 'src/config-global';
 
-import { BnakUploadCreateView } from 'src/sections/payments/view';
+import { BnakUploadCreateView } from 'src/sections/finance/view';
 
 // ----------------------------------------------------------------------
 

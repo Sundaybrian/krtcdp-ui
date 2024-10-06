@@ -144,7 +144,9 @@ export const endpoints = {
   invoice: {
     search: '/api/invoice/search',
     template: '/api/invoice/download-template',
-    templateData: (coopId: number) => `/api/invoice/pending-invoices-excel/download`,
+    applyCheckOffDeduction: '/api/invoice/apply-checkoff-deductions',
+    templateData: (coopId: number) =>
+      `/api/invoice/pending-invoices-excel/download?cooperativeId=${coopId}`,
   },
   statistics: {
     get: '/api/stats/statistics',
@@ -156,5 +158,9 @@ export const endpoints = {
   task: {
     search: '/api/task/search',
     new: '/api/task',
+  },
+  checkoffTransaction: {
+    search: '/api/checkofftransaction/search',
+    new: '/api/checkofftransaction',
   },
 };

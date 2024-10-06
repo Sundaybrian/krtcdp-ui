@@ -14,12 +14,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { formHelperTextClasses } from '@mui/material/FormHelperText';
 
-import { useLocalStorage } from 'src/hooks/use-local-storage';
-
-import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
-
-import { downloadInvoiceTemplateData } from 'src/api/services';
-
 import { Iconify } from 'src/components/iconify';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
@@ -29,21 +23,13 @@ type Props = {
   dateError: boolean;
   onResetPage: () => void;
   filters: UseSetStateReturn<IInvoiceTableFilters>;
-  onCheckOffDeduction: () => void;
   options: {
     services: string[];
   };
 };
 
-export function InvoiceTableToolbar({
-  filters,
-  options,
-  dateError,
-  onResetPage,
-  onCheckOffDeduction,
-}: Props) {
+export function InvoiceTableToolbar({ filters, options, dateError, onResetPage }: Props) {
   const popover = usePopover();
-  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,23 +65,6 @@ export function InvoiceTableToolbar({
     },
     [filters, onResetPage]
   );
-
-  const handleDownloadPendindInvoice = useCallback(() => {
-    downloadInvoiceTemplateData(state.coopId).then((res) => {
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      // name should have cuurent date-time format
-      const fileName: string = new Date()
-        .toISOString()
-        .replace(/:/g, '-')
-        .replace('T', '_')
-        .split('.')[0];
-      link.setAttribute('download', `${fileName}_invoice.xlsx`);
-      document.body.appendChild(link);
-      link.click();
-    });
-  }, [state.coopId]);
 
   return (
     <>
@@ -163,7 +132,7 @@ export function InvoiceTableToolbar({
             fullWidth
             value={filters.state.name}
             onChange={handleFilterName}
-            placeholder="Search customer or invoice number..."
+            placeholder="Search farmer name or status"
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -187,33 +156,31 @@ export function InvoiceTableToolbar({
       >
         <MenuList>
           <MenuList>
-            {/* <MenuItem
+            <MenuItem
               onClick={() => {
                 popover.onClose();
               }}
             >
               <Iconify icon="solar:printer-minimalistic-bold" />
               Print
-            </MenuItem> */}
-
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-                handleDownloadPendindInvoice();
-              }}
-            >
-              <Iconify icon="solar:import-bold" />
-              Download pending invoice
             </MenuItem>
 
             <MenuItem
               onClick={() => {
                 popover.onClose();
-                onCheckOffDeduction();
               }}
             >
-              <Iconify color="green" icon="solar:settings-minimalistic-bold" />
-              Apply checkoff
+              <Iconify icon="solar:import-bold" />
+              Import
+            </MenuItem>
+
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+              }}
+            >
+              <Iconify icon="solar:export-bold" />
+              Export
             </MenuItem>
           </MenuList>
         </MenuList>

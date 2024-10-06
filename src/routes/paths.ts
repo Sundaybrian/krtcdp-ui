@@ -196,6 +196,7 @@ export const paths = {
     payments: {
       root: `${ROOTS.DASHBOARD}/payments`,
       new: `${ROOTS.DASHBOARD}/payments/new`,
+      deductions: `${ROOTS.DASHBOARD}/payments/deductions`,
     },
     notification: {
       root: `${ROOTS.DASHBOARD}/notifications`,

@@ -231,14 +231,17 @@ export const navData = [
     ],
   },
   {
-    subheader: 'Bank Payment',
+    subheader: 'Finance Mgt',
     items: [
       {
-        title: 'Payment Narratives',
+        title: 'Transactions',
         path: paths.dashboard.payments.root,
         icon: ICONS.invoice,
         permission: 'view:invoice',
-        children: [{ title: 'Bank files', path: paths.dashboard.payments.root }],
+        children: [
+          { title: 'Bank files', path: paths.dashboard.payments.root },
+          { title: 'Deductions', path: paths.dashboard.payments.deductions },
+        ],
       },
     ],
   },
