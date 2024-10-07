@@ -32,8 +32,9 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
 
-import { INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
+import { TENANT_LOCAL_STORAGE, INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
 
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 import { useSearchTasks } from 'src/actions/task';
@@ -77,10 +78,11 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 export function TasksListView() {
   const confirmRows = useBoolean();
   const quickEdit = useBoolean();
+  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
   const router = useRouter();
 
-  const { searchResults, searchLoading } = useSearchTasks();
+  const { searchResults, searchLoading } = useSearchTasks({ cooperativeId: state.coopId });
 
   const filters = useSetState<IProductTableFilters>({ publish: [], stock: [] });
 

@@ -212,7 +212,7 @@ export function InvoiceListView() {
     promise
       .then((response) => {
         toast.success('Check off deduction success');
-        getInvoices();
+        getInvoices({ cooperativeId: state.coopId });
         // clear selected rows
         table.onSelectAllRows(false, []);
       })
@@ -221,9 +221,9 @@ export function InvoiceListView() {
       });
   };
 
-  const getInvoices = async () => {
+  const getInvoices = async (query = {}) => {
     try {
-      const response = await searchInvoice();
+      const response = await searchInvoice(query);
       console.log(response);
 
       setTableData(response.results);
@@ -233,8 +233,8 @@ export function InvoiceListView() {
   };
 
   useEffect(() => {
-    getInvoices();
-  }, []);
+    getInvoices({ cooperativeId: state.coopId });
+  }, [state.coopId]);
 
   return (
     <>
