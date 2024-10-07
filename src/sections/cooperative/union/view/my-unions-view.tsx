@@ -2,10 +2,8 @@
 
 import { useEffect } from 'react';
 
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Unstable_Grid2';
 
 import { paths } from 'src/routes/paths';
 
@@ -18,9 +16,9 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { useSearchCooperativeUnions } from 'src/actions/cooperative';
 
 import { Iconify } from 'src/components/iconify';
+import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { JoinedCoopUnions } from '../joined-union-list';
 import { CoopJoinUnionForm } from '../coop-join-union-form';
 
 // ----------------------------------------------------------------------
@@ -63,7 +61,7 @@ export function MyUnionListView() {
           flexDirection: { md: 'column' },
         }}
       >
-        {/* <EmptyContent
+        <EmptyContent
           title="No union onboarded"
           action={
             <Button
@@ -74,9 +72,9 @@ export function MyUnionListView() {
               Join a union
             </Button>
           }
-        /> */}
+        />
 
-        <Grid xs={12} md={6} lg={4}>
+        {/* <Grid xs={12} md={6} lg={4}>
           <Box
             rowGap={3}
             columnGap={2}
@@ -91,7 +89,7 @@ export function MyUnionListView() {
               phoneNumber="07157829"
             />
           </Box>
-        </Grid>
+        </Grid> */}
       </Card>
 
       {/* Assign coop to union dialog */}
