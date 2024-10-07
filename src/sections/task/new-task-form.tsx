@@ -141,10 +141,10 @@ export function TaskForm({ selectedAdmin }: Props) {
                 freeSolo
                 disableCloseOnSelect
                 options={farmers.userResults.map((user) => user)}
-                getOptionLabel={(option) => option.email}
+                getOptionLabel={(option) => option?.email || ''}
                 renderOption={(props, option) => (
                   <li {...props} key={option.email}>
-                    {option.firstName}--{option.email}
+                    {option?.firstName}--{option?.email}
                   </li>
                 )}
                 renderTags={(selected, getTagProps) =>

@@ -5,7 +5,7 @@ import type { PurchaseOrderItem } from 'src/types/order';
 import type { INotification } from 'src/types/notification';
 import type { CreateCooperative } from 'src/types/cooperative';
 import type { ValueChain, NewValueChain } from 'src/types/value-chain';
-import type { IcheckoffTransactionApply } from 'src/types/transaction';
+import type { FamerBalace, IcheckoffTransactionApply } from 'src/types/transaction';
 import type { Grn, Farm, Harvest, Expense, CreateExpense, WarehouseReceipt } from 'src/types/farm';
 import type {
   IUserItem,
@@ -801,6 +801,51 @@ export const applyCheckOffDeduction = async (data: IcheckoffTransactionApply) =>
     return response.data;
   } catch (error) {
     console.error('Error applying check off:', error);
+    throw error;
+  }
+};
+
+// create check off deduction
+export const createCheckOffDeduction = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.checkoffTransaction.new, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding check off:', error);
+    throw error;
+  }
+};
+
+// get farmer balance
+export const getFarmerBalance = async (id: number): Promise<FamerBalace> => {
+  try {
+    const response = await axios.get(endpoints.farmer.getBalance(id));
+    console.log(response, 'response');
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching farmer balance:', error);
+    throw error;
+  }
+};
+
+// search farmer balance
+export const searchFarmerBalance = async (query = {}): Promise<Page<FamerBalace[]>> => {
+  try {
+    const response = await axios.post(
+      endpoints.farmer.searchBalance,
+      {
+        page: 1,
+        limit: 20,
+        ...query,
+      },
+      {
+        params: {},
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching farmer balance:', error);
     throw error;
   }
 };

@@ -1,7 +1,8 @@
 'use client';
 
+import type { CoopFarmerList } from 'src/types/user';
+import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
-import type { IProductItem, IProductTableFilters } from 'src/types/product';
 import type {
   GridSlots,
   GridColDef,
@@ -31,31 +32,30 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
+
+import { TENANT_LOCAL_STORAGE, INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
 
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { approveCoopFarmer, searchCoopFarmers } from 'src/api/services';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { useSearchCooperative, useSearchCooperativeFarmers } from 'src/actions/cooperative';
-import { INSURANCE_TYPE_OPTIONS, TENANT_LOCAL_STORAGE } from 'src/utils/default';
-import { approveCoopFarmer, searchCoopFarmers } from 'src/api/services';
-import { CoopFarmerList } from 'src/types/user';
-import { useLocalStorage } from 'src/hooks/use-local-storage';
 
 import { CooperativeTableToolbar } from '../cooperative-table-toolbar';
 import { CooperativeTableFiltersResult } from '../cooperative-table-filters-result';
 import {
+  RenderGeneric,
   RenderCellStock,
   RenderCellPrice,
   RenderCellPublish,
   RenderCellProduct,
-  RenderCellCreatedAt,
-  RenderGeneric,
   RenderHasInsurance,
+  RenderCellCreatedAt,
   RenderInsuranceProvidere,
 } from '../coop-farmer-table-row';
 // ----------------------------------------------------------------------
@@ -107,6 +107,8 @@ export function CooperativeFarmerListView() {
     async (id: string) => {
       try {
         const data = tableData.find((row) => row.id === id)!;
+        console.log(data, 'Data');
+
         if (!data.Farmer?.cooperativeId) {
           toast.error('Farmer does not belong to a cooperative!');
           return;
@@ -200,6 +202,7 @@ export function CooperativeFarmerListView() {
       headerName: 'Name',
       flex: 1,
       minWidth: 8,
+      width: 200,
       hideable: false,
       renderCell: (params) => (
         <RenderCellProduct params={params} onViewRow={() => handleViewRow(params.row.id)} />

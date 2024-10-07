@@ -1,11 +1,13 @@
 import type { IUserItem } from './user';
 
 export type FamerBalace = {
+  id?: number;
   cooperativeId: number;
   totalOwed: number;
   totalPaid: number;
   outstandingBalance: number;
   overDraft: number;
+  farmerId?: number;
 };
 export type IcheckoffTransaction = {
   id: any;

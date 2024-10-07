@@ -146,10 +146,7 @@ export function useSearchValueChain(query: any = {}) {
 // ----------------------------------------------------------------------
 export function useSearchCooperativeUnions(query: any = {}) {
   const url = query
-    ? [
-        endpoints.cooperative.searchUnion,
-        { params: { limit: 20, page: 1, cooperativeId: 1, ...query } },
-      ]
+    ? [endpoints.cooperative.searchUnion, { params: { limit: 20, page: 1, ...query } }]
     : '';
 
   const { data, isLoading, error, isValidating } = useSWR<Page<CreateUnion[]>>(url, creator, {

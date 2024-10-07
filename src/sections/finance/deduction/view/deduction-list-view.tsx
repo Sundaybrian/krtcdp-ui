@@ -55,6 +55,7 @@ import {
 
 import { InvoiceAnalytic } from '../deduction-analytic';
 import { InvoiceTableRow } from '../deduction-table-row';
+import { DeductionCreateForm } from '../deduction-add-form';
 import { InvoiceTableToolbar } from '../deduction-table-toolbar';
 import { InvoiceTableFiltersResult } from '../deduction-table-filters-result';
 
@@ -83,6 +84,8 @@ export function DeductionListView() {
   const table = useTable({ defaultOrderBy: 'creationDate' });
 
   const confirm = useBoolean();
+
+  const quickEdit = useBoolean();
 
   const [tableData, setTableData] = useState<any[]>([]);
 
@@ -214,16 +217,15 @@ export function DeductionListView() {
             { name: 'Transactions', href: paths.dashboard.invoice.root },
             { name: 'Deductions' },
           ]}
-          //   action={
-          //     <Button
-          //       component={RouterLink}
-          //       href={paths.dashboard.payments.new}
-          //       variant="contained"
-          //       startIcon={<Iconify icon="mingcute:add-line" />}
-          //     >
-          //       Upload
-          //     </Button>
-          //   }
+          action={
+            <Button
+              onClick={quickEdit.onTrue}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+              New
+            </Button>
+          }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
@@ -412,6 +414,12 @@ export function DeductionListView() {
           />
         </Card>
       </DashboardContent>
+
+      <DeductionCreateForm
+        coopId={state.coopId}
+        open={quickEdit.value}
+        onClose={quickEdit.onFalse}
+      />
 
       <ConfirmDialog
         open={confirm.value}
