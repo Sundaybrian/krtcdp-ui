@@ -175,13 +175,12 @@ export function DeductionCreateForm({ coopId, open, onClose }: Props) {
 
                 <Divider sx={{ borderStyle: 'dashed' }} />
 
-                {['LOAN', 'DEDUCTION', 'EXPENSE', 'OTHER'].map((type) => (
+                {['LOAN', 'DEDUCTION', 'ADVANCE'].map((type) => (
                   <MenuItem key={type} value={type} onClick={() => {}}>
                     {type}
                   </MenuItem>
                 ))}
               </Field.Select>
-
               <Field.Text name="amount" label="Amount" />
               <Field.Text name="commodity" label="Commodity" />
               <Field.Text name="narration" label="Narration" />
