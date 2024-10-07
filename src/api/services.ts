@@ -313,11 +313,17 @@ export const searchCoopFarmers = async (query = {}): Promise<Page<CoopFarmerList
   console.log(query, 'query');
 
   try {
-    const response = await axios.post(endpoints.cooperative.searchCoopFarmer, {
-      page: 1,
-      limit: 200,
-      ...query,
-    });
+    const response = await axios.post(
+      endpoints.cooperative.searchCoopFarmer,
+      {},
+      {
+        params: {
+          page: 1,
+          limit: 200,
+          ...query,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('Error fetching users:', error);
