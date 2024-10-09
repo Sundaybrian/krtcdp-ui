@@ -464,7 +464,7 @@ export const searchHarvests = async (query = {}): Promise<Page<Harvest[]>> => {
       endpoints.farmer.searchHarvests,
       {
         page: 1,
-        limit: 20,
+        limit: 200,
         ...query,
       },
       {

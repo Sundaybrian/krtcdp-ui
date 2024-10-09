@@ -46,7 +46,12 @@ export function NotificationForm({ selectedAdmin }: Props) {
 
   const { id } = useAuthUser();
 
-  const { userResults } = useSearchAdmins({ userType: 'COOPERATIVE_ADMIN' });
+  const userSearch = state.coopId
+    ? {
+        coopId: Number(state.coopId),
+      }
+    : {};
+  const { userResults } = useSearchAdmins({ ...userSearch });
 
   const defaultValues = useMemo(
     () => ({

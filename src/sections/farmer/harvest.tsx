@@ -1,23 +1,25 @@
+import type { Harvest } from 'src/types/farm';
+
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import Card from '@mui/material/Card';
+import { Slider } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import ListItemText from '@mui/material/ListItemText';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
+import { fDate } from 'src/utils/format-time';
+
+import { approveHarvest, evaluateHarvest } from 'src/api/services';
+
+import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
 import { Form } from 'src/components/hook-form';
-import { Harvest } from 'src/types/farm';
-import { EmptyContent } from 'src/components/empty-content';
-import { fDate } from 'src/utils/format-time';
-import Typography from '@mui/material/Typography';
-import { Label } from 'src/components/label';
-import { Slider } from '@mui/material';
-import { approveHarvest, evaluateHarvest } from 'src/api/services';
-import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -165,25 +167,23 @@ export function FarmerHarvest({ harvest }: Props) {
                   name="quantity"
                   control={control}
                   render={({ field }) => (
-                    <>
-                      <FormControlLabel
-                        key="quantity"
-                        label=""
-                        labelPlacement="start"
-                        control={
-                          <Slider
-                            defaultValue={harvest.quantity}
-                            aria-label="Default"
-                            valueLabelDisplay="auto"
-                            step={20}
-                            marks
-                            min={0}
-                            max={harvest.quantity}
-                          />
-                        }
-                        sx={{ m: 0, width: 1, justifyContent: 'space-between' }}
-                      />
-                    </>
+                    <FormControlLabel
+                      key="quantity"
+                      label=""
+                      labelPlacement="start"
+                      control={
+                        <Slider
+                          defaultValue={harvest.quantity}
+                          aria-label="Default"
+                          valueLabelDisplay="auto"
+                          step={20}
+                          marks
+                          min={0}
+                          max={harvest.quantity}
+                        />
+                      }
+                      sx={{ m: 0, width: 1, justifyContent: 'space-between' }}
+                    />
                   )}
                 />
               )}

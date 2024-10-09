@@ -48,8 +48,17 @@ type Props = {
 export function TaskForm({ selectedAdmin }: Props) {
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
-  const { userResults } = useSearchAdmins({ userType: 'COOPERATIVE_ADMIN', coopId: state.coopId });
-  const farmers = useSearchAdmins({ userType: 'FARMER' });
+  const userSearch = state.coopId
+    ? {
+        coopId: Number(state.coopId),
+      }
+    : {};
+  const { userResults } = useSearchAdmins({
+    userType: ['COOPERATIVE_ADMIN'],
+    coopId: state.coopId,
+  });
+
+  const farmers = useSearchAdmins({ userType: ['FARMER'], ...userSearch });
 
   const defaultValues = useMemo(
     () => ({

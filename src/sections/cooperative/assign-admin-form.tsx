@@ -51,7 +51,16 @@ export function AssignAdminNewEditForm({ selectedAdmin }: Props) {
   });
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
-  const { userResults } = useSearchAdmins({ userType: 'COOPERATIVE_ADMIN' });
+  const userSearch = state.coopId
+    ? {
+        coopId: Number(state.coopId),
+      }
+    : {};
+
+  const { userResults } = useSearchAdmins({
+    userType: ['COOPERATIVE_ADMIN', 'SYSTEM_USER'],
+    ...userSearch,
+  });
 
   const defaultValues = useMemo(
     () => ({

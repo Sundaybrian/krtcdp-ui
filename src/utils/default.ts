@@ -47,8 +47,6 @@ export const PERMISSIONS = [
       'view:farmer',
       'view:product',
       'view:category',
-      'view:county',
-      'view:valuechain',
       'view:invoice',
       'view:order',
       'view:category',

@@ -1,8 +1,9 @@
 'use client';
 
+import type { Harvest } from 'src/types/farm';
 import type { IOrderTableFilters } from 'src/types/order';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -19,13 +20,14 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
-import { RouterLink } from 'src/routes/components';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
 
+import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
 import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _orders, ORDER_STATUS_OPTIONS } from 'src/_mock';
+import { searchHarvests, createPurchaseOrder } from 'src/api/services';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -44,10 +46,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import { Grn, Harvest } from 'src/types/farm';
-import { useLocalStorage } from 'src/hooks/use-local-storage';
-import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
-import { createPurchaseOrder, searchGrn, searchHarvests } from 'src/api/services';
 
 import { OrderTableRow } from '../order-table-row';
 import { OrderTableToolbar } from '../order-table-toolbar';
@@ -186,7 +184,7 @@ export function HarvestListView() {
   );
 
   const getHarvest = () => {
-    searchHarvests(state.coopId ? { cooperativeId: state.coopId } : {})
+    searchHarvests({ cooperativeId: state.coopId })
       .then((data) => {
         setTableData(data.results);
       })
