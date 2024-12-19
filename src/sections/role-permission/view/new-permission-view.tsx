@@ -6,7 +6,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { UserRoleForm } from '../new-user-role-form';
+// import { UserRoleForm } from '../new-user-role-form';
 // ----------------------------------------------------------------------
 
 export function UserRoleCreateView() {
@@ -22,7 +22,7 @@ export function UserRoleCreateView() {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <UserRoleForm />
+      {/* <UserRoleForm /> */}
     </DashboardContent>
   );
 }
