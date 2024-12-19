@@ -23,6 +23,7 @@ import { EmailInboxIcon } from 'src/assets/icons';
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { resendSignUpCode } from 'src/auth/context/amplify';
 import { signInWithPassword } from 'src/auth/context/jwt/action';
 
@@ -41,6 +42,7 @@ export const VerifySchema = zod.object({
 
 export function OtpVerify() {
   const router = useRouter();
+  const { checkUserSession } = useAuthContext();
 
   const searchParams = useSearchParams();
   const { state } = useLocalStorage('otp', { otp: { userId: 0 } });
@@ -72,11 +74,10 @@ export function OtpVerify() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       const response = await validateOtp({ userId: state.otp.userId, otp: data.otp });
-      console.log(response);
-
       signInWithPassword(response);
       await checkUserSession?.();
       router.push('/dashboard');
+      router.refresh();
     } catch (error) {
       console.error(error);
     }
@@ -164,7 +165,4 @@ export function OtpVerify() {
       </Form>
     </>
   );
-}
-function checkUserSession() {
-  throw new Error('Function not implemented.');
 }
