@@ -1,5 +1,7 @@
 import { paths } from 'src/routes/paths';
 
+import { requiredPermissions } from 'src/utils/default';
+
 import { CONFIG } from 'src/config-global';
 
 import { SvgColor } from 'src/components/svg-color';
@@ -82,7 +84,7 @@ export const navData = [
     items: [
       {
         title: 'User',
-        permission: 'view:user',
+        permission: requiredPermissions.users.viewUser,
         path: paths.dashboard.user.root,
         icon: ICONS.user,
         children: [
@@ -337,11 +339,15 @@ export const navData = [
         // Reference from 'src/guards/RoleBasedGuard'.
         title: 'Permission',
         permission: 'view:permission',
-        path: paths.dashboard.permission,
+        path: paths.dashboard.permission.root,
         icon: ICONS.lock,
         roles: ['admin', 'manager'],
         caption: 'Only admin can see this item',
-        children: [],
+        children: [
+          { title: 'Roles', path: paths.dashboard.permission.roles },
+          { title: 'User Roles', path: paths.dashboard.permission.userRoles },
+          { title: 'Role Permissions', path: paths.dashboard.permission.rolePermissions },
+        ],
       },
       // {
       //   title: 'Level',

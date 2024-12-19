@@ -27,7 +27,7 @@ export const PERMISSIONS = [
     permissions: [
       'view:county',
       'view:dashboard',
-      'view:user',
+      // 'view:user',
       'view:cooperative',
       'view:management',
       'view:permission',
@@ -118,3 +118,10 @@ export const QUALITY_GRADE = ['GRADE A', 'GRADE B', 'GRADE C', 'GRADE D', 'GRADE
 export const TASKTYPES = ['GENERAL', 'MILK_PICK', 'DELIVERY', 'INSPECTION', 'OTHER'];
 
 export const VALUE_CHAIN_TYPES = ['CROP', 'MILK', 'LIVESTOCK', 'DAIRY'];
+
+export const requiredPermissions = {
+  users: {
+    viewUser: 'viewUser',
+    createUser: 'createUser',
+  },
+};

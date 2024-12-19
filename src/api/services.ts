@@ -22,7 +22,29 @@ import type {
 
 import axios, { endpoints } from 'src/axios/axios';
 
-import type { Page, Ward, County } from './data.inteface';
+import type { Otp, Page, Ward, County } from './data.inteface';
+
+// auth - sign in with mobile phone
+export const signInWithMobilePhone = async (data: any): Promise<Otp> => {
+  try {
+    const response = await axios.post(endpoints.auth.signInWithOtp, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error signing in:', error);
+    throw error;
+  }
+};
+
+// validate OTP
+export const validateOtp = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.auth.verifyOtp, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error validating OTP:', error);
+    throw error;
+  }
+};
 
 // Function to fetch users
 export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {

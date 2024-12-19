@@ -8,36 +8,28 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import InputAdornment from '@mui/material/InputAdornment';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
 
-import { Iconify } from 'src/components/iconify';
+import { signInWithMobilePhone } from 'src/api/services';
+
 import { Form, Field } from 'src/components/hook-form';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { signInWithPassword } from 'src/auth/context/jwt';
 
 // ----------------------------------------------------------------------
 
 export type SignInSchemaType = zod.infer<typeof SignInSchema>;
 
 export const SignInSchema = zod.object({
-  email: zod
-    .string()
-    .min(1, { message: 'Email is required!' })
-    .email({ message: 'Email must be a valid email address!' }),
-  password: zod
-    .string()
-    .min(1, { message: 'Password is required!' })
-    .min(8, { message: 'Password must be at least 6 characters!' }),
+  mobilePhone: zod.string().min(1, { message: 'Phone number is required!' }),
 });
 
 // ----------------------------------------------------------------------
@@ -46,14 +38,14 @@ export function JwtSignInView() {
   const router = useRouter();
 
   const { checkUserSession } = useAuthContext();
+  const store = useLocalStorage('otp', { otp: { userId: 0 } });
 
   const [errorMsg, setErrorMsg] = useState('');
 
   const password = useBoolean();
 
   const defaultValues = {
-    email: '',
-    password: '',
+    mobilePhone: '',
   };
 
   const methods = useForm<SignInSchemaType>({
@@ -68,10 +60,14 @@ export function JwtSignInView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await signInWithPassword({ email: data.email, password: data.password });
-      await checkUserSession?.();
+      const response = await signInWithMobilePhone(data);
 
-      router.refresh();
+      // save to loca storage
+      store.setField('otp', { userId: response.userId } as any);
+      store.setState({ otp: { userId: response.userId } });
+      // await checkUserSession?.();
+
+      router.push('/auth/jwt/otp');
     } catch (error) {
       console.error(error);
       setErrorMsg(error.message);
@@ -96,10 +92,15 @@ export function JwtSignInView() {
 
   const renderForm = (
     <Stack spacing={3}>
-      <Field.Text name="email" label="Email address" InputLabelProps={{ shrink: true }} />
+      <Field.Phone
+        name="mobilePhone"
+        country="KE"
+        label="Phone Number"
+        InputLabelProps={{ shrink: true }}
+      />
 
       <Stack spacing={1.5}>
-        <Link
+        {/* <Link
           component={RouterLink}
           href="#"
           variant="body2"
@@ -107,9 +108,9 @@ export function JwtSignInView() {
           sx={{ alignSelf: 'flex-end' }}
         >
           Forgot password?
-        </Link>
+        </Link> */}
 
-        <Field.Text
+        {/* <Field.Text
           name="password"
           label="Password"
           placeholder="8+ characters"
@@ -124,7 +125,7 @@ export function JwtSignInView() {
               </InputAdornment>
             ),
           }}
-        />
+        /> */}
       </Stack>
 
       <LoadingButton

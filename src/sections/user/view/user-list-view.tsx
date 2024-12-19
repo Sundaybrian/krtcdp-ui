@@ -20,6 +20,9 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
+import { getStorage } from 'src/hooks/use-local-storage';
+
+import { requiredPermissions } from 'src/utils/default';
 
 import { varAlpha } from 'src/theme/styles';
 import { USER_STATUS_OPTIONS } from 'src/_mock';
@@ -44,6 +47,8 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
+import { PermissionDeniedView } from 'src/sections/permission/view';
+
 import { UserTableRow } from '../user-table-row';
 import { UserTableToolbar } from '../user-table-toolbar';
 import { UserTableFiltersResult } from '../user-table-filters-result';
@@ -67,6 +72,8 @@ const TABLE_HEAD = [
 
 export function UserListView() {
   const router = useRouter();
+
+  const perms = getStorage('permissions');
 
   const confirm = useBoolean();
 
@@ -169,6 +176,10 @@ export function UserListView() {
     fetchUserTypes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (perms.includes(requiredPermissions.users.viewUser) === false) {
+    return <PermissionDeniedView />;
+  }
 
   return (
     <>

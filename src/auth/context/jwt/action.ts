@@ -1,8 +1,10 @@
 'use client';
 
-import axios, { endpoints } from 'src/axios/axios';
+import type { UserAccount } from 'src/types/user';
+import type { NewUserSchemaType } from 'src/sections/user/user-new-edit-form';
 
-import { NewUserSchemaType } from 'src/sections/user/user-new-edit-form';
+import axios, { endpoints } from 'src/axios/axios';
+import { authorizeUser } from 'src/api/permission';
 
 import { setSession } from './utils';
 import { STORAGE_KEY } from './constant';
@@ -10,8 +12,9 @@ import { STORAGE_KEY } from './constant';
 // ----------------------------------------------------------------------
 
 export type SignInParams = {
-  email: string;
-  password: string;
+  access_token: string;
+  refresh_token: string;
+  user: UserAccount;
 };
 
 export type SignUpParams = {
@@ -24,19 +27,33 @@ export type SignUpParams = {
 /** **************************************
  * Sign in
  *************************************** */
-export const signInWithPassword = async ({ email, password }: SignInParams): Promise<void> => {
+export const signInWithPassword = async (auth: SignInParams): Promise<void> => {
   try {
-    const params = { email, password };
+    // const params = { email, password };
 
-    const res = await axios.post(endpoints.auth.signIn, params);
+    // const res = await axios.post(endpoints.auth.signIn, params);
 
-    const { access_token } = res.data;
+    const { access_token } = auth;
 
     if (!access_token) {
       throw new Error('Access token not found in response');
     }
 
     setSession(access_token);
+
+    // get user permissions
+    authorizeUser({ username: auth.user.email, action: 'accessApp' })
+      .then((permissions) => {
+        // save to cache
+        console.log('permissions:', permissions?.data?.permissions);
+
+        localStorage.setItem('permissions', JSON.stringify(permissions?.data?.permissions || []));
+      })
+      .catch((error) => {
+        console.error('Error during sign in:', error);
+      });
+
+    // save to cache
   } catch (error) {
     console.error('Error during sign in:', error);
     throw error;
@@ -69,6 +86,8 @@ export const signUp = async (data: NewUserSchemaType): Promise<void> => {
 export const signOut = async (): Promise<void> => {
   try {
     await setSession(null);
+    // clear user permissions
+    localStorage.removeItem('permissions');
   } catch (error) {
     console.error('Error during sign out:', error);
     throw error;

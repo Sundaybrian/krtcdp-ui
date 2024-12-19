@@ -2,15 +2,26 @@
 
 import { paths } from 'src/routes/paths';
 
+import { getStorage } from 'src/hooks/use-local-storage';
+
+import { requiredPermissions } from 'src/utils/default';
+
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
+import { PermissionDeniedView } from 'src/sections/permission/view';
 
 import { UserNewEditForm } from '../user-new-edit-form';
 
 // ----------------------------------------------------------------------
 
 export function UserCreateView() {
+  const perms = getStorage('permissions');
+
+  if (perms.includes(requiredPermissions.users.createUser) === false) {
+    return <PermissionDeniedView />;
+  }
   return (
     <DashboardContent>
       <CustomBreadcrumbs

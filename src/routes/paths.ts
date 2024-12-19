@@ -100,7 +100,15 @@ export const paths = {
     kanban: `${ROOTS.DASHBOARD}/kanban`,
     calendar: `${ROOTS.DASHBOARD}/calendar`,
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
-    permission: `${ROOTS.DASHBOARD}/permission`,
+    permission: {
+      root: `${ROOTS.DASHBOARD}/permission`,
+      roles: `${ROOTS.DASHBOARD}/permission/roles`,
+      newRole: `${ROOTS.DASHBOARD}/permission/roles/new`,
+      permissions: `${ROOTS.DASHBOARD}/permission/permissions`,
+      rolePermissions: `${ROOTS.DASHBOARD}/permission/role-permission`,
+      userRoles: `${ROOTS.DASHBOARD}/permission/user-role`,
+      newUserRole: `${ROOTS.DASHBOARD}/permission/user-role/new`,
+    },
     general: {
       app: `${ROOTS.DASHBOARD}/app`,
       ecommerce: `${ROOTS.DASHBOARD}/ecommerce`,
