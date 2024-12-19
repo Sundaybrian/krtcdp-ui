@@ -18,5 +18,5 @@ export default async function Page() {
     ssrNavData = data;
   }
 
-  return <MultiLanguageView ssrNavData={ssrNavData} />;
+  return <MultiLanguageView ssrNavData={ssrNavData as any} />;
 }

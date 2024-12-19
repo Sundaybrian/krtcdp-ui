@@ -159,7 +159,7 @@ export function MultiLanguageView({ ssrNavData }: Props) {
       name: 'Nav',
       component: (
         <Paper variant="outlined" sx={{ p: 2, width: 1, maxWidth: 320, borderRadius: 2 }}>
-          <NavSectionVertical data={navData} />
+          <NavSectionVertical data={navData as any} />
         </Paper>
       ),
     },
