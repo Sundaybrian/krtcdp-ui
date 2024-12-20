@@ -108,7 +108,7 @@ export function OverviewAppView() {
         <Grid xs={12} md={4}>
           <AppWidgetSummary
             title="Total active users"
-            href={paths.dashboard.user.root}
+            href={paths.dashboard.user.list}
             percent={2.6}
             total={
               data?.activeUsers?.filter((user) => user.accountState === 'active')[0]?.count || 0
@@ -137,7 +137,7 @@ export function OverviewAppView() {
         <Grid xs={12} md={4}>
           <AppWidgetSummary
             title="Total Admins"
-            href={paths.dashboard.user.root}
+            href={paths.dashboard.user.list}
             percent={-0.1}
             total={
               data?.userTypeCounts?.filter((user) => user.userType === 'SYSTEM_ADMIN')[0]?.count ||
