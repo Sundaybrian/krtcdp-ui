@@ -22,6 +22,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 import { useLocalStorage } from 'src/hooks/use-local-storage';
 
+import { exportExcel } from 'src/utils/xlsx';
+import { removeKeyFromArr } from 'src/utils/helper';
 import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
 import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
@@ -183,6 +185,23 @@ export function GrnListView() {
     [filters, table]
   );
 
+  const handleExport = useCallback(() => {
+    console.log('Exporting...');
+    const exportData = removeKeyFromArr(dataFiltered, [
+      'id',
+      'userId',
+      'lastModifiedDate',
+      'harvestId',
+      'autoInitiatedById',
+      'farmerId',
+      'cooperativeId',
+      'farmId',
+      'farmer',
+      'deleteAt',
+    ]);
+    exportExcel(exportData, 'GRN');
+  }, [dataFiltered]);
+
   const getGrn = () => {
     searchGrn({ cooperativeId: state.coopId })
       .then((data) => {
@@ -253,6 +272,7 @@ export function GrnListView() {
             filters={filters}
             onResetPage={table.onResetPage}
             dateError={dateError}
+            onExport={handleExport}
           />
 
           {canReset && (

@@ -18,7 +18,6 @@ import Button from '@mui/material/Button';
 import {
   DataGrid,
   gridClasses,
-  GridToolbarExport,
   GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarQuickFilter,
@@ -34,6 +33,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 import { useLocalStorage } from 'src/hooks/use-local-storage';
 
+import { exportExcel } from 'src/utils/xlsx';
+import { removeKeyFromArr } from 'src/utils/helper';
 import { TENANT_LOCAL_STORAGE, INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
 
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
@@ -46,6 +47,7 @@ import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import { BulkFarmerUploadDialog } from './bulk-upload-farmer';
 import { CooperativeTableToolbar } from '../cooperative-table-toolbar';
 import { CooperativeTableFiltersResult } from '../cooperative-table-filters-result';
 import {
@@ -76,6 +78,8 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 export function CooperativeFarmerListView() {
   const confirmRows = useBoolean();
+  const openBulkUpload = useBoolean();
+
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
   const router = useRouter();
@@ -181,6 +185,42 @@ export function CooperativeFarmerListView() {
     [router]
   );
 
+  const handleExport = () => {
+    const exportData = removeKeyFromArr(dataFiltered, [
+      'id',
+      'acceptTerms',
+      'lastUpdateDate',
+      'createbyId',
+      'password',
+      'coopUnionId',
+      'emailVerified',
+      'phoneVerified',
+      'accountState',
+      'userType',
+      'roleId',
+      'permissionsId',
+      'subCounty',
+      'ward',
+      'isAdministrator',
+      'isSupport',
+      'passwordReset',
+      'verificationToken',
+      'resetToken',
+      'resetTokenExpires',
+      'lastPasswordResetDate',
+      'refreshHashedToken',
+      'coopId',
+      'accessRights',
+      'verified',
+      'userState',
+      'deletedAt',
+      'lastLoginDate',
+      'lastModifiedDate',
+      // 'Farmer',
+    ]);
+    exportExcel(exportData, 'Farmers');
+  };
+
   const CustomToolbarCallback = useCallback(
     () => (
       <CustomToolbar
@@ -190,6 +230,7 @@ export function CooperativeFarmerListView() {
         setFilterButtonEl={setFilterButtonEl}
         filteredResults={dataFiltered.length}
         onOpenConfirmDeleteRows={confirmRows.onTrue}
+        handleExport={handleExport}
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -358,14 +399,24 @@ export function CooperativeFarmerListView() {
             { name: 'Coop Farmers' },
           ]}
           action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.farner.newCoopFarmer}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New Farmer
-            </Button>
+            <>
+              <Button
+                component={RouterLink}
+                href={paths.dashboard.farner.newCoopFarmer}
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+              >
+                New Farmer
+              </Button>
+
+              <Button
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+                onClick={openBulkUpload.onTrue}
+              >
+                Bulk Upload
+              </Button>
+            </>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
@@ -427,6 +478,12 @@ export function CooperativeFarmerListView() {
           </Button>
         }
       />
+
+      <BulkFarmerUploadDialog
+        actions={[]}
+        open={openBulkUpload.value}
+        onClose={openBulkUpload.onFalse}
+      />
     </>
   );
 }
@@ -438,6 +495,7 @@ interface CustomToolbarProps {
   filteredResults: number;
   selectedRowIds: GridRowSelectionModel;
   onOpenConfirmDeleteRows: () => void;
+  handleExport: () => void;
   filters: UseSetStateReturn<IProductTableFilters>;
   setFilterButtonEl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
 }
@@ -449,6 +507,7 @@ function CustomToolbar({
   filteredResults,
   setFilterButtonEl,
   onOpenConfirmDeleteRows,
+  handleExport,
 }: CustomToolbarProps) {
   return (
     <>
@@ -480,7 +539,11 @@ function CustomToolbar({
 
           <GridToolbarColumnsButton />
           <GridToolbarFilterButton ref={setFilterButtonEl} />
-          <GridToolbarExport />
+
+          <Button onClick={handleExport}>
+            <Iconify icon="solar:export-bold" />
+            Export
+          </Button>
         </Stack>
       </GridToolbarContainer>
 

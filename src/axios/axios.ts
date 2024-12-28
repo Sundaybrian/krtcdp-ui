@@ -79,6 +79,8 @@ export const endpoints = {
     new: '/farmer',
     search: '/farmer/search',
     get: '/farmer',
+    template: '/cooperative/download-farmer-template',
+    bulkUpload: (coopId: number) => `/cooperative/${coopId}/bulk-upload-farmers`,
     getOne: (id: number) => `/farmer/${id}`,
     getBalance: (id: number) => `/farmerbalance/${id}`,
     searchFarms: '/farm/search',
@@ -168,5 +170,10 @@ export const endpoints = {
   checkoffTransaction: {
     search: '/checkofftransaction/search',
     new: '/checkofftransaction',
+  },
+  insuranceProvider: {
+    new: '/insuranceprovider',
+    search: '/insuranceprovider/search',
+    update: (id: number) => `/insuranceprovider/${id}`,
   },
 };

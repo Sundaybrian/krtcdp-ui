@@ -4,6 +4,7 @@ import type { Theme, SxProps } from '@mui/material/styles';
 
 import { m } from 'framer-motion';
 
+import Alert from '@mui/material/Alert';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
@@ -19,6 +20,7 @@ export type RoleBasedGuardProp = {
   hasContent?: boolean;
   acceptRoles: string[];
   children: React.ReactNode;
+  permission?: string;
 };
 
 export function RoleBasedGuard({
@@ -27,6 +29,7 @@ export function RoleBasedGuard({
   hasContent,
   currentRole,
   acceptRoles,
+  permission,
 }: RoleBasedGuardProp) {
   if (typeof acceptRoles !== 'undefined' && !acceptRoles.includes(currentRole)) {
     return hasContent ? (
@@ -35,6 +38,19 @@ export function RoleBasedGuard({
           <Typography variant="h3" sx={{ mb: 2 }}>
             Permission denied
           </Typography>
+        </m.div>
+
+        <m.div variants={varBounce().in}>
+          {permission && (
+            <>
+              <Alert color="error">
+                {permission}
+                <Typography variant="caption" sx={{ color: 'text.danger', pl: 1 }}>
+                  is required to access this page
+                </Typography>
+              </Alert>{' '}
+            </>
+          )}
         </m.div>
 
         <m.div variants={varBounce().in}>

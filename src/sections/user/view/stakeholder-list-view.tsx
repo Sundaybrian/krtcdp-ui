@@ -21,6 +21,9 @@ import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
+import { exportExcel } from 'src/utils/xlsx';
+import { removeKeyFromArr } from 'src/utils/helper';
+
 import { varAlpha } from 'src/theme/styles';
 import { getStakeholders } from 'src/api/services';
 import { _roles, USER_STATUS_OPTIONS } from 'src/_mock';
@@ -135,6 +138,18 @@ export function StakeholderListView() {
     [filters, table]
   );
 
+  const handleExport = useCallback(() => {
+    console.log('Exporting...');
+    const exportData = removeKeyFromArr(dataFiltered, [
+      'id',
+      'userId',
+      'supplyChainId',
+      'deletedAt',
+      'lastModifiedDate',
+    ]);
+    exportExcel(exportData, 'Farmers');
+  }, [dataFiltered]);
+
   // fetch users
 
   const fetchStakeHolders = () => {
@@ -220,6 +235,7 @@ export function StakeholderListView() {
 
           <UserTableToolbar
             filters={filters}
+            onExport={handleExport}
             onResetPage={table.onResetPage}
             options={{ roles: _roles }}
           />

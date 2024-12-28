@@ -22,6 +22,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 import { useLocalStorage } from 'src/hooks/use-local-storage';
 
+import { exportExcel } from 'src/utils/xlsx';
+import { removeKeyFromArr } from 'src/utils/helper';
 import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
 import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
@@ -183,6 +185,23 @@ export function HarvestListView() {
     [filters, table]
   );
 
+  const handleExport = useCallback(() => {
+    console.log('Exporting...');
+    const exportData = removeKeyFromArr(dataFiltered, [
+      'id',
+      'userId',
+      'lastModifiedDate',
+      'taskId',
+      'autoInitiatedById',
+      'farmerId',
+      'cooperativeId',
+      'farmId',
+      'partitionId',
+      'deleteAt',
+    ]);
+    exportExcel(exportData, 'Havest');
+  }, [dataFiltered]);
+
   const getHarvest = () => {
     searchHarvests({ cooperativeId: state.coopId })
       .then((data) => {
@@ -253,6 +272,7 @@ export function HarvestListView() {
             filters={filters}
             onResetPage={table.onResetPage}
             dateError={dateError}
+            onExport={handleExport}
           />
 
           {canReset && (

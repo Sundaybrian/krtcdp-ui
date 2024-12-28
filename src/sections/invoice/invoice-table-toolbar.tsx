@@ -28,6 +28,7 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 type Props = {
   dateError: boolean;
   onResetPage: () => void;
+  onExport: () => void;
   filters: UseSetStateReturn<IInvoiceTableFilters>;
   onCheckOffDeduction: () => void;
   options: {
@@ -41,6 +42,7 @@ export function InvoiceTableToolbar({
   dateError,
   onResetPage,
   onCheckOffDeduction,
+  onExport,
 }: Props) {
   const popover = usePopover();
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
@@ -214,6 +216,16 @@ export function InvoiceTableToolbar({
             >
               <Iconify color="green" icon="solar:settings-minimalistic-bold" />
               Apply checkoff
+            </MenuItem>
+
+            <MenuItem
+              onClick={() => {
+                onExport();
+                popover.onClose();
+              }}
+            >
+              <Iconify icon="solar:export-bold" />
+              Export
             </MenuItem>
           </MenuList>
         </MenuList>

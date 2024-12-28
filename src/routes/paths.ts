@@ -175,6 +175,11 @@ export const paths = {
       new: `${ROOTS.DASHBOARD}/valuechain/new`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/valuechain/${id}/edit`,
     },
+    insuranceProviders: {
+      root: `${ROOTS.DASHBOARD}/insurance-providers`,
+      new: `${ROOTS.DASHBOARD}/insurance-providers/new`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/insurance-providers/${id}/edit`,
+    },
     supplychain: {
       root: `${ROOTS.DASHBOARD}/supplychain`,
       new: `${ROOTS.DASHBOARD}/supplychain/new`,

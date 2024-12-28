@@ -1,7 +1,8 @@
 'use client';
 
+import type { ValueChain } from 'src/types/value-chain';
+import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
-import type { IProductItem, IProductTableFilters } from 'src/types/product';
 import type {
   GridSlots,
   GridColDef,
@@ -32,26 +33,24 @@ import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
+import { INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
+
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useSearchValueChain } from 'src/actions/cooperative';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { useSearchCooperative, useSearchValueChain } from 'src/actions/cooperative';
-import { INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
-import { ValueChain } from 'src/types/value-chain';
 
 import { ValueChainTableToolbar } from '../valuechain-table-toolbar';
 import { ValueChainTableFiltersResult } from '../valuechain-table-filters-result';
 import {
-  RenderCellPrice,
-  RenderCellPublish,
+  RenderGeneric,
   RenderCellProduct,
   RenderCellCreatedAt,
-  RenderGeneric,
   RenderCellUpdatedAt,
 } from '../valuechain-table-row';
 
@@ -234,7 +233,7 @@ export function ValueChainListView() {
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.cooperative.new}
+              href={paths.dashboard.valuechain.new}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >

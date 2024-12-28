@@ -6,15 +6,10 @@ import type { UseSetStateReturn } from 'src/hooks/use-set-state';
 import { useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
-import Select from '@mui/material/Select';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
-import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { formHelperTextClasses } from '@mui/material/FormHelperText';
@@ -27,13 +22,14 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 type Props = {
   dateError: boolean;
   onResetPage: () => void;
+  onExport: () => void;
   filters: UseSetStateReturn<IInvoiceTableFilters>;
   options: {
     services: string[];
   };
 };
 
-export function InvoiceTableToolbar({ filters, options, dateError, onResetPage }: Props) {
+export function InvoiceTableToolbar({ filters, options, dateError, onResetPage, onExport }: Props) {
   const popover = usePopover();
 
   const handleFilterName = useCallback(
@@ -172,15 +168,7 @@ export function InvoiceTableToolbar({ filters, options, dateError, onResetPage }
 
             <MenuItem
               onClick={() => {
-                popover.onClose();
-              }}
-            >
-              <Iconify icon="solar:import-bold" />
-              Import
-            </MenuItem>
-
-            <MenuItem
-              onClick={() => {
+                onExport();
                 popover.onClose();
               }}
             >

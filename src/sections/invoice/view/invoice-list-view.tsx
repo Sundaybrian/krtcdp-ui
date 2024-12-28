@@ -24,8 +24,9 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 import { useLocalStorage } from 'src/hooks/use-local-storage';
 
-import { sumBy } from 'src/utils/helper';
+import { exportExcel } from 'src/utils/xlsx';
 import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
+import { sumBy, removeKeyFromArr } from 'src/utils/helper';
 import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
 import { varAlpha } from 'src/theme/styles';
@@ -197,6 +198,26 @@ export function InvoiceListView() {
     [filters, table]
   );
 
+  const handleExport = useCallback(() => {
+    console.log('Exporting...');
+    const exportData = removeKeyFromArr(dataFiltered, [
+      'id',
+      'userId',
+      'lastModifiedDate',
+      'taskId',
+      'autoInitiatedById',
+      'purchaseOrderId',
+      'checkOffTransactionId',
+      'deleteAt',
+      'purchaseOrder',
+      'cooperative',
+      'farmer',
+      'cooperativeId',
+      'farmerId',
+    ]);
+    exportExcel(exportData, 'Invoice');
+  }, [dataFiltered]);
+
   const hadleCheckOffDeduction = () => {
     if (!table.selected.length) {
       toast.error('Please select invoice(s) to apply deduction');
@@ -340,6 +361,7 @@ export function InvoiceListView() {
             dateError={dateError}
             onCheckOffDeduction={hadleCheckOffDeduction}
             onResetPage={table.onResetPage}
+            onExport={handleExport}
             options={{ services: INVOICE_SERVICE_OPTIONS.map((option) => option.name) }}
           />
 

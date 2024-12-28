@@ -123,5 +123,12 @@ export const requiredPermissions = {
   users: {
     viewUser: 'viewUser',
     createUser: 'createUser',
+    viewFarmer: 'viewFarmer',
+  },
+  insurance: {
+    viewInsuranceProvider: 'viewInsuranceProvider',
+    createInsuranceProvider: 'createInsuranceProvider',
+    updateInsuranceProvider: 'updateInsuranceProvider',
+    deleteInsuranceProvider: 'deleteInsuranceProvider',
   },
 };

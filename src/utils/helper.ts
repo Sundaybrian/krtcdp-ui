@@ -128,3 +128,13 @@ export const merge = (target: any, ...sources: any[]): any => {
 
   return merge(target, ...sources);
 };
+
+export const dateNameFormat = () =>
+  new Date().toISOString().replace(/:/g, '-').replace('T', '_').split('.')[0];
+
+export const removeKeyFromArr = (arr: any[], key: string[]) =>
+  arr.map((obj) => {
+    const newObj = { ...obj };
+    key.forEach((k) => delete newObj[k]);
+    return newObj;
+  });

@@ -21,10 +21,11 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 type Props = {
   dateError: boolean;
   onResetPage: () => void;
+  onExport: () => void;
   filters: UseSetStateReturn<IOrderTableFilters>;
 };
 
-export function OrderTableToolbar({ filters, onResetPage, dateError }: Props) {
+export function OrderTableToolbar({ filters, onResetPage, dateError, onExport }: Props) {
   const popover = usePopover();
 
   const handleFilterName = useCallback(
@@ -126,15 +127,7 @@ export function OrderTableToolbar({ filters, onResetPage, dateError }: Props) {
 
           <MenuItem
             onClick={() => {
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="solar:import-bold" />
-            Import
-          </MenuItem>
-
-          <MenuItem
-            onClick={() => {
+              onExport();
               popover.onClose();
             }}
           >

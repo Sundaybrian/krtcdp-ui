@@ -21,6 +21,9 @@ import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
+import { exportExcel } from 'src/utils/xlsx';
+import { removeKeyFromArr } from 'src/utils/helper';
+
 import { varAlpha } from 'src/theme/styles';
 import { getFarmers } from 'src/api/services';
 import { _roles, USER_STATUS_OPTIONS } from 'src/_mock';
@@ -135,6 +138,44 @@ export function FarmerListView() {
     [filters, table]
   );
 
+  // handle export
+
+  const handleExport = () => {
+    const exportData = removeKeyFromArr(dataFiltered, [
+      'id',
+      'acceptTerms',
+      'lastUpdateDate',
+      'createbyId',
+      'password',
+      'coopUnionId',
+      'emailVerified',
+      'phoneVerified',
+      'accountState',
+      'userType',
+      'roleId',
+      'permissionsId',
+      'subCounty',
+      'ward',
+      'isAdministrator',
+      'isSupport',
+      'passwordReset',
+      'verificationToken',
+      'resetToken',
+      'resetTokenExpires',
+      'lastPasswordResetDate',
+      'refreshHashedToken',
+      'coopId',
+      'accessRights',
+      'verified',
+      'userState',
+      'deletedAt',
+      'lastLoginDate',
+      'lastModifiedDate',
+      'Farmer',
+    ]);
+    exportExcel(exportData, 'Farmers');
+  };
+
   // fetch users
 
   const fetchFarmers = () => {
@@ -220,6 +261,7 @@ export function FarmerListView() {
 
           <UserTableToolbar
             filters={filters}
+            onExport={handleExport}
             onResetPage={table.onResetPage}
             options={{ roles: _roles }}
           />

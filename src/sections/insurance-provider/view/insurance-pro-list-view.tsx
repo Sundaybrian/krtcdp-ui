@@ -1,6 +1,7 @@
 'use client';
 
-import type { IUserItem, IUserTableFilters } from 'src/types/user';
+import type { IUserTableFilters } from 'src/types/user';
+import type { InsuranceProvider } from 'src/types/transaction';
 
 import { useState, useEffect, useCallback } from 'react';
 
@@ -27,9 +28,8 @@ import { removeKeyFromArr } from 'src/utils/helper';
 import { requiredPermissions } from 'src/utils/default';
 
 import { varAlpha } from 'src/theme/styles';
-import { USER_STATUS_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { getUsers, getUserTypes } from 'src/api/services';
+import { getUserTypes, searchInsuranceProviders } from 'src/api/services';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -51,41 +51,47 @@ import {
 
 import { PermissionDeniedView } from 'src/sections/permission/view';
 
-import { UserTableRow } from '../user-table-row';
-import { UserTableToolbar } from '../user-table-toolbar';
-import { UserTableFiltersResult } from '../user-table-filters-result';
+import { UserTableRow } from '../provider-table-row';
+import { UserTableToolbar } from '../provider-table-toolbar';
+import { UserTableFiltersResult } from '../provider-table-filters-result';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All' },
+  ...[
+    { value: 'active', label: 'Active' },
+    { value: 'deleted', label: 'Deleted' },
+  ],
+];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
   // { id: 'lastName', label: 'Last Name' },
-  { id: 'mobilePhone', label: 'Phone number', width: 180 },
-  { id: 'county', label: 'County', width: 220 },
-  { id: 'subCounty', label: 'Sub County', width: 180 },
-  { id: 'userType', label: 'User Type', width: 100 },
-  { id: 'accountState', label: 'Account State', width: 100 },
+  { id: 'contactPhone', label: 'Phone number', width: 180 },
+  { id: 'contactEmail', label: 'Contanct Email', width: 220 },
+  { id: 'website', label: 'Website', width: 180 },
+  { id: 'description', label: 'Description', width: 100 },
+  { id: 'targetMarket', label: 'Target Marker', width: 100 },
   { id: '', width: 88 },
 ];
 
 // ----------------------------------------------------------------------
 
-export function UserListView() {
+export function InsuranceProviderListView() {
   const router = useRouter();
 
   const perms = getStorage('permissions');
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState<IUserItem[]>([]);
-  const [dataFiltered, setDataFiltered] = useState<IUserItem[]>([]);
+  const [tableData, setTableData] = useState<InsuranceProvider[]>([]);
+  const [dataFiltered, setDataFiltered] = useState<InsuranceProvider[]>([]);
   const [userTypes, setUserTypes] = useState<string[]>([]);
 
   const filters = useSetState<IUserTableFilters>({ name: '', role: [], status: 'all' });
 
-  const applyNewFilter = (data: IUserItem[]) => {
+  const applyNewFilter = (data: InsuranceProvider[]) => {
     const filteredData = applyFilter({
       inputData: data,
       comparator: getComparator(table.order, table.orderBy),
@@ -155,25 +161,6 @@ export function UserListView() {
       'acceptTerms',
       'lastUpdateDate',
       'createbyId',
-      'password',
-      'coopUnionId',
-      'emailVerified',
-      'phoneVerified',
-      'accountState',
-      'userType',
-      'roleId',
-      'permissionsId',
-      'subCounty',
-      'ward',
-      'isAdministrator',
-      'isSupport',
-      'passwordReset',
-      'verificationToken',
-      'resetToken',
-      'resetTokenExpires',
-      'lastPasswordResetDate',
-      'refreshHashedToken',
-      'coopId',
       'accessRights',
       'verified',
       'userState',
@@ -181,19 +168,19 @@ export function UserListView() {
       'lastLoginDate',
       'lastModifiedDate',
     ]);
-    exportExcel(exportData, 'Users');
+    exportExcel(exportData, 'Insurance_providers');
   };
 
   // fetch users
-  const fetchUsers = () => {
-    getUsers()
+  const fetchInsuranceProviders = () => {
+    searchInsuranceProviders()
       .then((data) => {
         setTableData(data.results);
         applyNewFilter(data.results);
       })
       .catch((error) => {
-        toast.error('Failed to fetch users!');
-        console.error('Error fetching users:', error);
+        toast.error('Failed to fetch insurance providers!');
+        console.error('Error fetching providers:', error);
       });
   };
 
@@ -210,12 +197,12 @@ export function UserListView() {
 
   // use effect
   useEffect(() => {
-    fetchUsers();
+    fetchInsuranceProviders();
     fetchUserTypes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (perms.includes(requiredPermissions.users.viewUser) === false) {
+  if (perms.includes(requiredPermissions.insurance.viewInsuranceProvider) === false) {
     return <PermissionDeniedView />;
   }
 
@@ -223,20 +210,20 @@ export function UserListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="Users"
+          heading="Insurance Provider"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'User', href: paths.dashboard.user.root },
+            { name: 'Providers', href: paths.dashboard.insuranceProviders.root },
             { name: 'List' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.user.new}
+              href={paths.dashboard.insuranceProviders.new}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New user
+              New Provider
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -266,17 +253,12 @@ export function UserListView() {
                     }
                     color={
                       (tab.value === 'active' && 'success') ||
-                      (tab.value === 'pendingApproval' && 'warning') ||
-                      (tab.value === 'blacklisted' && 'error') ||
-                      (tab.value === 'rejected' && 'error') ||
-                      (tab.value === 'inactive' && 'primary') ||
+                      (tab.value === 'deleted' && 'error') ||
                       'default'
                     }
                   >
-                    {['active', 'pendingApproval', 'blacklisted', 'rejected', 'inactive'].includes(
-                      tab.value
-                    )
-                      ? tableData.filter((user) => user.accountState === tab.value).length
+                    {['active', 'deleted', 'active'].includes(tab.value)
+                      ? tableData.filter((user) => user.name === tab.value).length
                       : tableData.length}
                   </Label>
                 }
@@ -406,7 +388,7 @@ export function UserListView() {
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: IUserItem[];
+  inputData: InsuranceProvider[];
   filters: IUserTableFilters;
   comparator: (a: any, b: any) => number;
 };
@@ -429,16 +411,16 @@ function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
 
   if (name) {
     inputData = inputData.filter(
-      (user) => user.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
-  if (status !== 'all') {
-    inputData = inputData.filter((user) => user.accountState === status);
-  }
+  // if (status !== 'all') {
+  //   inputData = inputData.filter((user) => user.accountState === status);
+  // }
 
   if (role.length) {
-    inputData = inputData.filter((user) => role.includes(user.userType));
+    inputData = inputData.filter((user) => role.includes(user.contactPhone));
   }
 
   return inputData;

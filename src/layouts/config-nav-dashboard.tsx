@@ -111,7 +111,7 @@ export const navData = [
 
       {
         title: 'Farmers',
-        permission: 'view:farmer',
+        permission: requiredPermissions.users.viewFarmer,
         path: paths.dashboard.farner.root,
         icon: ICONS.banking,
         children: [
@@ -158,6 +158,14 @@ export const navData = [
           { title: 'Value chain list', path: paths.dashboard.valuechain.root },
           { title: 'Create', path: paths.dashboard.valuechain.new },
         ],
+      },
+
+      {
+        title: 'Insurance Providers',
+        permission: requiredPermissions.insurance.viewInsuranceProvider,
+        path: paths.dashboard.insuranceProviders.root,
+        icon: ICONS.kanban,
+        children: [{ title: 'Providers', path: paths.dashboard.insuranceProviders.root }],
       },
       // {
       //   title: 'Product',

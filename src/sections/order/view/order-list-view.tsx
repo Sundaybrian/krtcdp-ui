@@ -2,7 +2,7 @@
 
 import type { PurchaseOrderItem, IOrderTableFilters } from 'src/types/order';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -19,13 +19,14 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
-import { RouterLink } from 'src/routes/components';
 
+import { exportExcel } from 'src/utils/xlsx';
+import { removeKeyFromArr } from 'src/utils/helper';
 import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
 import { varAlpha } from 'src/theme/styles';
+import { searchPurchaseOrder } from 'src/api/services';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _orders } from 'src/_mock';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -44,7 +45,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import { searchPurchaseOrder } from 'src/api/services';
 
 import { OrderTableRow } from '../order-table-row';
 import { OrderTableToolbar } from '../order-table-toolbar';
@@ -155,6 +155,29 @@ export function OrderListView() {
     [filters, table]
   );
 
+  const handleExport = useCallback(() => {
+    console.log('Exporting...');
+    const exportData = removeKeyFromArr(dataFiltered, [
+      'id',
+      'userId',
+      'lastModifiedDate',
+      'taskId',
+      'autoInitiatedById',
+      'purchaseOrderId',
+      'checkOffTransactionId',
+      'deletedAt',
+      'deleteAt',
+      'purchaseOrder',
+      'cooperative',
+      'farmer',
+      'cooperativeId',
+      'farmerId',
+      'grnId',
+      'grn',
+    ]);
+    exportExcel(exportData, 'Purchase_Orders');
+  }, [dataFiltered]);
+
   // async functions
   const getPurchaseOrders = async () => {
     try {
@@ -232,6 +255,7 @@ export function OrderListView() {
             filters={filters}
             onResetPage={table.onResetPage}
             dateError={dateError}
+            onExport={handleExport}
           />
 
           {canReset && (

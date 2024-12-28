@@ -1,5 +1,6 @@
 import type { IUserItem } from 'src/types/user';
 import type { ValueChain } from 'src/types/value-chain';
+import type { InsuranceProvider } from 'src/types/transaction';
 import type { Ward, County, SubCounty } from 'src/api/data.inteface';
 
 import { z as zod } from 'zod';
@@ -37,6 +38,7 @@ import {
   addCoopFarmer,
   createNextOfKin,
   searchFarmValueChain,
+  searchInsuranceProviders,
 } from 'src/api/services';
 
 import { toast } from 'src/components/snackbar';
@@ -102,6 +104,7 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
   const [wards, setWards] = useState<Ward[]>([]);
   const [valueChains, setValueChains] = useState<ValueChain[]>([]);
   const [activeStep, setActiveStep] = useState(0);
+  const [insuranceProviders, setInsuranceProviders] = useState<InsuranceProvider[]>([]);
 
   const defaultValues = useMemo(
     () => ({
@@ -251,10 +254,23 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
       });
   };
 
+  // get insurance providers
+  const getInsuranceProviders = () => {
+    searchInsuranceProviders()
+      .then((data) => {
+        setInsuranceProviders(data.results);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error('Failed to fetch insurance providers');
+      });
+  };
+
   // use effect
   useEffect(() => {
     getchCounties();
     fetchValueChains();
+    getInsuranceProviders();
   }, []);
 
   // methods
@@ -439,9 +455,36 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
                   ))}
                 </Field.Select>
 
-                <Field.Checkbox name="hasInhasInsurancesurance" label="Insured" />
-                <Field.Text name="insuranceProvider" label="Insurance provider" />
-                <Field.Text name="insuranceType" label="Insurance Type" />
+                <Field.Checkbox name="hasInsurance" label="Insured" />
+
+                {values.hasInsurance && (
+                  <>
+                    <Field.Select name="insuranceProvider" label="Insurance provider">
+                      <MenuItem
+                        value=""
+                        onClick={() => null}
+                        sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                      >
+                        None
+                      </MenuItem>
+
+                      <Divider sx={{ borderStyle: 'dashed' }} />
+
+                      {insuranceProviders.map((provider) => (
+                        <MenuItem
+                          key={provider.id + provider.name}
+                          value={provider.name}
+                          onClick={() => null}
+                        >
+                          {provider.name}
+                        </MenuItem>
+                      ))}
+                    </Field.Select>
+
+                    <Field.Text name="insuranceType" label="Insurance Type" />
+                  </>
+                )}
+                {/* <Field.Text name="insuranceProvider" label="Insurance provider" /> */}
 
                 <Field.Select name="valueChain" label="Value chain">
                   <MenuItem

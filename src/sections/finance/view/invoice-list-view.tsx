@@ -2,7 +2,7 @@
 
 import type { InvoiceItem, IInvoiceTableFilters } from 'src/types/invoice';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -24,12 +24,13 @@ import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
-import { sumBy } from 'src/utils/helper';
+import { exportExcel } from 'src/utils/xlsx';
+import { sumBy, removeKeyFromArr } from 'src/utils/helper';
 import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
 import { varAlpha } from 'src/theme/styles';
+import { INVOICE_SERVICE_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _invoices, INVOICE_SERVICE_OPTIONS } from 'src/_mock';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -48,7 +49,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import { searchInvoice } from 'src/api/services';
 
 import { InvoiceAnalytic } from '../invoice-analytic';
 import { InvoiceTableRow } from '../invoice-table-row';
@@ -257,6 +257,23 @@ export function BankPaymentListView() {
     [filters, table]
   );
 
+  const handleExport = useCallback(() => {
+    console.log('Exporting...');
+    const exportData = removeKeyFromArr(dataFiltered, [
+      'id',
+      'userId',
+      'lastModifiedDate',
+      'taskId',
+      'autoInitiatedById',
+      'farmerId',
+      'cooperativeId',
+      'farmId',
+      'partitionId',
+      'deleteAt',
+    ]);
+    exportExcel(exportData, 'Invoice');
+  }, [dataFiltered]);
+
   return (
     <>
       <DashboardContent>
@@ -350,6 +367,7 @@ export function BankPaymentListView() {
           <InvoiceTableToolbar
             filters={filters}
             dateError={dateError}
+            onExport={handleExport}
             onResetPage={table.onResetPage}
             options={{ services: INVOICE_SERVICE_OPTIONS.map((option) => option.name) }}
           />

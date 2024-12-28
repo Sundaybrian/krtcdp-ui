@@ -5,8 +5,12 @@ import type { PurchaseOrderItem } from 'src/types/order';
 import type { INotification } from 'src/types/notification';
 import type { CreateCooperative } from 'src/types/cooperative';
 import type { ValueChain, NewValueChain } from 'src/types/value-chain';
-import type { FamerBalace, IcheckoffTransactionApply } from 'src/types/transaction';
 import type { Grn, Farm, Harvest, Expense, CreateExpense, WarehouseReceipt } from 'src/types/farm';
+import type {
+  FamerBalace,
+  InsuranceProvider,
+  IcheckoffTransactionApply,
+} from 'src/types/transaction';
 import type {
   IUserItem,
   NewFarmer,
@@ -215,6 +219,33 @@ export const createFarmer = async (id: number, farmer: NewFarmer) => {
     return response.data;
   } catch (error) {
     console.error('Error adding farmer:', error);
+    throw error;
+  }
+};
+
+// download farmer template
+export const downloadFarmerTemplate = async () => {
+  try {
+    return await axios.get(endpoints.farmer.template, {
+      responseType: 'blob',
+    });
+  } catch (error) {
+    console.error('Error downloading farmer template:', error);
+    throw error;
+  }
+};
+
+// bulk upload farmers
+export const bulkUploadFarmers = async (coopId: number, data: FormData) => {
+  try {
+    const response = await axios.post(endpoints.farmer.bulkUpload(coopId), data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading farmers:', error);
     throw error;
   }
 };
@@ -879,6 +910,38 @@ export const createNextOfKin = async (data: any) => {
     return response.data;
   } catch (error) {
     console.error('Error adding next of kin:', error);
+    throw error;
+  }
+};
+
+// insurance provider
+export const searchInsuranceProviders = async (query = {}): Promise<Page<InsuranceProvider[]>> => {
+  try {
+    const response = await axios.post(
+      endpoints.insuranceProvider.search,
+      {
+        page: 1,
+        limit: 20,
+        ...query,
+      },
+      {
+        params: {},
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching insurance providers:', error);
+    throw error;
+  }
+};
+
+// create insurance
+export const createInsuranceProvider = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.insuranceProvider.new, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding insurance:', error);
     throw error;
   }
 };

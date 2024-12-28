@@ -97,6 +97,8 @@ export function TasksListView() {
 
   useEffect(() => {
     if (searchResults.length) {
+      console.log('searchResults', searchResults);
+
       setTableData(searchResults);
     }
   }, [searchResults]);

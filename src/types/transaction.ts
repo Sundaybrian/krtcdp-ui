@@ -30,3 +30,18 @@ export type IcheckoffTransactionApply = {
   cooperativeId: number;
   invoiceId: number[];
 };
+
+export type InsuranceProvider = {
+  description: string;
+  coverageTypes: string[];
+  specialFeatures: string[];
+  targetMarket: string[];
+  contactPhone: string;
+  contactEmail: string;
+  website: string;
+  creationDate: string;
+  deletedAt: string;
+  lastModifiedDate: string;
+  id: string;
+  name: string;
+};
