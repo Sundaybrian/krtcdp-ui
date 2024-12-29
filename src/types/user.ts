@@ -293,7 +293,7 @@ export type CreateUnion = {
   name: string;
   location: string;
   registrationDate: string;
-  totalCooperatives: number;
+  totalCooperatives: any;
   contactEmail: string;
   phoneNumber: string;
   address: string;
