@@ -1,8 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import type { CreateUnion } from 'src/types/user';
 
+import { useState, useEffect } from 'react';
+
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 
 import { paths } from 'src/routes/paths';
@@ -12,6 +16,7 @@ import { useLocalStorage } from 'src/hooks/use-local-storage';
 
 import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
 
+import { getCooperativeById } from 'src/api/services';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useSearchCooperativeUnions } from 'src/actions/cooperative';
 
@@ -19,6 +24,7 @@ import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import { JoinedCoopUnions } from '../joined-union-list';
 import { CoopJoinUnionForm } from '../coop-join-union-form';
 
 // ----------------------------------------------------------------------
@@ -27,14 +33,24 @@ export function MyUnionListView() {
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
   const { searchResults } = useSearchCooperativeUnions();
+  const [coopUnions, setCoopUnions] = useState<CreateUnion[]>([]);
 
   const quickEdit = useBoolean();
 
   useEffect(() => {
     if (searchResults.length) {
-      //
+      getCooperativeById(state.coopId).then((coop) => {
+        if (coop) {
+          // filter joined unions
+          const joinedUnions = searchResults.filter(
+            (union) => union.id === coop.cooperativeUnionId
+          );
+
+          setCoopUnions(joinedUnions);
+        }
+      });
     }
-  }, [searchResults]);
+  }, [searchResults, state.coopId]);
 
   return (
     <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -61,35 +77,39 @@ export function MyUnionListView() {
           flexDirection: { md: 'column' },
         }}
       >
-        <EmptyContent
-          title="No union onboarded"
-          action={
-            <Button
-              onClick={quickEdit.onTrue}
-              variant="contained"
-              startIcon={<Iconify icon="fluent:add-variant" />}
-            >
-              Join a union
-            </Button>
-          }
-        />
+        {!coopUnions.length && (
+          <EmptyContent
+            title="No union joined"
+            action={
+              <Button
+                onClick={quickEdit.onTrue}
+                variant="contained"
+                startIcon={<Iconify icon="fluent:add-variant" />}
+              >
+                Join a union
+              </Button>
+            }
+          />
+        )}
 
-        {/* <Grid xs={12} md={6} lg={4}>
+        <Grid xs={12} md={6} lg={4}>
           <Box
             rowGap={3}
             columnGap={2}
             display="grid"
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(3, 1fr)' }}
           >
-            <JoinedCoopUnions
-              title="Union"
-              name="Nakuru Farmers Union"
-              location="Nakuru"
-              totalCooperatives={5}
-              phoneNumber="07157829"
-            />
+            {coopUnions.map((union) => (
+              <JoinedCoopUnions
+                title="Union"
+                name={union.name}
+                location={union.location}
+                totalCooperatives={union.totalCooperatives}
+                phoneNumber={union.phoneNumber}
+              />
+            ))}
           </Box>
-        </Grid> */}
+        </Grid>
       </Card>
 
       {/* Assign coop to union dialog */}

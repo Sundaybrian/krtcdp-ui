@@ -217,6 +217,7 @@ export type Cooperative = {
   insuranceType: string;
   hasInsurance: boolean;
   admins?: IUserItem[];
+  cooperativeUnionId: number;
 };
 
 export type IUserItem = {
@@ -292,7 +293,7 @@ export type CreateUnion = {
   name: string;
   location: string;
   registrationDate: string;
-  totalCooperatives: string;
+  totalCooperatives: number;
   contactEmail: string;
   phoneNumber: string;
   address: string;
