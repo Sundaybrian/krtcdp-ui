@@ -1,4 +1,5 @@
 import type { IProductItem } from 'src/types/product';
+import type { CategoryData } from 'src/types/category';
 
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -14,24 +15,24 @@ import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
+import MenuItem from '@mui/material/MenuItem/MenuItem';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { VALUE_CHAIN_TYPES, UNIT_OF_MEASUREMENT } from 'src/utils/default';
+
+import { _tags } from 'src/_mock';
 import {
-  _tags,
-  PRODUCT_SIZE_OPTIONS,
-  PRODUCT_GENDER_OPTIONS,
-  PRODUCT_COLOR_NAME_OPTIONS,
-  PRODUCT_CATEGORY_GROUP_OPTIONS,
-  PRODUCT_CATEGORIES,
-} from 'src/_mock';
+  createProduct,
+  updateProduct,
+  searchCategories,
+  uploadProductImage,
+} from 'src/api/services';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import MenuItem from '@mui/material/MenuItem/MenuItem';
 
 // ----------------------------------------------------------------------
 
@@ -41,21 +42,21 @@ export const NewProductSchema = zod.object({
   name: zod.string().min(1, { message: 'Name is required!' }),
   description: schemaHelper.editor({ message: { required_error: 'Description is required!' } }),
   images: schemaHelper.files({ message: { required_error: 'Images is required!' } }),
-  code: zod.string().min(1, { message: 'Product code is required!' }),
-  sku: zod.string().min(1, { message: 'Product sku is required!' }),
-  quantity: zod.number().min(1, { message: 'Quantity is required!' }),
-  colors: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
-  sizes: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
+  stockQuantity: zod.number().min(1, { message: 'Product quantity is required!' }),
+  minStockLevel: zod.number().min(1, { message: 'Stock level is required!' }),
+  unit: zod.string().min(1, { message: 'Choose at least one option!' }),
   tags: zod.string().array().min(2, { message: 'Must have at least 2 items!' }),
-  gender: zod.string().array().nonempty({ message: 'Choose at least one option!' }),
   price: zod.number().min(1, { message: 'Price should not be $0.00' }),
+  category: zod.string().min(1, { message: 'Category is required!' }),
+  categoryId: zod.number().min(1, { message: 'Product category is required!' }),
+  subCategoryId: zod.number().min(1, { message: 'Sub-category is required!' }),
   // Not required
-  category: zod.string(),
-  priceSale: zod.number(),
-  subDescription: zod.string(),
-  taxes: zod.number(),
-  saleLabel: zod.object({ enabled: zod.boolean(), content: zod.string() }),
-  newLabel: zod.object({ enabled: zod.boolean(), content: zod.string() }),
+  marketPrice: zod.number(),
+  taxRate: zod.number(),
+  isOnSale: zod.boolean(),
+  saleStartDate: zod.any(),
+  saleEndDate: zod.any(),
+  sku: zod.string(),
 });
 
 // ----------------------------------------------------------------------
@@ -68,27 +69,29 @@ export function ProductNewEditForm({ currentProduct }: Props) {
   const router = useRouter();
 
   const [includeTaxes, setIncludeTaxes] = useState(false);
+  const [categories, setCategories] = useState<CategoryData[]>([]);
+  const [subCategories, setSubCategories] = useState<any[]>([]);
 
   const defaultValues = useMemo(
     () => ({
       name: currentProduct?.name || '',
       description: currentProduct?.description || '',
-      subDescription: currentProduct?.subDescription || '',
       images: currentProduct?.images || [],
       //
-      code: currentProduct?.code || '',
-      sku: currentProduct?.sku || '',
+      stockQuantity: currentProduct?.stockQuantity || 0,
+      sku: currentProduct?.sku || '10',
       price: currentProduct?.price || 0,
-      quantity: currentProduct?.quantity || 0,
-      priceSale: currentProduct?.priceSale || 0,
+      minStockLevel: currentProduct?.minStockLevel || 0,
+      marketPrice: currentProduct?.marketPrice || 0,
       tags: currentProduct?.tags || [],
-      taxes: currentProduct?.taxes || 0,
-      gender: currentProduct?.gender || [],
-      category: currentProduct?.category || PRODUCT_CATEGORY_GROUP_OPTIONS[0].classify[1],
-      colors: currentProduct?.colors || [],
-      sizes: currentProduct?.sizes || [],
-      newLabel: currentProduct?.newLabel || { enabled: false, content: '' },
-      saleLabel: currentProduct?.saleLabel || { enabled: false, content: '' },
+      taxRate: currentProduct?.taxRate || 0,
+      unit: currentProduct?.unit || '',
+      saleStartDate: currentProduct?.saleStartDate || null,
+      saleEndDate: currentProduct?.saleEndDate || null,
+      category: currentProduct?.category || '',
+      categoryId: currentProduct?.categoryId || ('' as any),
+      subCategoryId: currentProduct?.subCategoryId || ('' as any),
+      isOnSale: currentProduct?.isOnSale || false,
     }),
     [currentProduct]
   );
@@ -103,34 +106,75 @@ export function ProductNewEditForm({ currentProduct }: Props) {
     watch,
     setValue,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
 
   const values = watch();
 
+  // get product category
+  const getCategories = useCallback(() => {
+    // get categories
+    searchCategories({})
+      .then((response) => {
+        setCategories(response.results);
+      })
+      .catch((error) => {
+        toast(error.message || 'An error occurred. Please try again later.');
+      });
+  }, []);
+
   useEffect(() => {
+    getCategories();
     if (currentProduct) {
       reset(defaultValues);
     }
-  }, [currentProduct, defaultValues, reset]);
+  }, [currentProduct, defaultValues, reset, getCategories]);
 
   useEffect(() => {
     if (includeTaxes) {
-      setValue('taxes', 0);
+      setValue('taxRate', 0);
     } else {
-      setValue('taxes', currentProduct?.taxes || 0);
+      setValue('taxRate', currentProduct?.taxRate || 0);
     }
-  }, [currentProduct?.taxes, includeTaxes, setValue]);
+  }, [currentProduct?.taxRate, includeTaxes, setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // format date to iso
+      if (data.saleStartDate) {
+        data.saleStartDate = new Date(data.saleStartDate).toISOString();
+      }
+      if (data.saleEndDate) {
+        data.saleEndDate = new Date(data.saleEndDate).toISOString();
+      }
+
+      if (currentProduct) {
+        await updateProduct(currentProduct.id, data);
+      } else {
+        const product = await createProduct(data);
+        // upload product images
+        if (data.images && data.images.length > 0) {
+          data.images.forEach((image: File | string, index: number) => {
+            const formData = new FormData();
+            formData.append('image', image);
+            if (index === 0) {
+              formData.append('isMain', true as any);
+            }
+            formData.append('sortOrder', (index + 1) as any);
+
+            uploadProductImage(product.id, formData).catch((error) => {
+              console.error(error);
+              toast.error('Failed to upload product images');
+            });
+          });
+        }
+      }
       reset();
-      toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.product.root);
-      console.info('DATA', data);
+      toast.success(currentProduct ? 'Update success!' : 'Product created successfully!');
+      // router.push(paths.dashboard.product.root);
     } catch (error) {
       console.error(error);
+      toast.error('Failed to create product');
     }
   });
 
@@ -150,6 +194,15 @@ export function ProductNewEditForm({ currentProduct }: Props) {
     setIncludeTaxes(event.target.checked);
   }, []);
 
+  const handleCategoryChange = (id: number) => {
+    console.log(values);
+
+    const selectedCategory = categories.find((category) => category.id === Number(id));
+    if (selectedCategory) {
+      setSubCategories(selectedCategory.subCategories || []);
+    }
+  };
+
   const renderDetails = (
     <Card>
       <CardHeader
@@ -163,7 +216,7 @@ export function ProductNewEditForm({ currentProduct }: Props) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.Text name="name" label="Product name" />
 
-        <Field.Text name="subDescription" label="Highlight" multiline rows={4} />
+        {/* <Field.Text name="subDescription" label="Highlight" multiline rows={4} /> */}
 
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Detailed description</Typography>
@@ -203,11 +256,55 @@ export function ProductNewEditForm({ currentProduct }: Props) {
           display="grid"
           gridTemplateColumns={{ xs: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
         >
-          <Field.Text name="code" label="Product code" />
+          <Field.Text
+            name="stockQuantity"
+            label="Stock quantity"
+            type="number"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Box component="span" sx={{ color: 'text.disabled' }}>
+                    Qty
+                  </Box>
+                </InputAdornment>
+              ),
+            }}
+          />
 
-          <Field.Text name="sku" label="Product State" />
+          <Field.Text
+            name="minStockLevel"
+            label="Stock level"
+            type="number"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Box component="span" sx={{ color: 'text.disabled' }}>
+                    Min
+                  </Box>
+                </InputAdornment>
+              ),
+            }}
+          />
 
-          <Field.Select name="county" label="Product category">
+          <Field.Select name="categoryId" label="Product category">
+            <MenuItem value="" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+              None
+            </MenuItem>
+
+            <Divider sx={{ borderStyle: 'dashed' }} />
+
+            {categories.map((category) => (
+              <MenuItem
+                onClick={(e: any) => handleCategoryChange(category.id)}
+                key={category.id + category.categoryName}
+                value={category.id}
+              >
+                {category.categoryName}
+              </MenuItem>
+            ))}
+          </Field.Select>
+
+          <Field.Select name="subCategoryId" label="Product sub-category">
             <MenuItem
               value=""
               onClick={() => null}
@@ -218,7 +315,43 @@ export function ProductNewEditForm({ currentProduct }: Props) {
 
             <Divider sx={{ borderStyle: 'dashed' }} />
 
-            {PRODUCT_CATEGORIES.map((county) => (
+            {subCategories.map((county) => (
+              <MenuItem key={county.id + county.subcategoryName} value={county.id}>
+                {county.subcategoryName}
+              </MenuItem>
+            ))}
+          </Field.Select>
+
+          <Field.Select name="unit" label="Units eg Litres">
+            <MenuItem
+              value=""
+              onClick={() => null}
+              sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+            >
+              None
+            </MenuItem>
+
+            <Divider sx={{ borderStyle: 'dashed' }} />
+
+            {UNIT_OF_MEASUREMENT.map((county) => (
+              <MenuItem key={county} value={county}>
+                {county}
+              </MenuItem>
+            ))}
+          </Field.Select>
+
+          <Field.Select name="category" label="Category eg CROPS">
+            <MenuItem
+              value=""
+              onClick={() => null}
+              sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+            >
+              None
+            </MenuItem>
+
+            <Divider sx={{ borderStyle: 'dashed' }} />
+
+            {VALUE_CHAIN_TYPES.map((county) => (
               <MenuItem key={county} value={county}>
                 {county}
               </MenuItem>
@@ -287,8 +420,8 @@ export function ProductNewEditForm({ currentProduct }: Props) {
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.Text
-          name="price"
-          label="Regular price"
+          name="marketPrice"
+          label="Market price"
           placeholder="0.00"
           type="number"
           InputLabelProps={{ shrink: true }}
@@ -304,7 +437,7 @@ export function ProductNewEditForm({ currentProduct }: Props) {
         />
 
         <Field.Text
-          name="priceSale"
+          name="price"
           label="Sale price"
           placeholder="0.00"
           type="number"
@@ -329,7 +462,7 @@ export function ProductNewEditForm({ currentProduct }: Props) {
 
         {!includeTaxes && (
           <Field.Text
-            name="taxes"
+            name="taxRate"
             label="Tax (%)"
             placeholder="0.00"
             type="number"
@@ -349,15 +482,39 @@ export function ProductNewEditForm({ currentProduct }: Props) {
     </Card>
   );
 
-  const renderActions = (
-    <Stack spacing={3} direction="row" alignItems="center" flexWrap="wrap">
-      <FormControlLabel
-        control={<Switch defaultChecked inputProps={{ id: 'publish-switch' }} />}
-        label="Publish"
-        sx={{ pl: 3, flexGrow: 1 }}
-      />
+  const renderSaleInfo = (
+    <Card>
+      <CardHeader title="Sale Window" subheader="Product sale availability" sx={{ mb: 3 }} />
 
-      <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
+      <Divider />
+
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Field.DatePicker name="saleStartDate" label="Start Date" />
+
+        <Field.DatePicker name="saleEndDate" label="End Date" />
+
+        <FormControlLabel
+          name="isOnSale"
+          control={<Switch id="toggle-onsale" checked={values.isOnSale} />}
+          label="On sale"
+        />
+      </Stack>
+    </Card>
+  );
+
+  const renderActions = (
+    <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+      <LoadingButton
+        onClick={(e) => {
+          console.log(e);
+          console.log(values);
+          console.log(errors);
+        }}
+        type="submit"
+        variant="contained"
+        size="large"
+        loading={isSubmitting}
+      >
         {!currentProduct ? 'Create product' : 'Save changes'}
       </LoadingButton>
     </Stack>
@@ -371,6 +528,8 @@ export function ProductNewEditForm({ currentProduct }: Props) {
         {renderProperties}
 
         {renderPricing}
+
+        {renderSaleInfo}
 
         {renderActions}
       </Stack>

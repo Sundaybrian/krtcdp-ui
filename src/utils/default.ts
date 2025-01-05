@@ -117,7 +117,14 @@ export const QUALITY_GRADE = ['GRADE A', 'GRADE B', 'GRADE C', 'GRADE D', 'GRADE
 
 export const TASKTYPES = ['GENERAL', 'MILK_PICK', 'DELIVERY', 'INSPECTION', 'OTHER'];
 
-export const VALUE_CHAIN_TYPES = ['CROP', 'MILK', 'LIVESTOCK', 'DAIRY'];
+export const VALUE_CHAIN_TYPES = [
+  'CROPS',
+  'LIVESTOCK',
+  'DAIRY',
+  'FARM_INPUTS',
+  'MACHINERY',
+  'OTHER',
+];
 
 export const requiredPermissions = {
   users: {
@@ -131,4 +138,40 @@ export const requiredPermissions = {
     updateInsuranceProvider: 'updateInsuranceProvider',
     deleteInsuranceProvider: 'deleteInsuranceProvider',
   },
+  cooperative: {
+    viewCooperative: 'viewCooperative',
+    createCooperative: 'createCooperative',
+    updateCooperative: 'updateCooperative',
+    deleteCooperative: 'deleteCooperative',
+  },
+  cooperativeUnion: {
+    viewCooperativeUnion: 'viewCooperativeUnion',
+    createCooperativeUnion: 'createCooperativeUnion',
+    updateCooperativeUnion: 'updateCooperativeUnion',
+    deleteCooperativeUnion: 'deleteCooperativeUnion',
+  },
+  county: {
+    viewCounty: 'viewCounty',
+    createCounty: 'createCounty',
+    updateCounty: 'updateCounty',
+    deleteCounty: 'deleteCounty',
+  },
+  valueChain: {
+    viewValueChain: 'viewValueChain',
+    createValueChain: 'createValueChain',
+    updateValueChain: 'updateValueChain',
+    deleteValueChain: 'deleteValueChain',
+  },
+  product: {
+    viewProduct: 'viewProduct',
+    createProduct: 'createProduct',
+    updateProduct: 'updateProduct',
+    deleteProduct: 'deleteProduct',
+  },
+  tickets: {
+    viewTicket: 'viewTicket',
+    createTicket: 'createTicket',
+  },
 };
+
+export const TICKET_STATUS = ['New', 'Assigned', 'Inprogress', 'OnHold', 'Resolved', 'Closed'];

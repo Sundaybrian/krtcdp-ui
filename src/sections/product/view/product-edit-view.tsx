@@ -2,21 +2,42 @@
 
 import type { IProductItem } from 'src/types/product';
 
+import { useState, useEffect } from 'react';
+
 import { paths } from 'src/routes/paths';
 
+import { getStorage } from 'src/hooks/use-local-storage';
+
+import { requiredPermissions } from 'src/utils/default';
+
+import { getProductById } from 'src/api/services';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
+import { PermissionDeniedView } from 'src/sections/permission/view';
 
 import { ProductNewEditForm } from '../product-new-edit-form';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  product?: IProductItem;
+  id: string;
+  // product?: IProductItem;
 };
 
-export function ProductEditView({ product }: Props) {
+export function ProductEditView({ id }: Props) {
+  const [product, setProduct] = useState<IProductItem>({} as any);
+  const perms = getStorage('permissions');
+  useEffect(() => {
+    getProductById(Number(id)).then((response) => {
+      setProduct(response);
+    });
+  }, [id]);
+
+  if (perms.includes(requiredPermissions.product.updateProduct) === false) {
+    return <PermissionDeniedView permission="updateProduct" />;
+  }
   return (
     <DashboardContent>
       <CustomBreadcrumbs

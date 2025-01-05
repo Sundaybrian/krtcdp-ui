@@ -2,15 +2,26 @@
 
 import { paths } from 'src/routes/paths';
 
+import { getStorage } from 'src/hooks/use-local-storage';
+
+import { requiredPermissions } from 'src/utils/default';
+
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
+import { PermissionDeniedView } from 'src/sections/permission/view';
 
 import { ProductNewEditForm } from '../product-new-edit-form';
 
 // ----------------------------------------------------------------------
 
 export function ProductCreateView() {
+  const perms = getStorage('permissions');
+
+  if (perms.includes(requiredPermissions.product.createProduct) === false) {
+    return <PermissionDeniedView permission="createProduct" />;
+  }
   return (
     <DashboardContent>
       <CustomBreadcrumbs
@@ -22,7 +33,6 @@ export function ProductCreateView() {
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-
       <ProductNewEditForm />
     </DashboardContent>
   );

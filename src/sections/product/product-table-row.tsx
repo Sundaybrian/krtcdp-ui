@@ -22,28 +22,66 @@ export function RenderCellPrice({ params }: ParamsProps) {
   return fCurrency(params.row.price);
 }
 
+export function RenderCellMarketPrice({ params }: ParamsProps) {
+  return fCurrency(params.row.marketPrice);
+}
+
 export function RenderCellCategory({ params }: ParamsProps) {
   return params.row.category;
 }
 
-export function RenderCellCode({ params }: ParamsProps) {
-  return params.row.code;
+export function RenderProductCategory({ params }: ParamsProps) {
+  return params.row?.Category?.categoryName;
 }
 
-export function RenderCellPublish({ params }: ParamsProps) {
+export function RenderProductSubCategory({ params }: ParamsProps) {
+  return params.row?.SubCategory?.subcategoryName;
+}
+
+export function RenderCellCooperative({ params }: ParamsProps) {
+  return params.row.cooperative.groupName;
+}
+
+export function RenderCellCode({ params }: ParamsProps) {
   return (
-    <Label variant="soft" color={(params.row.publish === 'published' && 'info') || 'default'}>
-      {params.row.publish}
+    <Label
+      variant="soft"
+      color={
+        (params.row.status === 'DRAFT' && 'info') ||
+        (params.row.status === 'PUBLISHED' && 'success') ||
+        'default'
+      }
+    >
+      {params.row.status}
     </Label>
   );
 }
 
-export function RenderCellCreatedAt({ params }: ParamsProps) {
+export function RenderCellTags({ params }: ParamsProps) {
+  return params.row?.tags.map((tag: string) => (
+    <Label key={tag} variant="filled" color="default" sx={{ textTransform: 'capitalize' }}>
+      {tag}
+    </Label>
+  ));
+}
+
+export function RenderCellSaleDate({ params }: ParamsProps) {
   return (
     <Stack spacing={0.5}>
-      <Box component="span">{fDate(params.row.createdAt)}</Box>
+      <Box component="span">{fDate(params.row.saleStartDate)}</Box>
       <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-        {fTime(params.row.createdAt)}
+        {fTime(params.row.saleStartDate)}
+      </Box>
+    </Stack>
+  );
+}
+
+export function RenderCellSaleEndDate({ params }: ParamsProps) {
+  return (
+    <Stack spacing={0.5}>
+      <Box component="span">{fDate(params.row.saleEndDate)}</Box>
+      <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.saleEndDate)}
       </Box>
     </Stack>
   );
@@ -53,16 +91,16 @@ export function RenderCellStock({ params }: ParamsProps) {
   return (
     <Stack justifyContent="center" sx={{ typography: 'caption', color: 'text.secondary' }}>
       <LinearProgress
-        value={(params.row.available * 100) / params.row.quantity}
+        value={(params.row.stockQuantity * 100) / params.row.minStockLevel}
         variant="determinate"
         color={
-          (params.row.inventoryType === 'out of stock' && 'error') ||
-          (params.row.inventoryType === 'low stock' && 'warning') ||
+          (params.row.minStockLevel === 0 && 'error') ||
+          (params.row.minStockLevel < 10 && 'warning') ||
           'success'
         }
         sx={{ mb: 1, width: 1, height: 6, maxWidth: 80 }}
       />
-      {(!!params.row.available && params.row.available) || 0} orders
+      {(!!params.row.stockQuantity && params.row.stockQuantity) || 0} {params.row.unit}
     </Stack>
   );
 }
@@ -77,7 +115,7 @@ export function RenderCellProduct({
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
       <Avatar
         alt={params.row.name}
-        src={params.row.coverUrl}
+        src={params.row?.thumbnail}
         variant="rounded"
         sx={{ width: 64, height: 64, mr: 2 }}
       />

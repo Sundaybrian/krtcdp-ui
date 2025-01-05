@@ -35,7 +35,7 @@ export type IProductReview = {
 };
 
 export type IProductItem = {
-  id: string;
+  id: any;
   sku: string;
   name: string;
   code: string;
@@ -50,6 +50,11 @@ export type IProductItem = {
   colors: string[];
   quantity: number;
   category: string;
+  categoryId: number;
+  subCategoryId: number;
+  saleStartDate: any;
+  saleEndDate: any;
+  isOnSale: boolean;
   available: number;
   totalSold: number;
   description: string;
@@ -59,7 +64,13 @@ export type IProductItem = {
   inventoryType: string;
   subDescription: string;
   priceSale: number | null;
+  marketPrice: number | null;
   reviews: IProductReview[];
+  unit: string | null;
+  onSale: boolean;
+  stockQuantity: number;
+  minStockLevel: number;
+  taxRate: number;
   ratings: {
     name: string;
     starCount: number;
@@ -73,4 +84,24 @@ export type IProductItem = {
     enabled: boolean;
     content: string;
   };
+};
+
+export type IProduct = {
+  name: string;
+  description: string;
+  images: any[];
+  stockQuantity: number;
+  sku?: string;
+  price: number;
+  minStockLevel: number;
+  marketPrice: number;
+  tags: string[];
+  taxRate: number;
+  unit?: string;
+  saleStartDate?: any;
+  saleEndDate?: any;
+  category: string;
+  categoryId: number;
+  subCategoryId: number;
+  isOnSale?: boolean;
 };

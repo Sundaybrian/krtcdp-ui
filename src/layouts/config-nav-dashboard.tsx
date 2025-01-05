@@ -331,6 +331,14 @@ export const navData = [
         permission: 'view:invoice',
         children: [{ title: 'Notifications', path: paths.dashboard.notification.root }],
       },
+
+      {
+        title: 'Tickets',
+        path: paths.dashboard.tickets.root,
+        icon: ICONS.invoice,
+        permission: 'view:invoice',
+        children: [{ title: 'Tickets', path: paths.dashboard.tickets.root }],
+      },
     ],
   },
   /**

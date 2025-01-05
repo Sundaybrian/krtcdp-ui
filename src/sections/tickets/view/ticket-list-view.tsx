@@ -1,7 +1,8 @@
 'use client';
 
+import type { ITicket } from 'src/types/notification';
+import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
-import type { IProductItem, IProductTableFilters } from 'src/types/product';
 import type {
   GridSlots,
   GridColDef,
@@ -27,21 +28,17 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
-import { getStorage } from 'src/hooks/use-local-storage';
+import { getStorage, useLocalStorage } from 'src/hooks/use-local-storage';
 
-import { fCurrency } from 'src/utils/format-number';
-import { requiredPermissions } from 'src/utils/default';
+import { requiredPermissions, TENANT_LOCAL_STORAGE } from 'src/utils/default';
 
-import { updateProduct } from 'src/api/services';
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
-import { useSearchProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useSearchTickets } from 'src/actions/notification';
 
-import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
@@ -50,21 +47,16 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { PermissionDeniedView } from 'src/sections/permission/view';
 
-import { ProductTableToolbar } from '../product-table-toolbar';
-import { ProductTableFiltersResult } from '../product-table-filters-result';
+import { TicketViewDialog } from './ticket-view-dialog';
+import { CooperativeTableToolbar } from '../ticket-table-toolbar';
+import { CooperativeTableFiltersResult } from '../ticket-table-filters-result';
 import {
-  RenderCellCode,
-  RenderCellTags,
-  RenderCellPrice,
-  RenderCellStock,
+  RenderAgent,
+  RenderGeneric,
+  RenderCreatedAt,
+  RenderCellStatus,
   RenderCellProduct,
-  RenderCellSaleDate,
-  RenderCellCooperative,
-  RenderProductCategory,
-  RenderCellSaleEndDate,
-  RenderCellMarketPrice,
-  RenderProductSubCategory,
-} from '../product-table-row';
+} from '../ticket-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -73,28 +65,34 @@ const PUBLISH_OPTIONS = [
   { value: 'draft', label: 'Draft' },
 ];
 
-const HIDE_COLUMNS = { cooperative: false, tags: false };
+const HIDE_COLUMNS = {
+  whoPays: false,
+  pestorDiseaseName: false,
+  description: false,
+  cropAnimalName: false,
+};
 
-const HIDE_COLUMNS_TOGGLABLE = ['actions'];
+const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-export function ProductListView() {
+export function TicketListView() {
   const confirmRows = useBoolean();
-  const onPublish = useBoolean();
+  const quickView = useBoolean();
 
-  const router = useRouter();
+  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
   const perms = getStorage('permissions');
 
-  const { products, productsLoading } = useSearchProducts();
+  const router = useRouter();
+
+  const { searchResults, searchLoading } = useSearchTickets({ coopId: state.coopId });
+  const [selectedTicket, setSelectedTicket] = useState<ITicket>();
 
   const filters = useSetState<IProductTableFilters>({ publish: [], stock: [] });
 
-  const [tableData, setTableData] = useState<IProductItem[]>([]);
+  const [tableData, setTableData] = useState<ITicket[]>([]);
 
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>([]);
-
-  const [selectedProduct, setProduct] = useState<IProductItem>({} as any);
 
   const [filterButtonEl, setFilterButtonEl] = useState<HTMLButtonElement | null>(null);
 
@@ -102,17 +100,19 @@ export function ProductListView() {
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (searchResults.length) {
+      console.log('searchResults', searchResults);
+
+      setTableData(searchResults);
     }
-  }, [products]);
+  }, [searchResults, state.coopId]);
 
   const canReset = filters.state.publish.length > 0 || filters.state.stock.length > 0;
 
   const dataFiltered = applyFilter({ inputData: tableData, filters: filters.state });
 
   const handleDeleteRow = useCallback(
-    (id: string) => {
+    (id: any) => {
       const deleteRow = tableData.filter((row) => row.id !== id);
 
       toast.success('Delete success!');
@@ -123,7 +123,7 @@ export function ProductListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
+    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id!));
 
     toast.success('Delete success!');
 
@@ -132,25 +132,18 @@ export function ProductListView() {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.product.edit(id));
+      router.push(paths.dashboard.cooperative.edit(id));
     },
     [router]
   );
 
   const handleViewRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.product.details(id));
+      const sTicket = tableData.find((row) => row.id === id);
+      setSelectedTicket(sTicket);
+      quickView.onTrue();
     },
-    [router]
-  );
-
-  const handlePublishRow = useCallback(
-    (id: string) => {
-      const product = tableData.find((row) => row.id === id);
-      setProduct(product!);
-      onPublish.onTrue();
-    },
-    [tableData, onPublish]
+    [tableData, quickView]
   );
 
   const CustomToolbarCallback = useCallback(
@@ -168,87 +161,103 @@ export function ProductListView() {
     [filters.state, selectedRowIds]
   );
 
-  if (perms.includes(requiredPermissions.product.viewProduct) === false) {
-    return <PermissionDeniedView permission="viewProduct" />;
+  //  handle permission
+
+  if (perms.includes(requiredPermissions.tickets.viewTicket) === false) {
+    return <PermissionDeniedView permission="viewTicket" />;
   }
 
   const columns: GridColDef[] = [
-    // { field: 'category', headerName: 'Category', filterable: false },
-    // handleViewRow(params.row.id)
     {
-      field: 'name',
-      headerName: 'Product',
+      field: 'locationName',
+      headerName: 'Location name',
       flex: 1,
-      minWidth: 190,
+      // maxWidth: 8,
+      // width: 70,
       hideable: false,
-      renderCell: (params) => <RenderCellProduct params={params} onViewRow={() => null} />,
+      renderCell: (params) => (
+        <RenderCellProduct params={params} onViewRow={() => handleViewRow(params.row.id)} />
+      ),
     },
+    {
+      field: 'phoneNumber',
+      headerName: 'Phone Number',
+      width: 160,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'agent',
+      headerName: 'Assigned To',
+      width: 160,
+      renderCell: (params) => <RenderAgent params={params} />,
+    },
+    {
+      field: 'issueSummary',
+      headerName: 'Summary',
+      width: 140,
+      editable: true,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    // {
+    //   field: 'location',
+    //   headerName: 'Location',
+    //   width: 110,
+    //   type: 'singleSelect',
+    //   editable: true,
+    //   renderCell: (params) => <RenderCellLocation params={params} />,
+    // },
 
     {
-      field: 'cooperative',
-      headerName: 'Cooperative',
-      width: 160,
-      renderCell: (params) => <RenderCellCooperative params={params} />,
+      field: 'source',
+      headerName: 'Source',
+      width: 110,
+      renderCell: (params) => <RenderGeneric params={params} />,
     },
     {
-      field: 'Category',
-      headerName: 'Product Category',
+      field: 'farmType',
+      headerName: 'Farm Type',
       width: 160,
-      renderCell: (params) => <RenderProductCategory params={params} />,
-    },
-    {
-      field: 'SubCategory',
-      headerName: 'Product sub-category',
-      width: 160,
-      renderCell: (params) => <RenderProductSubCategory params={params} />,
+      renderCell: (params) => <RenderGeneric params={params} />,
     },
 
     {
       field: 'status',
       headerName: 'Status',
       width: 160,
-      renderCell: (params) => <RenderCellCode params={params} />,
-    },
-    {
-      field: 'saleStartDate',
-      headerName: 'Sale start date',
-      width: 160,
-      renderCell: (params) => <RenderCellSaleDate params={params} />,
-    },
-    {
-      field: 'saleEndDate',
-      headerName: 'Sale end date',
-      width: 160,
-      renderCell: (params) => <RenderCellSaleEndDate params={params} />,
-    },
-    {
-      field: 'marketPrice',
-      headerName: 'Market Price',
-      width: 160,
-      renderCell: (params) => <RenderCellMarketPrice params={params} />,
+      renderCell: (params) => <RenderCellStatus params={params} />,
     },
 
     {
-      field: 'price',
-      headerName: 'Price',
-      width: 140,
-      editable: true,
-      renderCell: (params) => <RenderCellPrice params={params} />,
+      field: 'whoPays',
+      headerName: 'Who Pays',
+      width: 160,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'pestorDiseaseName',
+      headerName: 'Pest or Disease Name',
+      width: 160,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'description',
+      headerName: 'Description',
+      width: 160,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'cropAnimalName',
+      headerName: 'Crop/Animal Name',
+      width: 160,
+      renderCell: (params) => <RenderGeneric params={params} />,
     },
 
     {
-      field: 'minStockLevel',
-      headerName: 'Stock',
-      width: 160,
-      type: 'singleSelect',
-      valueOptions: PRODUCT_STOCK_OPTIONS,
-      renderCell: (params) => <RenderCellStock params={params} />,
-    },
-    {
-      field: 'tags',
-      headerName: 'Tags',
+      field: 'creationDate',
+      headerName: 'Creation Date',
       width: 110,
-      renderCell: (params) => <RenderCellTags params={params} />,
+      editable: false,
+      renderCell: (params) => <RenderCreatedAt params={params} />,
     },
     {
       type: 'actions',
@@ -263,15 +272,9 @@ export function ProductListView() {
       getActions: (params) => [
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:archive-up-minimlistic-broken" />}
-          label="Publish"
-          onClick={() => handlePublishRow(params.row.id)}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          onClick={() => handleEditRow(params.row.id)}
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="View"
+          onClick={() => handleViewRow(params.row.id)}
         />,
         <GridActionsCellItem
           showInMenu
@@ -291,16 +294,6 @@ export function ProductListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  async function handlePublishProducts() {
-    try {
-      await updateProduct(selectedProduct.id, { status: 'PUBLISHED' });
-      toast.success('Product published successfully');
-      onPublish.onFalse();
-    } catch (error) {
-      toast.error('An error occurred. Please try again.');
-    }
-  }
-
   return (
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -308,19 +301,19 @@ export function ProductListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Product', href: paths.dashboard.product.root },
-            { name: 'List' },
+            { name: 'Tickets', href: paths.dashboard.product.root },
+            { name: 'Tickets' },
           ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.product.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New product
-            </Button>
-          }
+          // action={
+          //   <Button
+          //     component={RouterLink}
+          //     href={paths.dashboard.notification.new}
+          //     variant="contained"
+          //     startIcon={<Iconify icon="mingcute:add-line" />}
+          //   >
+          //     Broadcast
+          //   </Button>
+          // }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
@@ -337,7 +330,7 @@ export function ProductListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={searchLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 25]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
@@ -382,27 +375,10 @@ export function ProductListView() {
         }
       />
 
-      <ConfirmDialog
-        open={onPublish.value}
-        onClose={onPublish.onFalse}
-        title="Publish"
-        content={
-          <>
-            Are you sure want to publish <strong> {selectedProduct.name} </strong>, Price:{' '}
-            <Label>{fCurrency(selectedProduct.price)}</Label>
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            color="warning"
-            onClick={() => {
-              handlePublishProducts();
-            }}
-          >
-            Publish
-          </Button>
-        }
+      <TicketViewDialog
+        open={quickView.value}
+        onClose={quickView.onFalse}
+        ticket={selectedTicket!}
       />
     </>
   );
@@ -430,7 +406,7 @@ function CustomToolbar({
   return (
     <>
       <GridToolbarContainer>
-        <ProductTableToolbar
+        <CooperativeTableToolbar
           filters={filters}
           options={{ stocks: PRODUCT_STOCK_OPTIONS, publishs: PUBLISH_OPTIONS }}
         />
@@ -462,7 +438,7 @@ function CustomToolbar({
       </GridToolbarContainer>
 
       {canReset && (
-        <ProductTableFiltersResult
+        <CooperativeTableFiltersResult
           filters={filters}
           totalResults={filteredResults}
           sx={{ p: 2.5, pt: 0 }}
@@ -475,20 +451,19 @@ function CustomToolbar({
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: IProductItem[];
+  inputData: ITicket[];
   filters: IProductTableFilters;
 };
 
 function applyFilter({ inputData, filters }: ApplyFilterProps) {
   const { stock, publish } = filters;
-  console.log('APplying--------');
 
   if (stock.length) {
-    inputData = inputData.filter((product) => stock.includes(product.inventoryType));
+    inputData = inputData.filter((product) => stock.includes(product.description));
   }
 
   if (publish.length) {
-    inputData = inputData.filter((product) => publish.includes(product.publish));
+    inputData = inputData.filter((product) => publish.includes(product.status));
   }
 
   return inputData;

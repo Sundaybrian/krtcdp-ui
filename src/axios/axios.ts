@@ -145,9 +145,13 @@ export const endpoints = {
     search: '/post/search',
   },
   product: {
-    list: '/product/list',
-    details: '/product/details',
-    search: '/product/search',
+    list: '/products/list',
+    details: '/products/details',
+    search: '/products/search',
+    get: '/products',
+    new: '/products',
+    update: (productId: number) => `/products/${productId}`,
+    uploadImage: (productId: number) => `/products/${productId}/images`,
   },
   invoice: {
     search: '/invoice/search',
@@ -175,5 +179,11 @@ export const endpoints = {
     new: '/insuranceprovider',
     search: '/insuranceprovider/search',
     update: (id: number) => `/insuranceprovider/${id}`,
+  },
+  ticket: {
+    new: '/ticket',
+    search: '/ticket/search',
+    update: (id: number) => `/ticket/${id}`,
+    approve: (id: number) => `/ticket/${id}/approve`,
   },
 };

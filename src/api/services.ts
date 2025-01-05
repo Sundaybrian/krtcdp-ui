@@ -2,8 +2,9 @@ import type { ItaskNew } from 'src/types/task';
 import type { InvoiceItem } from 'src/types/invoice';
 import type { CategoryData } from 'src/types/category';
 import type { PurchaseOrderItem } from 'src/types/order';
-import type { INotification } from 'src/types/notification';
 import type { CreateCooperative } from 'src/types/cooperative';
+import type { IProduct, IProductItem } from 'src/types/product';
+import type { ITicket, INotification } from 'src/types/notification';
 import type { ValueChain, NewValueChain } from 'src/types/value-chain';
 import type { Grn, Farm, Harvest, Expense, CreateExpense, WarehouseReceipt } from 'src/types/farm';
 import type {
@@ -942,6 +943,129 @@ export const createInsuranceProvider = async (data: any) => {
     return response.data;
   } catch (error) {
     console.error('Error adding insurance:', error);
+    throw error;
+  }
+};
+
+// product
+export const searchProducts = async (query = {}): Promise<Page<IProductItem[]>> => {
+  try {
+    const response = await axios.post(
+      endpoints.product.search,
+      {
+        page: 1,
+        limit: 20,
+        ...query,
+      },
+      {
+        params: {},
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    throw error;
+  }
+};
+
+// get product by id
+export const getProductById = async (id: number): Promise<IProductItem> => {
+  try {
+    const response = await axios.get(`${endpoints.product.get}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    return error;
+  }
+};
+
+// create product
+export const createProduct = async (data: IProduct) => {
+  try {
+    const response = await axios.post(endpoints.product.new, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding product:', error);
+    throw error;
+  }
+};
+
+// update product
+export const updateProduct = async (id: number, data: any) => {
+  try {
+    const response = await axios.patch(`${endpoints.product.update(id)}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating product:', error);
+    throw error;
+  }
+};
+
+// upload product image
+export const uploadProductImage = async (id: number, data: FormData) => {
+  try {
+    const response = await axios.post(endpoints.product.uploadImage(id), data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading product image:', error);
+    throw error;
+  }
+};
+
+// tickets
+export const searchTickets = async (query = {}): Promise<Page<ITicket[]>> => {
+  try {
+    const response = await axios.post(
+      endpoints.ticket.search,
+      {
+        page: 1,
+        limit: 20,
+        ...query,
+      },
+      {
+        params: {},
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching tickets:', error);
+    throw error;
+  }
+};
+
+// create ticket
+export const createTicket = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.ticket.new, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding ticket:', error);
+    throw error;
+  }
+};
+
+// update ticket
+export const updateTicket = async (id: number, data: any) => {
+  try {
+    const response = await axios.patch(`${endpoints.ticket.update(id)}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating ticket:', error);
+    throw error;
+  }
+};
+
+// approve ticket
+export const approveTicket = async (id: number, data: any) => {
+  try {
+    const response = await axios.post(`${endpoints.ticket.approve(id)}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error approving ticket:', error);
     throw error;
   }
 };

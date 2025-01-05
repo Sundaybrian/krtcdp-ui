@@ -1,12 +1,11 @@
 'use client';
 
-import type { IUserItem, IUserTableFilters } from 'src/types/user';
+import type { CategoryData } from 'src/types/category';
+import type { IUserTableFilters } from 'src/types/user';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -21,11 +20,9 @@ import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
-import { varAlpha } from 'src/theme/styles';
+import { searchCategories } from 'src/api/services';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _roles, _userList } from 'src/_mock';
 
-import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
@@ -42,8 +39,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import { CategoryData } from 'src/types/category';
-import { searchCategories } from 'src/api/services';
 
 import { CategoryTableRow } from '../category-table-row';
 import { CategoryTableToolbar } from '../category-table-toolbar';
