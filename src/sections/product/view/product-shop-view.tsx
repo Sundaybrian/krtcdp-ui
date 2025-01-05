@@ -58,7 +58,7 @@ export function ProductShopView({ products }: Props) {
     priceRange: [0, 200],
   });
 
-  const { searchResults, searchLoading } = useSearchProducts(debouncedQuery);
+  const productSearch = useSearchProducts(debouncedQuery);
 
   const dataFiltered = applyFilter({ inputData: products, filters: filters.state, sortBy });
 
@@ -91,9 +91,9 @@ export function ProductShopView({ products }: Props) {
     >
       <ProductSearch
         query={debouncedQuery}
-        results={searchResults}
+        results={productSearch.products}
         onSearch={handleSearch}
-        loading={searchLoading}
+        loading={productSearch.productsLoading}
       />
 
       <Stack direction="row" spacing={1} flexShrink={0}>
