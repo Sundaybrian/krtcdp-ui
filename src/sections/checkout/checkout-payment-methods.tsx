@@ -17,6 +17,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { Iconify } from 'src/components/iconify';
+import { Field } from 'src/components/hook-form';
 
 import { PaymentNewCardDialog } from '../payment/payment-new-card-dialog';
 
@@ -50,8 +51,9 @@ export function CheckoutPaymentMethods({ options, ...other }: Props) {
                   key={option.label}
                   onOpen={newCard.onTrue}
                   cardOptions={options.cards}
-                  selected={field.value === option.value}
+                  selected
                   isCredit={option.value === 'credit' && field.value === 'credit'}
+                  isCash={option.value === 'cash' && field.value === 'cash'}
                   onClick={() => {
                     field.onChange(option.value);
                   }}
@@ -78,6 +80,7 @@ export function CheckoutPaymentMethods({ options, ...other }: Props) {
 type OptionItemProps = PaperProps & {
   selected: boolean;
   isCredit: boolean;
+  isCash: boolean;
   onOpen: () => void;
   option: ICheckoutPaymentOption;
   cardOptions: ICheckoutCardOption[];
@@ -86,8 +89,9 @@ type OptionItemProps = PaperProps & {
 function OptionItem({
   option,
   cardOptions,
-  selected,
+  selected = true,
   isCredit,
+  isCash,
   onOpen,
   ...other
 }: OptionItemProps) {
@@ -112,14 +116,6 @@ function OptionItem({
               {label}
             </Box>
             <Stack spacing={1} direction="row" alignItems="center">
-              {value === 'credit' && (
-                <>
-                  <Iconify icon="logos:mastercard" width={24} />
-                  ,
-                  <Iconify icon="logos:visa" width={24} />
-                </>
-              )}
-              {value === 'paypal' && <Iconify icon="logos:paypal" width={24} />}
               {value === 'cash' && <Iconify icon="solar:wad-of-money-bold" width={32} />}
             </Stack>
           </Stack>
@@ -149,6 +145,17 @@ function OptionItem({
           </Button>
         </Stack>
       )}
+
+      {/* {isCash && ( */}
+      <Stack spacing={2.5} alignItems="flex-end" sx={{ pt: 2.5 }}>
+        <Field.Phone
+          name="phoneNumber"
+          country="KE"
+          label="Phone Number"
+          InputLabelProps={{ shrink: true }}
+        />
+      </Stack>
+      {/* )} */}
     </Paper>
   );
 }

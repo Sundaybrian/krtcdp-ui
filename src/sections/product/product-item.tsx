@@ -15,9 +15,9 @@ import { fCurrency } from 'src/utils/format-number';
 import { Label } from 'src/components/label';
 import { Image } from 'src/components/image';
 import { Iconify } from 'src/components/iconify';
-import { ColorPreview } from 'src/components/color-utils';
 
 import { useCheckoutContext } from '../checkout/context';
+import { CategoryView } from './components/category-preview';
 
 // ----------------------------------------------------------------------
 
@@ -28,8 +28,23 @@ type Props = {
 export function ProductItem({ product }: Props) {
   const checkout = useCheckoutContext();
 
-  const { id, name, coverUrl, price, colors, available, sizes, priceSale, newLabel, saleLabel } =
-    product;
+  const {
+    id,
+    name,
+    thumbnail,
+    coverUrl,
+    price,
+    tags,
+    available,
+    colors,
+    sizes = ['XS', 'S', 'M', 'L', 'XL'],
+    priceSale,
+    newLabel,
+    saleLabel,
+    minStockLevel,
+    category,
+    unit,
+  } = product;
 
   const linkTo = paths.product.details(id);
 
@@ -38,9 +53,12 @@ export function ProductItem({ product }: Props) {
       id,
       name,
       coverUrl,
+      unit,
       available,
       price,
-      colors: [colors[0]],
+      discount: product.discount,
+      tags: [tags[0]],
+      colors: ['green', 'red', 'blue', 'yellow'],
       size: sizes[0],
       quantity: 1,
     };
@@ -51,7 +69,7 @@ export function ProductItem({ product }: Props) {
     }
   };
 
-  const renderLabels = (newLabel.enabled || saleLabel.enabled) && (
+  const renderLabels = (newLabel?.enabled || saleLabel?.enabled) && (
     <Stack
       direction="row"
       alignItems="center"
@@ -63,14 +81,14 @@ export function ProductItem({ product }: Props) {
         right: 16,
       }}
     >
-      {newLabel.enabled && (
+      {newLabel?.enabled && (
         <Label variant="filled" color="info">
           {newLabel.content}
         </Label>
       )}
-      {saleLabel.enabled && (
+      {saleLabel?.enabled && (
         <Label variant="filled" color="error">
-          {saleLabel.content}
+          {saleLabel?.content}
         </Label>
       )}
     </Stack>
@@ -78,7 +96,7 @@ export function ProductItem({ product }: Props) {
 
   const renderImg = (
     <Box sx={{ position: 'relative', p: 1 }}>
-      {!!available && (
+      {!!minStockLevel && (
         <Fab
           color="warning"
           size="medium"
@@ -101,12 +119,15 @@ export function ProductItem({ product }: Props) {
         </Fab>
       )}
 
-      <Tooltip title={!available && 'Out of stock'} placement="bottom-end">
+      <Tooltip title={minStockLevel === 0 && 'Out of stock'} placement="bottom-end">
         <Image
           alt={name}
-          src={coverUrl}
+          src={thumbnail}
           ratio="1/1"
-          sx={{ borderRadius: 1.5, ...(!available && { opacity: 0.48, filter: 'grayscale(1)' }) }}
+          sx={{
+            borderRadius: 1.5,
+            ...(minStockLevel === 0 && { opacity: 0.48, filter: 'grayscale(1)' }),
+          }}
         />
       </Tooltip>
     </Box>
@@ -119,7 +140,7 @@ export function ProductItem({ product }: Props) {
       </Link>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between">
-        <ColorPreview colors={colors} />
+        <CategoryView category={category} />
 
         <Stack direction="row" spacing={0.5} sx={{ typography: 'subtitle1' }}>
           {priceSale && (

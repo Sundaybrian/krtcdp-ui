@@ -12,6 +12,7 @@ export type ICheckoutItem = {
   size: string;
   quantity: number;
   subtotal?: number;
+  unit: string;
 };
 
 export type ICheckoutDeliveryOption = {

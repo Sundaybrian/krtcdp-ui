@@ -13,7 +13,6 @@ import { useCheckoutContext } from '../context';
 import { CheckoutSteps } from '../checkout-steps';
 import { CheckoutPayment } from '../checkout-payment';
 import { CheckoutOrderComplete } from '../checkout-order-complete';
-import { CheckoutBillingAddress } from '../checkout-billing-address';
 
 // ----------------------------------------------------------------------
 
@@ -40,9 +39,9 @@ export function CheckoutView() {
       <>
         {checkout.activeStep === 0 && <CheckoutCart />}
 
-        {checkout.activeStep === 1 && <CheckoutBillingAddress />}
+        {/* {checkout.activeStep === 1 && <CheckoutBillingAddress />} */}
 
-        {checkout.activeStep === 2 && <CheckoutPayment />}
+        {checkout.activeStep === 1 && <CheckoutPayment />}
 
         {checkout.completed && (
           <CheckoutOrderComplete open onReset={checkout.onReset} onDownloadPDF={() => {}} />

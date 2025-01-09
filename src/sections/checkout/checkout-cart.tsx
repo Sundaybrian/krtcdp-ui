@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -8,6 +10,7 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/config-global';
+import { createCart } from 'src/api/services';
 
 import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
@@ -22,6 +25,25 @@ export function CheckoutCart() {
   const checkout = useCheckoutContext();
 
   const empty = !checkout.items.length;
+
+  // handle create cart
+  const handleCreateCart = async () => {
+    try {
+      // create cart
+      const promise = checkout.items.map((item) =>
+        createCart({
+          productId: item.id,
+          quantity: item.quantity,
+        })
+      );
+
+      await Promise.all(promise);
+      checkout.onNextStep();
+    } catch (error) {
+      console.error(error);
+      toast.error('Error creating cart');
+    }
+  };
 
   return (
     <Grid container spacing={3}>
@@ -81,7 +103,10 @@ export function CheckoutCart() {
           type="submit"
           variant="contained"
           disabled={empty}
-          onClick={checkout.onNextStep}
+          onClick={() => {
+            // create cart
+            handleCreateCart();
+          }}
         >
           Check out
         </Button>

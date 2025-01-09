@@ -10,11 +10,14 @@ import { RouterLink } from 'src/routes/components';
 
 import { Logo } from 'src/components/logo';
 
+import { useAuthContext } from 'src/auth/hooks';
+
 import { HeaderSection } from './header-section';
 import { Searchbar } from '../components/searchbar';
 import { MenuButton } from '../components/menu-button';
 import { SignInButton } from '../components/sign-in-button';
 import { AccountDrawer } from '../components/account-drawer';
+import { SignOutButton } from '../components/sign-out-button';
 import { SettingsButton } from '../components/settings-button';
 import { WorkspacesPopover } from '../components/workspaces-popover';
 import { NotificationsDrawer } from '../components/notifications-drawer';
@@ -83,6 +86,7 @@ export type HeaderBaseProps = HeaderSectionProps & {
     menuButton?: boolean;
     localization?: boolean;
     notifications?: boolean;
+    normalUserLogin?: boolean;
   };
 };
 
@@ -99,6 +103,7 @@ export function HeaderBase({
     helpLink = true,
     settings = true,
     purchase = true,
+    normalUserLogin = false,
     contacts = true,
     searchbar = true,
     workspaces = true,
@@ -109,6 +114,7 @@ export function HeaderBase({
   ...other
 }: HeaderBaseProps) {
   const theme = useTheme();
+  const { authenticated } = useAuthContext();
   return (
     <HeaderSection
       sx={sx}
@@ -187,10 +193,10 @@ export function HeaderBase({
               {account && <AccountDrawer data-slot="account" data={data?.account} />}
 
               {/* -- Sign in button -- */}
-              {signIn && <SignInButton />}
+              {!authenticated && signIn && <SignInButton />}
 
               {/* -- Purchase button -- */}
-              {purchase && (
+              {!authenticated && purchase && (
                 <Button
                   data-slot="purchase"
                   variant="contained"
@@ -204,6 +210,15 @@ export function HeaderBase({
                 >
                   Sign up
                 </Button>
+              )}
+
+              {authenticated && normalUserLogin && (
+                <SignOutButton
+                  size="medium"
+                  variant="text"
+                  href={paths.auth.jwt.signIn}
+                  sx={{ display: 'block', textAlign: 'left' }}
+                />
               )}
             </Box>
 

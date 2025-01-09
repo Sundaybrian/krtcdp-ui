@@ -110,4 +110,4 @@ export const PRODUCT_CATEGORIES = [
   'Other Services',
 ];
 
-export const PRODUCT_CHECKOUT_STEPS = ['Cart', 'Billing & address', 'Payment'];
+export const PRODUCT_CHECKOUT_STEPS = ['Cart', 'Payment'];

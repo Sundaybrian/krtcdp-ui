@@ -1,7 +1,6 @@
 import type { DialogProps } from '@mui/material/Dialog';
 
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Divider from '@mui/material/Divider';
@@ -44,7 +43,7 @@ export function CheckoutOrderComplete({ open, onReset, onDownloadPDF }: Props) {
           px: { xs: 2, sm: 0 },
         }}
       >
-        <Typography variant="h4">Thank you for your purchase!</Typography>
+        <Typography variant="h4">Thank u you for your purchase!</Typography>
 
         <OrderCompleteIllustration />
 
@@ -52,10 +51,10 @@ export function CheckoutOrderComplete({ open, onReset, onDownloadPDF }: Props) {
           Thanks for placing order
           <br />
           <br />
-          <Link>01dc1370-3df6-11eb-b378-0242ac130002</Link>
+          {/* <Link>01dc1370-3df6-11eb-b378-0242ac130002</Link>
           <br />
-          <br />
-          We will send you a notification within 5 days when it ships.
+          <br /> */}
+          We will send you a notification within the next 24 hours.
           <br /> If you have any question or queries then fell to get in contact us. <br />
           All the best,
         </Typography>

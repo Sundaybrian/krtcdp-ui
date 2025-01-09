@@ -10,7 +10,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { sumBy } from 'src/utils/helper';
 import { fShortenNumber } from 'src/utils/format-number';
 
 import { Iconify } from 'src/components/iconify';
@@ -25,17 +24,19 @@ type Props = {
   totalReviews?: number;
   reviews?: IProductReview[];
   ratings?: { name: string; starCount: number; reviewCount: number }[];
+  totalRating?: number;
 };
 
 export function ProductDetailsReview({
   totalRatings,
   totalReviews,
+  totalRating = 0,
   ratings = [],
   reviews = [],
 }: Props) {
   const review = useBoolean();
 
-  const total = sumBy(ratings, (star) => star.starCount);
+  const total = totalRating;
 
   const renderSummary = (
     <Stack spacing={1} alignItems="center" justifyContent="center">

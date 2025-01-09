@@ -44,23 +44,19 @@ export function useGetCooperatives() {
 
 // ----------------------------------------------------------------------
 
-type ProductData = {
-  product: IProductItem;
-};
-
 export function useGetProduct(productId: string) {
-  const url = productId ? [endpoints.product.details, { params: { productId } }] : '';
+  const url = endpoints.product.details(productId);
 
-  const { data, isLoading, error, isValidating } = useSWR<ProductData>(url, fetcher, swrOptions);
+  const { data, isLoading, error, isValidating } = useSWR<IProductItem>(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
-      product: data?.product,
+      product: data,
       productLoading: isLoading,
       productError: error,
       productValidating: isValidating,
     }),
-    [data?.product, error, isLoading, isValidating]
+    [data, error, isLoading, isValidating]
   );
 
   return memoizedValue;

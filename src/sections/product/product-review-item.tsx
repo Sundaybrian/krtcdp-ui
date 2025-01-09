@@ -5,7 +5,6 @@ import Stack from '@mui/material/Stack';
 import Rating from '@mui/material/Rating';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-import ButtonBase from '@mui/material/ButtonBase';
 import ListItemText from '@mui/material/ListItemText';
 
 import { fDate } from 'src/utils/format-time';
@@ -32,7 +31,7 @@ export function ProductReviewItem({ review }: Props) {
       />
 
       <ListItemText
-        primary={review.name}
+        primary={review.name || 'User'}
         secondary={fDate(review.postedAt)}
         primaryTypographyProps={{ noWrap: true, typography: 'subtitle2', mb: 0.5 }}
         secondaryTypographyProps={{ noWrap: true, typography: 'caption', component: 'span' }}
@@ -71,7 +70,7 @@ export function ProductReviewItem({ review }: Props) {
         </Stack>
       )}
 
-      <Stack direction="row" spacing={2} sx={{ pt: 1.5 }}>
+      {/* <Stack direction="row" spacing={2} sx={{ pt: 1.5 }}>
         <ButtonBase disableRipple sx={{ gap: 0.5, typography: 'caption' }}>
           <Iconify icon="solar:like-outline" width={16} />
           123
@@ -81,7 +80,7 @@ export function ProductReviewItem({ review }: Props) {
           <Iconify icon="solar:dislike-outline" width={16} />
           34
         </ButtonBase>
-      </Stack>
+      </Stack> */}
     </Stack>
   );
 

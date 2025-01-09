@@ -49,18 +49,22 @@ export function ProductDetailsSummary({
   const {
     id,
     name,
-    sizes,
+    sizes = ['XS', 'S', 'M', 'L', 'XL'],
     price,
     coverUrl,
-    colors,
+    thumbnail,
+    colors = ['green', 'red', 'blue', 'yellow'],
     newLabel,
     available,
     priceSale,
     saleLabel,
     totalRatings,
-    totalReviews,
+    stockQuantity,
+    reviews,
     inventoryType,
     subDescription,
+    unit,
+    discount,
   } = product;
 
   const existProduct = !!items?.length && items.map((item) => item.id).includes(id);
@@ -72,11 +76,13 @@ export function ProductDetailsSummary({
   const defaultValues = {
     id,
     name,
-    coverUrl,
-    available,
+    coverUrl: thumbnail,
+    available: stockQuantity,
     price,
+    unit,
     colors: colors[0],
     size: sizes[4],
+    discount,
     quantity: available < 1 ? 0 : 1,
   };
 
@@ -138,7 +144,7 @@ export function ProductDetailsSummary({
         Compare
       </Link>
 
-      <Link
+      {/* <Link
         variant="subtitle2"
         sx={{ color: 'text.secondary', display: 'inline-flex', alignItems: 'center' }}
       >
@@ -152,7 +158,7 @@ export function ProductDetailsSummary({
       >
         <Iconify icon="solar:share-bold" width={16} sx={{ mr: 1 }} />
         Share
-      </Link>
+      </Link> */}
     </Stack>
   );
 
@@ -167,7 +173,7 @@ export function ProductDetailsSummary({
         control={control}
         render={({ field }) => (
           <ColorPicker
-            colors={colors}
+            colors={['green']}
             selected={field.value}
             onSelectColor={(color) => field.onChange(color as string)}
             limit={4}
@@ -257,15 +263,15 @@ export function ProductDetailsSummary({
 
   const renderRating = (
     <Stack direction="row" alignItems="center" sx={{ color: 'text.disabled', typography: 'body2' }}>
-      <Rating size="small" value={totalRatings} precision={0.1} readOnly sx={{ mr: 1 }} />
-      {`(${fShortenNumber(totalReviews)} reviews)`}
+      <Rating size="small" value={reviews?.length || 0} precision={0.1} readOnly sx={{ mr: 1 }} />
+      {`(${fShortenNumber(reviews?.length || 0)} reviews)`}
     </Stack>
   );
 
-  const renderLabels = (newLabel.enabled || saleLabel.enabled) && (
+  const renderLabels = (newLabel?.enabled || saleLabel?.enabled) && (
     <Stack direction="row" alignItems="center" spacing={1}>
-      {newLabel.enabled && <Label color="info">{newLabel.content}</Label>}
-      {saleLabel.enabled && <Label color="error">{saleLabel.content}</Label>}
+      {newLabel?.enabled && <Label color="info">{newLabel?.content}</Label>}
+      {saleLabel?.enabled && <Label color="error">{saleLabel?.content}</Label>}
     </Stack>
   );
 

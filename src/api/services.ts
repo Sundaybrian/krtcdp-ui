@@ -1,11 +1,11 @@
 import type { ItaskNew } from 'src/types/task';
 import type { InvoiceItem } from 'src/types/invoice';
 import type { CategoryData } from 'src/types/category';
-import type { PurchaseOrderItem } from 'src/types/order';
 import type { CreateCooperative } from 'src/types/cooperative';
+import type { Order, PurchaseOrderItem } from 'src/types/order';
 import type { IProduct, IProductItem } from 'src/types/product';
-import type { ITicket, INotification } from 'src/types/notification';
 import type { ValueChain, NewValueChain } from 'src/types/value-chain';
+import type { ITicket, IcartItem, INotification } from 'src/types/notification';
 import type { Grn, Farm, Harvest, Expense, CreateExpense, WarehouseReceipt } from 'src/types/farm';
 import type {
   FamerBalace,
@@ -628,6 +628,23 @@ export const searchPurchaseOrder = async (query = {}): Promise<Page<PurchaseOrde
   }
 };
 
+// get user orders
+export const getUserOrders = async (query = {}): Promise<Page<Order[]>> => {
+  try {
+    const response = await axios.get(endpoints.orders.myOrders, {
+      params: {
+        page: 1,
+        limit: 20,
+        ...query,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user orders:', error);
+    throw error;
+  }
+};
+
 // search invoice
 export const searchInvoice = async (query = {}): Promise<Page<InvoiceItem[]>> => {
   try {
@@ -950,17 +967,13 @@ export const createInsuranceProvider = async (data: any) => {
 // product
 export const searchProducts = async (query = {}): Promise<Page<IProductItem[]>> => {
   try {
-    const response = await axios.post(
-      endpoints.product.search,
-      {
+    const response = await axios.get(endpoints.product.search, {
+      params: {
         page: 1,
         limit: 20,
         ...query,
       },
-      {
-        params: {},
-      }
-    );
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -1066,6 +1079,49 @@ export const approveTicket = async (id: number, data: any) => {
     return response.data;
   } catch (error) {
     console.error('Error approving ticket:', error);
+    throw error;
+  }
+};
+
+//  create cart
+export const createCart = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.cart.new, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding cart:', error);
+    throw error;
+  }
+};
+
+// search cart by user id
+export const searchCart = async (query = {}): Promise<IcartItem> => {
+  try {
+    const response = await axios.get(
+      endpoints.cart.search,
+
+      {
+        params: {
+          page: 1,
+          limit: 20,
+          ...query,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching cart:', error);
+    throw error;
+  }
+};
+
+// cart checkout
+export const cartCheckout = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.cart.checkout, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error checking out cart:', error);
     throw error;
   }
 };

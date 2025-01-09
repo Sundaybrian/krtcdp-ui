@@ -62,6 +62,7 @@ export function MainLayout({ sx, data, children }: MainLayoutProps) {
               workspaces: false,
               localization: false,
               notifications: false,
+              normalUserLogin: true,
             }}
             slots={{
               topArea: (

@@ -48,7 +48,7 @@ export function CheckoutCartProduct({ row, onDelete, onDecrease, onIncrease }: P
               alignItems="center"
               sx={{ typography: 'body2', color: 'text.secondary' }}
             >
-              size: <Label sx={{ ml: 0.5 }}> {row.size} </Label>
+              Unit: <Label sx={{ ml: 0.5 }}> {row.unit} </Label>
               <Divider orientation="vertical" sx={{ mx: 1, height: 16 }} />
               <ColorPreview colors={row.colors} />
             </Stack>

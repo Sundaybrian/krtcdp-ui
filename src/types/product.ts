@@ -1,4 +1,5 @@
 import type { IDateValue } from './common';
+import type { CategoryData, SubCategoryData } from './category';
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +35,15 @@ export type IProductReview = {
   attachments?: string[];
 };
 
+export type Image = {
+  id: number;
+  url: string;
+  isMain: boolean;
+  sortOrder: number;
+  createdAt: IDateValue;
+  updatedAt: IDateValue;
+};
+
 export type IProductItem = {
   id: any;
   sku: string;
@@ -46,16 +56,18 @@ export type IProductItem = {
   publish: string;
   gender: string[];
   coverUrl: string;
-  images: string[];
+  images: any[];
   colors: string[];
   quantity: number;
-  category: string;
+  category: 'CROPS' | 'LIVESTOCK' | 'DAIRY' | 'FARM_INPUTS' | 'MACHINERY' | 'OTHER';
   categoryId: number;
   subCategoryId: number;
   saleStartDate: any;
   saleEndDate: any;
   isOnSale: boolean;
   available: number;
+  brand: string;
+  location?: string;
   totalSold: number;
   description: string;
   totalRatings: number;
@@ -66,7 +78,7 @@ export type IProductItem = {
   priceSale: number | null;
   marketPrice: number | null;
   reviews: IProductReview[];
-  unit: string | null;
+  unit: string;
   onSale: boolean;
   stockQuantity: number;
   minStockLevel: number;
@@ -84,6 +96,12 @@ export type IProductItem = {
     enabled: boolean;
     content: string;
   };
+  thumbnail: string;
+  Category: CategoryData;
+  SubCategory: SubCategoryData;
+  viewCount: number;
+  rating: number;
+  discount: number;
 };
 
 export type IProduct = {

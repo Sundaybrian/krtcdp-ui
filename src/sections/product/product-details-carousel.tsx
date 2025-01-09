@@ -27,7 +27,7 @@ export function ProductDetailsCarousel({ images }: Props) {
     },
   });
 
-  const slides = images?.map((img) => ({ src: img })) || [];
+  const slides = images?.map((img) => ({ src: img.url })) || [];
 
   const lightbox = useLightBox(slides);
 

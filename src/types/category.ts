@@ -5,3 +5,11 @@ export type CategoryData = {
   lastModifiedDate: any;
   subCategories?: any[];
 };
+
+export type SubCategoryData = {
+  id: any;
+  subcategoryName: string;
+  creationDate: any;
+  lastModifiedDate: any;
+  category: CategoryData;
+};

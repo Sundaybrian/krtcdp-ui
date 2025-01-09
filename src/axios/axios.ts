@@ -100,6 +100,15 @@ export const endpoints = {
     approveLeaveCoop: (userId: number, coopId: number) =>
       `/cooperative/${userId}/approve-leave-cooperative/${coopId}`,
   },
+  cart: {
+    search: '/cart',
+    new: '/cart',
+    update: (id: number) => `/cart/${id}`,
+    checkout: '/cart/checkout',
+  },
+  orders: {
+    myOrders: '/orders/user/my-orders',
+  },
   purchaseOrder: {
     new: '/purchaseorder',
     search: '/purchaseorder/search',
@@ -146,7 +155,7 @@ export const endpoints = {
   },
   product: {
     list: '/products/list',
-    details: '/products/details',
+    details: (id: string) => `/products/${id}`,
     search: '/products/search',
     get: '/products',
     new: '/products',

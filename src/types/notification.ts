@@ -47,3 +47,13 @@ export type ITicket = {
   assignedToId: number;
   agent: UserAccount;
 };
+
+export interface IcartItem {
+  id: string;
+  name: string;
+  coverUrl: string;
+  price: number;
+  quantity: number;
+  unit: string;
+  colors: string[];
+}

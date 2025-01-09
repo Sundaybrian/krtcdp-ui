@@ -1,6 +1,6 @@
+import type { Grn } from './farm';
+import type { Cooperative, CoopFarmerList } from './user';
 import type { IDateValue, IDatePickerControl } from './common';
-import { Grn } from './farm';
-import { CoopFarmerList, Cooperative } from './user';
 
 // ----------------------------------------------------------------------
 
@@ -86,4 +86,47 @@ export type PurchaseOrderItem = {
   creationDate: string;
   lastModifiedDate: string;
   deleteAt: string;
+};
+
+export type Order = {
+  id: any;
+  orderNumber: string;
+  subTotal: number;
+  taxAmount: number;
+  shippingAmount: number;
+  discountAmount: number;
+  shippingAddress: IOrderShippingAddress;
+  trackingNumber: string;
+  createdAt: IDateValue;
+  updatedAt: IDateValue;
+  productId: number;
+  userId: number;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  totalAmount: number;
+  notes: string;
+  items: {
+    id: number;
+    orderId: number;
+    productId: number;
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+    discount: number;
+    product: {
+      id: number;
+      name: string;
+      price: number;
+      stockQuantity: number;
+    };
+    deliveryDate: IDateValue;
+  }[];
+  payments: {
+    id: number;
+    orderId: number;
+    amount: number;
+    method: 'MPESA' | 'CREDIT_CARD' | 'PAYPAL';
+    status: 'PENDING' | 'COMPLETED' | 'FAILED';
+    reference: string;
+    currency: string;
+  }[];
 };

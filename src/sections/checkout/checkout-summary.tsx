@@ -73,19 +73,6 @@ export function CheckoutSummary({
           </Typography>
         </Box>
 
-        <Box display="flex">
-          <Typography
-            component="span"
-            variant="body2"
-            sx={{ flexGrow: 1, color: 'text.secondary' }}
-          >
-            Shipping
-          </Typography>
-          <Typography component="span" variant="subtitle2">
-            {shipping ? fCurrency(shipping) : displayShipping}
-          </Typography>
-        </Box>
-
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Box display="flex">
@@ -115,7 +102,11 @@ export function CheckoutSummary({
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <Button color="primary" onClick={() => onApplyDiscount(5)} sx={{ mr: -0.5 }}>
+                  <Button
+                    color="primary"
+                    onClick={() => onApplyDiscount(discount || 0)}
+                    sx={{ mr: -0.5 }}
+                  >
                     Apply
                   </Button>
                 </InputAdornment>

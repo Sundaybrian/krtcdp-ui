@@ -6,15 +6,28 @@ import Box from '@mui/material/Box';
 
 import { varAlpha } from 'src/theme/styles';
 
-import type { ColorPreviewProps } from './types';
-
 // ----------------------------------------------------------------------
 
-export const ColorPreview = forwardRef<HTMLDivElement, BoxProps & ColorPreviewProps>(
-  ({ colors, limit = 3, sx, ...other }, ref) => {
-    const colorsRange = (colors || [])?.slice(0, limit);
+export type Prop = {
+  category: 'CROPS' | 'LIVESTOCK' | 'DAIRY' | 'FARM_INPUTS' | 'MACHINERY' | 'OTHER';
+  limit?: number;
+};
 
-    const restColors = (colors || []).length - limit;
+export const CategoryView = forwardRef<HTMLDivElement, BoxProps & Prop>(
+  ({ category, limit = 4, sx, ...other }, ref) => {
+    const categoryKeys: any = {
+      CROPS: 'red',
+      LIVESTOCK: 'green',
+      DAIRY: 'blue',
+      FARM_INPUTS: 'yellow',
+      MACHINERY: 'purple',
+      OTHER: 'orange',
+    };
+    const colorsRange = ['red', 'green', 'blue', 'orange', 'purple'].filter(
+      (color) => color === categoryKeys[category]
+    );
+
+    console.log('colorsRange', colorsRange);
 
     return (
       <Box
@@ -44,9 +57,9 @@ export const ColorPreview = forwardRef<HTMLDivElement, BoxProps & ColorPreviewPr
           />
         ))}
 
-        {colors?.length > limit && (
+        {/* {category && limit && (
           <Box component="span" sx={{ typography: 'subtitle2' }}>{`+${restColors}`}</Box>
-        )}
+        )} */}
       </Box>
     );
   }

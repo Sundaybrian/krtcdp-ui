@@ -5,6 +5,7 @@ import type {
 } from 'src/types/checkout';
 
 import { z as zod } from 'zod';
+import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -12,13 +13,15 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import LoadingButton from '@mui/lab/LoadingButton';
 
+import { searchCart, cartCheckout } from 'src/api/services';
+
 import { Form } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
 
+import { useAuthContext } from 'src/auth/hooks';
+
 import { useCheckoutContext } from './context';
 import { CheckoutSummary } from './checkout-summary';
-import { CheckoutDelivery } from './checkout-delivery';
-import { CheckoutBillingInfo } from './checkout-billing-info';
 import { CheckoutPaymentMethods } from './checkout-payment-methods';
 
 // ----------------------------------------------------------------------
@@ -30,17 +33,7 @@ const DELIVERY_OPTIONS: ICheckoutDeliveryOption[] = [
 ];
 
 const PAYMENT_OPTIONS: ICheckoutPaymentOption[] = [
-  {
-    value: 'paypal',
-    label: 'Pay with Paypal',
-    description: 'You will be redirected to PayPal website to complete your purchase securely.',
-  },
-  {
-    value: 'credit',
-    label: 'Credit / Debit card',
-    description: 'We support Mastercard, Visa, Discover and Stripe.',
-  },
-  { value: 'cash', label: 'Cash', description: 'Pay with cash when your order is delivered.' },
+  { value: 'cash', label: 'Mpesa', description: 'Pay with Mpesa convinient and faster' },
 ];
 
 const CARDS_OPTIONS: ICheckoutCardOption[] = [
@@ -54,17 +47,17 @@ const CARDS_OPTIONS: ICheckoutCardOption[] = [
 export type PaymentSchemaType = zod.infer<typeof PaymentSchema>;
 
 export const PaymentSchema = zod.object({
-  payment: zod.string().min(1, { message: 'Payment is required!' }),
+  phoneNumber: zod.string().min(1, { message: 'Phone is required!' }),
   // Not required
-  delivery: zod.number(),
 });
 
 // ----------------------------------------------------------------------
 
 export function CheckoutPayment() {
   const checkout = useCheckoutContext();
+  const { user } = useAuthContext();
 
-  const defaultValues = { delivery: checkout.shipping, payment: '' };
+  const defaultValues = { phoneNumber: '' };
 
   const methods = useForm<PaymentSchemaType>({
     resolver: zodResolver(PaymentSchema),
@@ -77,10 +70,22 @@ export function CheckoutPayment() {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    // get user cart
+    const userCart = await searchCart({ userId: user?.id!, status: 'ACTIVE' });
+
     try {
+      await cartCheckout({
+        paymentMethod: 'MPESA',
+        cartId: userCart.id,
+        phoneNumber: data.phoneNumber.slice(1),
+      });
+
+      toast.success('Order placed succesfully!');
+      // sleep 10 seconds
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+
       checkout.onNextStep();
       checkout.onReset();
-      console.info('DATA', data);
     } catch (error) {
       console.error(error);
     }
@@ -90,7 +95,7 @@ export function CheckoutPayment() {
     <Form methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={8}>
-          <CheckoutDelivery onApplyShipping={checkout.onApplyShipping} options={DELIVERY_OPTIONS} />
+          {/* <CheckoutDelivery onApplyShipping={checkout.onApplyShipping} options={DELIVERY_OPTIONS} /> */}
 
           <CheckoutPaymentMethods
             options={{
@@ -111,7 +116,7 @@ export function CheckoutPayment() {
         </Grid>
 
         <Grid xs={12} md={4}>
-          <CheckoutBillingInfo billing={checkout.billing} onBackStep={checkout.onBackStep} />
+          {/* <CheckoutBillingInfo billing={checkout.billing} onBackStep={checkout.onBackStep} /> */}
 
           <CheckoutSummary
             total={checkout.total}

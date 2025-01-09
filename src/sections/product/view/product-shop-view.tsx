@@ -39,12 +39,15 @@ type Props = {
   products: IProductItem[];
 };
 
-export function ProductShopView({ products }: Props) {
+export function ProductShopView() {
+  // const products = await searchProducts();
+
   const checkout = useCheckoutContext();
 
   const openFilters = useBoolean();
 
   const [sortBy, setSortBy] = useState('featured');
+  const { products } = useSearchProducts({ status: 'PUBLISHED' });
 
   const [searchQuery, setSearchQuery] = useState('');
 
