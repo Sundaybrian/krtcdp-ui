@@ -46,6 +46,10 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
+import { View401 } from 'src/sections/error/401-view';
+
+import { useAuthContext } from 'src/auth/hooks';
+
 import { OrderTableToolbar } from '../order-table-toolbar';
 import { UserOrderTableRow } from '../user-order-table-row';
 import { OrderTableFiltersResult } from '../order-table-filters-result';
@@ -84,6 +88,8 @@ export function MyOrderListView() {
   const table = useTable({ defaultOrderBy: 'orderNumber' });
 
   const router = useRouter();
+
+  const { authenticated } = useAuthContext();
 
   const confirm = useBoolean();
 
@@ -193,6 +199,11 @@ export function MyOrderListView() {
   useEffect(() => {
     getPurchaseOrders();
   }, []);
+
+  // check if authenticated else redirect to home
+  if (!authenticated) {
+    return <View401 />;
+  }
 
   return (
     <>

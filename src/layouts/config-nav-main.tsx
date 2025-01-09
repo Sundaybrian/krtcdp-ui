@@ -66,7 +66,7 @@ export const navData = [
   // },
   {
     title: 'Orders',
-    icon: <Iconify width={22} icon="solar:notebook-bold-duotone" />,
+    icon: <Iconify width={22} icon="solar:backpack-bold-duotone" />,
     path: paths.product.myOrders,
   },
 ];
