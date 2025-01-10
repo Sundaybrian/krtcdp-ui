@@ -30,14 +30,12 @@ export function CheckoutCart() {
   const handleCreateCart = async () => {
     try {
       // create cart
-      const promise = checkout.items.map((item) =>
-        createCart({
-          productId: item.id,
-          quantity: item.quantity,
-        })
-      );
 
-      await Promise.all(promise);
+      const cartItems = checkout.items.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+      }));
+      await createCart(cartItems);
       checkout.onNextStep();
     } catch (error) {
       console.error(error);
