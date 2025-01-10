@@ -35,7 +35,7 @@ export function CheckoutCart() {
         productId: item.id,
         quantity: item.quantity,
       }));
-      await createCart(cartItems);
+      await createCart({ items: cartItems });
       checkout.onNextStep();
     } catch (error) {
       console.error(error);
