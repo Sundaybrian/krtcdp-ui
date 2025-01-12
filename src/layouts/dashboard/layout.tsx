@@ -57,7 +57,7 @@ export function DashboardLayout({ sx, children, data }: DashboardLayoutProps) {
 
   const navColorVars = useNavColorVars(theme, settings);
 
-  const perms = getStorage('permissions');
+  const perms: { permissions: string[]; isSuperAdmin: boolean } = getStorage('permissions');
 
   const layoutQuery: Breakpoint = 'lg';
 
@@ -71,7 +71,9 @@ export function DashboardLayout({ sx, children, data }: DashboardLayoutProps) {
     const zz = item.items.filter((subItem) => {
       const perm = PERMISSIONS.find((permission) => permission.role === currentUser?.userType);
       return (
-        perm?.permissions.includes(subItem.permission!) || perms?.includes(subItem?.permission!)
+        perm?.permissions.includes(subItem.permission!) ||
+        perms?.permissions.includes(subItem?.permission!) ||
+        perms.isSuperAdmin!
       );
     });
     if (zz.length) {
