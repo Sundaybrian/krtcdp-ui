@@ -202,7 +202,12 @@ export function InsuranceProviderListView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (perms.includes(requiredPermissions.insurance.viewInsuranceProvider) === false) {
+  const { permissions = [], isSuperAdmin = false } = perms;
+
+  if (
+    permissions.includes(requiredPermissions.insurance.viewInsuranceProvider) === false &&
+    !isSuperAdmin
+  ) {
     return <PermissionDeniedView />;
   }
 

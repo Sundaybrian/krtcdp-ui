@@ -19,7 +19,9 @@ import { UserNewEditForm } from '../user-new-edit-form';
 export function UserCreateView() {
   const perms = getStorage('permissions');
 
-  if (perms.includes(requiredPermissions.users.createUser) === false) {
+  const { permissions = [], isSuperAdmin = false } = perms;
+
+  if (permissions.includes(requiredPermissions.users.createUser) === false && !isSuperAdmin) {
     return <PermissionDeniedView />;
   }
   return (

@@ -18,8 +18,9 @@ import { ProductNewEditForm } from '../product-new-edit-form';
 
 export function ProductCreateView() {
   const perms = getStorage('permissions');
+  const { permissions = [], isSuperAdmin = false } = perms;
 
-  if (perms.includes(requiredPermissions.product.createProduct) === false) {
+  if (permissions.includes(requiredPermissions.product.createProduct) === false && !isSuperAdmin) {
     return <PermissionDeniedView permission="createProduct" />;
   }
   return (

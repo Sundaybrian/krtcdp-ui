@@ -35,7 +35,9 @@ export function ProductEditView({ id }: Props) {
     });
   }, [id]);
 
-  if (perms.includes(requiredPermissions.product.updateProduct) === false) {
+  const { permissions = [], isSuperAdmin = false } = perms;
+
+  if (permissions.includes(requiredPermissions.product.updateProduct) === false && !isSuperAdmin) {
     return <PermissionDeniedView permission="updateProduct" />;
   }
   return (

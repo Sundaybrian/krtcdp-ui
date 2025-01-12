@@ -18,8 +18,12 @@ import { ProviderNewEditForm } from './new-provider-form';
 
 export function ProviderCreateView() {
   const perms = getStorage('permissions');
+  const { permissions = [], isSuperAdmin = false } = perms;
 
-  if (perms.includes(requiredPermissions.insurance.createInsuranceProvider) === false) {
+  if (
+    permissions.includes(requiredPermissions.insurance.createInsuranceProvider) === false &&
+    !isSuperAdmin
+  ) {
     return <PermissionDeniedView permission="createInsuranceProvider" />;
   }
   return (

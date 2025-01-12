@@ -215,7 +215,9 @@ export function UserListView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (perms.includes(requiredPermissions.users.viewUser) === false) {
+  const { permissions = [], isSuperAdmin = false } = perms;
+
+  if (permissions.includes(requiredPermissions.users.viewUser) === false && !isSuperAdmin) {
     return <PermissionDeniedView />;
   }
 

@@ -162,8 +162,9 @@ export function TicketListView() {
   );
 
   //  handle permission
+  const { permissions = [], isSuperAdmin = false } = perms;
 
-  if (perms.includes(requiredPermissions.tickets.viewTicket) === false) {
+  if (permissions.includes(requiredPermissions.tickets.viewTicket) === false && !isSuperAdmin) {
     return <PermissionDeniedView permission="viewTicket" />;
   }
 

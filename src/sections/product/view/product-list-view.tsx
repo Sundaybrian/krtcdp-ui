@@ -168,7 +168,9 @@ export function ProductListView() {
     [filters.state, selectedRowIds]
   );
 
-  if (perms.includes(requiredPermissions.product.viewProduct) === false) {
+  const { permissions = [], isSuperAdmin = false } = perms;
+
+  if (permissions.includes(requiredPermissions.product.viewProduct) === false && !isSuperAdmin) {
     return <PermissionDeniedView permission="viewProduct" />;
   }
 

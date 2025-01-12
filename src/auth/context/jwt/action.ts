@@ -45,9 +45,13 @@ export const signInWithPassword = async (auth: SignInParams): Promise<void> => {
     authorizeUser({ username: auth.user.email, action: 'accessApp' })
       .then((permissions) => {
         // save to cache
-        console.log('permissions:', permissions?.data?.permissions);
-
-        localStorage.setItem('permissions', JSON.stringify(permissions?.data?.permissions || []));
+        localStorage.setItem(
+          'permissions',
+          JSON.stringify({
+            permissions: permissions?.data?.permissions || [],
+            isSuperAdmin: permissions?.data?.isSuperAdmin,
+          })
+        );
       })
       .catch((error) => {
         console.error('Error during sign in:', error);
