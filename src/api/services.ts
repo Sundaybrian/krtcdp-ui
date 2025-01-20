@@ -201,7 +201,7 @@ export const getFarmers = async (query = {}): Promise<Page<IUserItem[]>> => {
   try {
     const response = await axios.get(endpoints.farmer.search, {
       params: {
-        page: 1,
+        page: 0,
         limit: 20,
         ...query,
       },
@@ -256,7 +256,7 @@ export const getStakeholders = async (query = {}): Promise<Page<Stakeholder[]>> 
   try {
     const response = await axios.get(endpoints.stakeholder.search, {
       params: {
-        page: 1,
+        page: 0,
         limit: 20,
         ...query,
       },
@@ -314,7 +314,7 @@ export const getCooperatives = async (query = {}): Promise<Page<Cooperative[]>> 
   try {
     const response = await axios.get(endpoints.cooperative.search, {
       params: {
-        page: 1,
+        page: 0,
         limit: 200,
         ...query,
       },
@@ -633,7 +633,7 @@ export const getUserOrders = async (query = {}): Promise<Page<Order[]>> => {
   try {
     const response = await axios.get(endpoints.orders.myOrders, {
       params: {
-        page: 1,
+        page: 0,
         limit: 20,
         ...query,
       },
@@ -969,7 +969,7 @@ export const searchProducts = async (query = {}): Promise<Page<IProductItem[]>> 
   try {
     const response = await axios.get(endpoints.product.search, {
       params: {
-        page: 1,
+        page: 0,
         limit: 20,
         ...query,
       },
@@ -1102,7 +1102,7 @@ export const searchCart = async (query = {}): Promise<IcartItem> => {
 
       {
         params: {
-          page: 1,
+          page: 0,
           limit: 20,
           ...query,
         },

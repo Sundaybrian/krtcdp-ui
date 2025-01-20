@@ -1,8 +1,9 @@
 'use client';
 
-import type { IUserItem, IUserTableFilters } from 'src/types/user';
+import type { County } from 'src/api/data.inteface';
+import type { IUserTableFilters } from 'src/types/user';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -21,10 +22,12 @@ import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
+import { exportExcel } from 'src/utils/xlsx';
+import { removeKeyFromArr } from 'src/utils/helper';
+
 import { varAlpha } from 'src/theme/styles';
-import { DashboardContent } from 'src/layouts/dashboard';
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import { getCounties } from 'src/api/services';
+import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -43,7 +46,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import { County } from 'src/api/data.inteface';
 
 import { CountyTableRow } from '../county-table-row';
 import { CountyTableToolbar } from '../county-table-toolbar';
@@ -56,7 +58,7 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }];
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
   { id: 'code', label: 'Code', width: 180 },
-  { id: 'capital', label: 'Capital', width: 220 },
+  { id: 'capital', label: 'Headquarters', width: 220 },
   { id: '', width: 88 },
 ];
 
@@ -70,19 +72,14 @@ export function CountyListView() {
   const confirm = useBoolean();
 
   const [tableData, setTableData] = useState<County[]>([]);
-  const [dataFiltered, setDataFiltered] = useState<County[]>([]);
 
   const filters = useSetState<IUserTableFilters>({ name: '', role: [], status: 'all' });
 
-  const applyNewFilter = (data: County[]) => {
-    const filteredData = applyFilter({
-      inputData: data,
-      comparator: getComparator(table.order, table.orderBy),
-      filters: filters.state,
-    });
-
-    setDataFiltered(filteredData);
-  };
+  const dataFiltered = applyFilter({
+    inputData: tableData,
+    comparator: getComparator(table.order, table.orderBy),
+    filters: filters.state,
+  });
 
   const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 
@@ -139,8 +136,6 @@ export function CountyListView() {
       .then((data) => {
         setTableData(data);
         console.log('Counties:', data);
-
-        applyNewFilter(data);
       })
       .catch((error) => {
         toast.error('Failed to fetch counties!');
@@ -151,8 +146,21 @@ export function CountyListView() {
   // use effect
   useEffect(() => {
     fetchCounties();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // actions
+  // handle export
+  const handleExport = () => {
+    const exportData = removeKeyFromArr(dataFiltered, [
+      'id',
+      'subCounties',
+      // dates
+      'deletedAt',
+      'lastLoginDate',
+      'lastModifiedDate',
+    ]);
+    exportExcel(exportData, 'Counties');
+  };
 
   return (
     <>
@@ -217,6 +225,7 @@ export function CountyListView() {
 
           <CountyTableToolbar
             filters={filters}
+            onExport={handleExport}
             onResetPage={table.onResetPage}
             options={{ roles: [] }}
           />
@@ -356,7 +365,9 @@ function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
 
   if (name) {
     inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (county) =>
+        county.name.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        county.capital.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 

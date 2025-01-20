@@ -21,8 +21,8 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 import { UserQuickEditForm } from './user-quick-edit-form';
-import { UserManageProfileForm } from './user-manage-profile-form';
 import { UserManageStateForm } from './user-manage-state-form';
+import { UserManageProfileForm } from './user-manage-profile-form';
 
 // ----------------------------------------------------------------------
 
@@ -66,6 +66,7 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
             </Stack>
           </Stack>
         </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.maritalStatus}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.mobilePhone}</TableCell>
 

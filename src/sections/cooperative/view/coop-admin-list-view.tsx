@@ -18,7 +18,6 @@ import Button from '@mui/material/Button';
 import {
   DataGrid,
   gridClasses,
-  GridToolbarExport,
   GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarQuickFilter,
@@ -164,6 +163,7 @@ export function CooperativeAdminListView() {
         setFilterButtonEl={setFilterButtonEl}
         filteredResults={dataFiltered.length}
         onOpenConfirmDeleteRows={confirmRows.onTrue}
+        exportReport={() => console.log('Exporting report')}
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -382,6 +382,7 @@ interface CustomToolbarProps {
   onOpenConfirmDeleteRows: () => void;
   filters: UseSetStateReturn<IProductTableFilters>;
   setFilterButtonEl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
+  exportReport: () => void;
 }
 
 function CustomToolbar({
@@ -391,6 +392,7 @@ function CustomToolbar({
   filteredResults,
   setFilterButtonEl,
   onOpenConfirmDeleteRows,
+  exportReport,
 }: CustomToolbarProps) {
   return (
     <>
@@ -422,7 +424,13 @@ function CustomToolbar({
 
           <GridToolbarColumnsButton />
           <GridToolbarFilterButton ref={setFilterButtonEl} />
-          <GridToolbarExport />
+          {/* <GridToolbarExport /> */}
+          <Button
+            size="small"
+            onClick={exportReport}
+            startIcon={<Iconify icon="solar:export-bold" />}
+            disabled={!canReset}
+          />
         </Stack>
       </GridToolbarContainer>
 

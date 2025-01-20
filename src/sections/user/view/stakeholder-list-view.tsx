@@ -24,9 +24,9 @@ import { useSetState } from 'src/hooks/use-set-state';
 import { exportExcel } from 'src/utils/xlsx';
 import { removeKeyFromArr } from 'src/utils/helper';
 
+import { _roles } from 'src/_mock';
 import { varAlpha } from 'src/theme/styles';
 import { getStakeholders } from 'src/api/services';
-import { _roles, USER_STATUS_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Label } from 'src/components/label';
@@ -47,13 +47,13 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { UserTableToolbar } from '../user-table-toolbar';
 import { StakeholderTableRow } from '../stakeholder-table-row';
 import { UserTableFiltersResult } from '../user-table-filters-result';
+import { StakeholderTableToolbar } from '../stakeholder-table-toolbar';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
+const STATUS_OPTIONS = [{ value: 'all', label: 'All' }];
 
 const TABLE_HEAD = [
   { id: 'businessName', label: 'Business Name' },
@@ -76,19 +76,14 @@ export function StakeholderListView() {
   const confirm = useBoolean();
 
   const [tableData, setTableData] = useState<Stakeholder[]>([]);
-  const [dataFiltered, setDataFiltered] = useState<Stakeholder[]>([]);
 
   const filters = useSetState<IUserTableFilters>({ name: '', role: [], status: 'all' });
 
-  const applyNewFilter = (data: Stakeholder[]) => {
-    const filteredData = applyFilter({
-      inputData: data,
-      comparator: getComparator(table.order, table.orderBy),
-      filters: filters.state,
-    });
-
-    setDataFiltered(filteredData);
-  };
+  const dataFiltered = applyFilter({
+    inputData: tableData,
+    comparator: getComparator(table.order, table.orderBy),
+    filters: filters.state,
+  });
 
   const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 
@@ -156,9 +151,7 @@ export function StakeholderListView() {
     getStakeholders()
       .then((data) => {
         setTableData(data.results);
-        console.log('Users:', data);
-
-        applyNewFilter(data.results);
+        console.log('Stakeholders:', data);
       })
       .catch((error) => {
         toast.error('Failed to fetch users!');
@@ -233,7 +226,7 @@ export function StakeholderListView() {
             ))}
           </Tabs>
 
-          <UserTableToolbar
+          <StakeholderTableToolbar
             filters={filters}
             onExport={handleExport}
             onResetPage={table.onResetPage}
@@ -361,7 +354,7 @@ type ApplyFilterProps = {
 };
 
 function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
-  const { name, status, role } = filters;
+  const { name, status } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -375,16 +368,17 @@ function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
 
   if (name) {
     inputData = inputData.filter(
-      (user) => user.businessName.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (user) =>
+        user.businessName.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user.mobilePhone.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user.county.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user.subCounty.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user.ward.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
   if (status !== 'all') {
     inputData = inputData.filter((user) => user.businessName === status);
-  }
-
-  if (role.length) {
-    inputData = inputData.filter((user) => role.includes(user.businessName));
   }
 
   return inputData;

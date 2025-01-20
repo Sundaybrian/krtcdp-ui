@@ -59,10 +59,7 @@ import { UserTableFiltersResult } from '../provider-table-filters-result';
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'All' },
-  ...[
-    { value: 'active', label: 'Active' },
-    { value: 'deleted', label: 'Deleted' },
-  ],
+  ...[{ value: 'deleted', label: 'Deleted' }],
 ];
 
 const TABLE_HEAD = [

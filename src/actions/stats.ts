@@ -19,6 +19,8 @@ export type Istats = {
     count: number;
   }[];
 
+  totalUsers: number;
+
   farmersCount: number;
   cooperativesCount: number;
   farmsCount: number;

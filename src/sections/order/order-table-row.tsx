@@ -1,13 +1,11 @@
-import type { IOrderItem, PurchaseOrderItem } from 'src/types/order';
+import type { PurchaseOrderItem } from 'src/types/order';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import MenuList from '@mui/material/MenuList';
-import Collapse from '@mui/material/Collapse';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
@@ -175,7 +173,7 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem
+          {/* <MenuItem
             onClick={() => {
               confirm.onTrue();
               popover.onClose();
@@ -184,7 +182,7 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
             Delete
-          </MenuItem>
+          </MenuItem> */}
 
           <MenuItem
             onClick={() => {

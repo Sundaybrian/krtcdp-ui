@@ -157,24 +157,34 @@ export function OrderListView() {
 
   const handleExport = useCallback(() => {
     console.log('Exporting...');
-    const exportData = removeKeyFromArr(dataFiltered, [
-      'id',
-      'userId',
-      'lastModifiedDate',
-      'taskId',
-      'autoInitiatedById',
-      'purchaseOrderId',
-      'checkOffTransactionId',
-      'deletedAt',
-      'deleteAt',
-      'purchaseOrder',
-      'cooperative',
-      'farmer',
-      'cooperativeId',
-      'farmerId',
-      'grnId',
-      'grn',
-    ]);
+    const exportData = removeKeyFromArr(
+      dataFiltered.map((row) => ({
+        ...row,
+        orderDate: new Date(row.orderDate).toLocaleString(),
+        farmer: `${row?.farmer?.firstName} ${row?.farmer?.lastName}`,
+        phoneNumber: row?.farmer?.mobilePhone,
+        cooperative: row?.cooperative?.groupName,
+        creationDate: new Date(row.creationDate).toLocaleString(),
+      })),
+      [
+        'id',
+        'userId',
+        'lastModifiedDate',
+        'taskId',
+        'autoInitiatedById',
+        'purchaseOrderId',
+        'checkOffTransactionId',
+        'deletedAt',
+        'deleteAt',
+        'purchaseOrder',
+        // 'cooperative',
+        // 'farmer',
+        'cooperativeId',
+        'farmerId',
+        'grnId',
+        'grn',
+      ]
+    );
     exportExcel(exportData, 'Purchase_Orders');
   }, [dataFiltered]);
 

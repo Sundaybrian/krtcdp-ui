@@ -18,14 +18,14 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 type Props = {
   onResetPage: () => void;
-  filters: UseSetStateReturn<IUserTableFilters>;
   onExport: () => void;
-  options: {
+  filters: UseSetStateReturn<IUserTableFilters>;
+  options?: {
     roles: string[];
   };
 };
 
-export function CountyTableToolbar({ filters, options, onResetPage, onExport }: Props) {
+export function StakeholderTableToolbar({ filters, options, onResetPage, onExport }: Props) {
   const popover = usePopover();
 
   const handleFilterName = useCallback(
@@ -55,6 +55,30 @@ export function CountyTableToolbar({ filters, options, onResetPage, onExport }: 
         direction={{ xs: 'column', md: 'row' }}
         sx={{ p: 2.5, pr: { xs: 2.5, md: 1 } }}
       >
+        {/* <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 200 } }}>
+          <InputLabel htmlFor="user-filter-role-select-label">Marital Status</InputLabel>
+          <Select
+            multiple
+            value={filters.state.role}
+            onChange={handleFilterRole}
+            input={<OutlinedInput label="Role" />}
+            renderValue={(selected) => selected.map((value) => value).join(', ')}
+            inputProps={{ id: 'user-filter-role-select-label' }}
+            MenuProps={{ PaperProps: { sx: { maxHeight: 240 } } }}
+          >
+            {options.roles.map((option) => (
+              <MenuItem key={option} value={option}>
+                <Checkbox
+                  disableRipple
+                  size="small"
+                  checked={filters.state.role.includes(option)}
+                />
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl> */}
+
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth

@@ -65,7 +65,7 @@ export function useGetProduct(productId: string) {
 // ----------------------------------------------------------------------
 export function useSearchCooperative(query: any = {}) {
   const url = query
-    ? [endpoints.cooperative.search, { params: { limit: 200, page: 1, ...query } }]
+    ? [endpoints.cooperative.search, { params: { limit: 500, page: 1, ...query } }]
     : '';
 
   const { data, isLoading, error, isValidating } = useSWR<Page<ICooperative[]>>(url, fetcher, {

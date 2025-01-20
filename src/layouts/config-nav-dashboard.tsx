@@ -116,7 +116,7 @@ export const navData = [
         icon: ICONS.banking,
         children: [
           { title: 'New farmer', path: paths.dashboard.farner.newCoopFarmer },
-          { title: 'Farmers', path: paths.dashboard.farner.coopFarmers },
+          { title: 'Coop-Farmers', path: paths.dashboard.farner.coopFarmers },
           { title: 'Harvest', path: paths.dashboard.farner.harvest },
           { title: 'GRN', path: paths.dashboard.farner.grn },
           { title: 'Invoice', path: paths.dashboard.invoice.root },
@@ -126,12 +126,12 @@ export const navData = [
       },
       {
         title: 'Cooperative Mgt',
-        permission: 'view:cooperative',
+        permission: requiredPermissions.cooperative.viewCooperative,
         path: paths.dashboard.cooperative.root,
         icon: ICONS.banking,
         children: [
           { title: 'Cooperatives', path: paths.dashboard.cooperative.root },
-          { title: 'Create', path: paths.dashboard.cooperative.new },
+          // { title: 'Create', path: paths.dashboard.cooperative.new },
           { title: 'Assign Admin', path: paths.dashboard.cooperative.assignAdmin },
           { title: 'Admins', path: paths.dashboard.cooperative.admin },
           { title: 'Unions', path: paths.dashboard.cooperative.union },
@@ -140,7 +140,7 @@ export const navData = [
 
       {
         title: 'County',
-        permission: 'view:county',
+        permission: requiredPermissions.county.viewCounty,
         path: paths.dashboard.county.root,
         icon: ICONS.job,
         children: [
@@ -272,7 +272,7 @@ export const navData = [
       },
       {
         title: 'Categories',
-        permission: 'view:category',
+        permission: requiredPermissions.category.viewCategory,
         path: paths.dashboard.category.root,
         icon: ICONS.job,
         children: [

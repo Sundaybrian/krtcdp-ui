@@ -172,6 +172,12 @@ export const requiredPermissions = {
     viewTicket: 'viewTicket',
     createTicket: 'createTicket',
   },
+  category: {
+    viewCategory: 'viewCategory',
+    createCategory: 'createCategory',
+    updateCategory: 'updateCategory',
+    deleteCategory: 'deleteCategory',
+  },
 };
 
 export const TICKET_STATUS = ['New', 'Assigned', 'Inprogress', 'OnHold', 'Resolved', 'Closed'];

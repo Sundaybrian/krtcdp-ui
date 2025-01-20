@@ -19,12 +19,13 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 type Props = {
   onResetPage: () => void;
   filters: UseSetStateReturn<IUserTableFilters>;
+  onExport: () => void;
   options: {
     roles: string[];
   };
 };
 
-export function CategoryTableToolbar({ filters, options, onResetPage }: Props) {
+export function CategoryTableToolbar({ filters, options, onResetPage, onExport }: Props) {
   const popover = usePopover();
 
   const handleFilterName = useCallback(
@@ -94,15 +95,7 @@ export function CategoryTableToolbar({ filters, options, onResetPage }: Props) {
           <MenuItem
             onClick={() => {
               popover.onClose();
-            }}
-          >
-            <Iconify icon="solar:import-bold" />
-            Import
-          </MenuItem>
-
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
+              onExport();
             }}
           >
             <Iconify icon="solar:export-bold" />

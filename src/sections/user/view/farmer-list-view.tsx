@@ -26,7 +26,7 @@ import { removeKeyFromArr } from 'src/utils/helper';
 
 import { varAlpha } from 'src/theme/styles';
 import { getFarmers } from 'src/api/services';
-import { _roles, USER_STATUS_OPTIONS } from 'src/_mock';
+import { USER_STATUS_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Label } from 'src/components/label';
@@ -57,7 +57,7 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
-  // { id: 'lastName', label: 'Last Name' },
+  { id: 'maritalStatus', label: 'Marital Status' },
   { id: 'mobilePhone', label: 'Phone number', width: 180 },
   { id: 'county', label: 'County', width: 220 },
   { id: 'subCounty', label: 'Sub County', width: 180 },
@@ -76,19 +76,15 @@ export function FarmerListView() {
   const confirm = useBoolean();
 
   const [tableData, setTableData] = useState<IUserItem[]>([]);
-  const [dataFiltered, setDataFiltered] = useState<IUserItem[]>([]);
+  // const [dataFiltered, setDataFiltered] = useState<IUserItem[]>([]);
 
   const filters = useSetState<IUserTableFilters>({ name: '', role: [], status: 'all' });
 
-  const applyNewFilter = (data: IUserItem[]) => {
-    const filteredData = applyFilter({
-      inputData: data,
-      comparator: getComparator(table.order, table.orderBy),
-      filters: filters.state,
-    });
-
-    setDataFiltered(filteredData);
-  };
+  const dataFiltered = applyFilter({
+    inputData: tableData,
+    comparator: getComparator(table.order, table.orderBy),
+    filters: filters.state,
+  });
 
   const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 
@@ -139,7 +135,6 @@ export function FarmerListView() {
   );
 
   // handle export
-
   const handleExport = () => {
     const exportData = removeKeyFromArr(dataFiltered, [
       'id',
@@ -184,7 +179,7 @@ export function FarmerListView() {
         setTableData(data.results);
         console.log('Users:', data);
 
-        applyNewFilter(data.results);
+        // applyNewFilter(data.results);
       })
       .catch((error) => {
         toast.error('Failed to fetch users!');
@@ -263,7 +258,7 @@ export function FarmerListView() {
             filters={filters}
             onExport={handleExport}
             onResetPage={table.onResetPage}
-            options={{ roles: _roles }}
+            options={{ roles: ['married', 'single'] }}
           />
 
           {canReset && (
@@ -410,7 +405,7 @@ function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
   }
 
   if (role.length) {
-    inputData = inputData.filter((user) => role.includes(user.userType));
+    inputData = inputData.filter((user) => role.includes(user.maritalStatus));
   }
 
   return inputData;

@@ -73,7 +73,7 @@ export function DashboardLayout({ sx, children, data }: DashboardLayoutProps) {
       return (
         perm?.permissions.includes(subItem.permission!) ||
         perms?.permissions.includes(subItem?.permission!) ||
-        perms.isSuperAdmin!
+        perms?.isSuperAdmin!
       );
     });
     if (zz.length) {

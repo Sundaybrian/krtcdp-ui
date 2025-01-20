@@ -1,7 +1,8 @@
 'use client';
 
+import type { ICooperative } from 'src/types/cooperative';
+import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
-import type { IProductItem, IProductTableFilters } from 'src/types/product';
 import type {
   GridSlots,
   GridColDef,
@@ -17,7 +18,6 @@ import Button from '@mui/material/Button';
 import {
   DataGrid,
   gridClasses,
-  GridToolbarExport,
   GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarQuickFilter,
@@ -32,30 +32,31 @@ import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
+import { exportExcel } from 'src/utils/xlsx';
+import { removeKeyFromArr } from 'src/utils/helper';
+import { INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
+
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useSearchCooperative } from 'src/actions/cooperative';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { useSearchCooperative } from 'src/actions/cooperative';
-import { ICooperative } from 'src/types/cooperative';
-import { INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
 
 import { CooperativeTableToolbar } from '../cooperative-table-toolbar';
 import { CooperativeTableFiltersResult } from '../cooperative-table-filters-result';
 import {
+  RenderGeneric,
   RenderCellStock,
   RenderCellPrice,
   RenderCellPublish,
   RenderCellProduct,
-  RenderCellCreatedAt,
-  RenderGeneric,
   RenderHasInsurance,
+  RenderCellCreatedAt,
 } from '../cooperative-table-row';
-import { CooperativeNewEditForm } from '../cooperative-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -137,6 +138,21 @@ export function CooperativeListView() {
     [router]
   );
 
+  // handle export
+  const handleExport = useCallback(() => {
+    console.log('exporting...............');
+    console.log(dataFiltered);
+
+    const exportData = removeKeyFromArr(dataFiltered, [
+      'id',
+      // dates
+      'deletedAt',
+      'lastLoginDate',
+      'lastModifiedDate',
+    ]);
+    exportExcel(exportData, 'Cooperatives');
+  }, [dataFiltered]);
+
   const CustomToolbarCallback = useCallback(
     () => (
       <CustomToolbar
@@ -145,11 +161,13 @@ export function CooperativeListView() {
         selectedRowIds={selectedRowIds}
         setFilterButtonEl={setFilterButtonEl}
         filteredResults={dataFiltered.length}
+        data={dataFiltered}
         onOpenConfirmDeleteRows={confirmRows.onTrue}
+        // exportReport={handleExport}
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filters.state, selectedRowIds]
+    [filters.state, selectedRowIds, dataFiltered]
   );
 
   const columns: GridColDef[] = [
@@ -170,13 +188,13 @@ export function CooperativeListView() {
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
     {
-      field: 'insuranceType',
-      headerName: 'Insuarance Type',
+      field: 'type',
+      headerName: 'Cooperative Type',
       width: 160,
-      type: 'singleSelect',
-      valueOptions: INSURANCE_TYPE_OPTIONS,
-      renderCell: (params) => <RenderCellStock params={params} />,
+      renderCell: (params) => <RenderGeneric params={params} />,
     },
+    // type
+
     {
       field: 'yearOfCreation',
       headerName: 'Year Of Creation',
@@ -224,6 +242,14 @@ export function CooperativeListView() {
       editable: false,
       hideable: true,
       renderCell: (params) => <RenderGeneric params={params} key="insuranceProvider" />,
+    },
+    {
+      field: 'insuranceType',
+      headerName: 'Insuarance Type',
+      width: 160,
+      type: 'singleSelect',
+      valueOptions: INSURANCE_TYPE_OPTIONS,
+      renderCell: (params) => <RenderCellStock params={params} />,
     },
 
     {
@@ -388,6 +414,8 @@ interface CustomToolbarProps {
   onOpenConfirmDeleteRows: () => void;
   filters: UseSetStateReturn<IProductTableFilters>;
   setFilterButtonEl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
+  // exportReport: () => void;
+  data?: ICooperative[];
 }
 
 function CustomToolbar({
@@ -397,7 +425,29 @@ function CustomToolbar({
   filteredResults,
   setFilterButtonEl,
   onOpenConfirmDeleteRows,
+  // exportReport,
+  data,
 }: CustomToolbarProps) {
+  const handleExport = () => {
+    console.log('exporting...............');
+    console.log(data);
+
+    const exportData = removeKeyFromArr(data!, [
+      'id',
+      // data
+      'admins',
+      'latitude',
+      'precision',
+      'mainAcitivity',
+      'cooperativeUnionId',
+
+      // dates
+      'deletedAt',
+      'lastLoginDate',
+      'lastModifiedDate',
+    ]);
+    exportExcel(exportData, 'Cooperatives');
+  };
   return (
     <>
       <GridToolbarContainer>
@@ -428,7 +478,12 @@ function CustomToolbar({
 
           <GridToolbarColumnsButton />
           <GridToolbarFilterButton ref={setFilterButtonEl} />
-          <GridToolbarExport />
+          {/* <GridToolbarExport /> */}
+          <Button
+            size="small"
+            onClick={handleExport}
+            startIcon={<Iconify icon="solar:export-bold" />}
+          />
         </Stack>
       </GridToolbarContainer>
 

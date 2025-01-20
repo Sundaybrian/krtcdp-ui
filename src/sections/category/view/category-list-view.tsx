@@ -20,6 +20,9 @@ import { RouterLink } from 'src/routes/components';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
+import { exportExcel } from 'src/utils/xlsx';
+import { removeKeyFromArr } from 'src/utils/helper';
+
 import { searchCategories } from 'src/api/services';
 import { DashboardContent } from 'src/layouts/dashboard';
 
@@ -63,19 +66,14 @@ export function CategoryListView() {
   const confirm = useBoolean();
 
   const [tableData, setTableData] = useState<CategoryData[]>([]);
-  const [dataFiltered, setDataFiltered] = useState<CategoryData[]>([]);
 
   const filters = useSetState<IUserTableFilters>({ name: '', role: [], status: 'all' });
 
-  const applyNewFilter = (data: CategoryData[]) => {
-    const filteredData = applyFilter({
-      inputData: data,
-      comparator: getComparator(table.order, table.orderBy),
-      filters: filters.state,
-    });
-
-    setDataFiltered(filteredData);
-  };
+  const dataFiltered = applyFilter({
+    inputData: tableData,
+    comparator: getComparator(table.order, table.orderBy),
+    filters: filters.state,
+  });
 
   const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 
@@ -125,12 +123,23 @@ export function CategoryListView() {
     [filters, table]
   );
 
+  const handleExport = () => {
+    const exportData = removeKeyFromArr(dataFiltered, [
+      'id',
+      'subCategories',
+      // dates
+      'deletedAt',
+      'lastLoginDate',
+      'lastModifiedDate',
+    ]);
+    exportExcel(exportData, 'Categories');
+  };
+
   // use effect
   useEffect(() => {
     searchCategories()
       .then((res) => {
         setTableData(res.results);
-        applyNewFilter(res.results);
       })
       .catch((err) => {
         console.error(err);
@@ -142,7 +151,7 @@ export function CategoryListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="Counties"
+          heading="Categories"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Categories', href: paths.dashboard.user.root },
@@ -165,6 +174,7 @@ export function CategoryListView() {
           <CategoryTableToolbar
             filters={filters}
             onResetPage={table.onResetPage}
+            onExport={handleExport}
             options={{ roles: [] }}
           />
 

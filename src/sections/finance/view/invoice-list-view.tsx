@@ -1,6 +1,6 @@
 'use client';
 
-import type { InvoiceItem, IInvoiceTableFilters } from 'src/types/invoice';
+import type { IInvoiceTableFilters } from 'src/types/invoice';
 
 import { useState, useCallback } from 'react';
 
@@ -509,13 +509,14 @@ export function BankPaymentListView() {
 
 type ApplyFilterProps = {
   dateError: boolean;
-  inputData: InvoiceItem[];
+  inputData: any[];
   filters: IInvoiceTableFilters;
   comparator: (a: any, b: any) => number;
 };
 
 function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterProps) {
   const { name, status, service, startDate, endDate } = filters;
+  console.log('inputData', filters);
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -528,11 +529,7 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name) {
-    inputData = inputData.filter(
-      (invoice) =>
-        invoice.id.indexOf(name.toLowerCase()) !== -1 ||
-        invoice.farmer.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
+    inputData = inputData.filter((invoice) => invoice.fileName.indexOf(name.toLowerCase()) !== -1);
   }
 
   if (status !== 'all') {

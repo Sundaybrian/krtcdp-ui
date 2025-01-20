@@ -28,7 +28,6 @@ export function OverviewAppView() {
   const { searchLoading, searchError, searchResults } = useGetStatistcis();
 
   console.log(searchResults);
-  console.log(searchError);
 
   const data = searchResults as Istats;
 
@@ -110,9 +109,7 @@ export function OverviewAppView() {
             title="Total active users"
             href={paths.dashboard.user.list}
             percent={2.6}
-            total={
-              data?.activeUsers?.filter((user) => user.accountState === 'active')[0]?.count || 0
-            }
+            total={data?.totalUsers || 0}
             chart={{
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
               series: [15, 18, 12, 51, 68, 11, 39, 37],
