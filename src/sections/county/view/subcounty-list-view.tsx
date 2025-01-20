@@ -1,8 +1,9 @@
 'use client';
 
-import type { IUserItem, IUserTableFilters } from 'src/types/user';
+import type { County } from 'src/api/data.inteface';
+import type { IUserTableFilters } from 'src/types/user';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -22,9 +23,9 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
 import { varAlpha } from 'src/theme/styles';
-import { DashboardContent } from 'src/layouts/dashboard';
-import { _roles, _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 import { getCounties } from 'src/api/services';
+import { _roles, USER_STATUS_OPTIONS } from 'src/_mock';
+import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -43,7 +44,6 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
-import { County } from 'src/api/data.inteface';
 
 import { CountyTableRow } from '../county-table-row';
 import { CountyTableToolbar } from '../county-table-toolbar';
@@ -218,6 +218,7 @@ export function SubCountyListView() {
           <CountyTableToolbar
             filters={filters}
             onResetPage={table.onResetPage}
+            onExport={() => console.log('Export')}
             options={{ roles: _roles }}
           />
 
