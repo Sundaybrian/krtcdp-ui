@@ -99,6 +99,7 @@ export function CooperativeFarmerListView() {
     searchCoopFarmers(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
       if (data.results.length) {
         setTableData(data.results);
+        console.log(data.results);
       }
     });
   }, [state.coopId]);
@@ -399,7 +400,7 @@ export function CooperativeFarmerListView() {
             { name: 'Coop Farmers' },
           ]}
           action={
-            <>
+            <Stack direction="row" spacing={2}>
               <Button
                 component={RouterLink}
                 href={paths.dashboard.farner.newCoopFarmer}
@@ -416,7 +417,7 @@ export function CooperativeFarmerListView() {
               >
                 Bulk Upload
               </Button>
-            </>
+            </Stack>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
         />

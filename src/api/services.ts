@@ -369,11 +369,14 @@ export const searchCoopFarmers = async (query = {}): Promise<Page<CoopFarmerList
   try {
     const response = await axios.post(
       endpoints.cooperative.searchCoopFarmer,
-      {},
+      {
+        page: 1,
+        limit: 20,
+      },
       {
         params: {
           page: 1,
-          limit: 200,
+          limit: 20,
           ...query,
         },
       }
