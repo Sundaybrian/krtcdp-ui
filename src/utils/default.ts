@@ -178,6 +178,16 @@ export const requiredPermissions = {
     updateCategory: 'updateCategory',
     deleteCategory: 'deleteCategory',
   },
+  statistics: {
+    viewStatistics: 'viewStatistics',
+    viewUserCount: 'viewUserCount',
+    viewFarmerCount: 'viewFarmerCount',
+    viewCooperativeCount: 'viewCooperativeCount',
+    viewInsuranceCount: 'viewInsuranceCount',
+    viewProductCount: 'viewProductCount',
+    viewCategoryCount: 'viewCategoryCount',
+    viewAdminCount: 'viewAdminCount',
+  },
 };
 
 export const TICKET_STATUS = ['New', 'Assigned', 'Inprogress', 'OnHold', 'Resolved', 'Closed'];

@@ -8,6 +8,10 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 import { paths } from 'src/routes/paths';
 
+import { getStorage } from 'src/hooks/use-local-storage';
+
+import { requiredPermissions } from 'src/utils/default';
+
 import { useGetStatistcis } from 'src/actions/stats';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { SeoIllustration } from 'src/assets/illustrations';
@@ -23,11 +27,13 @@ import { AppCurrentDownload } from '../app-current-download';
 export function OverviewAppView() {
   const { firstName } = useAuthUser();
 
+  const perms = getStorage('permissions');
+
   const theme = useTheme();
 
-  const { searchLoading, searchError, searchResults } = useGetStatistcis();
+  const { searchResults } = useGetStatistcis();
 
-  console.log(searchResults);
+  const { permissions = [], isSuperAdmin = false } = perms;
 
   const data = searchResults as Istats;
 
@@ -106,7 +112,7 @@ export function OverviewAppView() {
 
         <Grid xs={12} md={4}>
           <AppWidgetSummary
-            title="Total active users"
+            title="Total users"
             href={paths.dashboard.user.list}
             percent={2.6}
             total={data?.totalUsers || 0}
@@ -131,22 +137,25 @@ export function OverviewAppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={4}>
-          <AppWidgetSummary
-            title="Total Admins"
-            href={paths.dashboard.user.list}
-            percent={-0.1}
-            total={
-              data?.userTypeCounts?.filter((user) => user.userType === 'SYSTEM_ADMIN')[0]?.count ||
-              0
-            }
-            chart={{
-              colors: [theme.vars.palette.error.main],
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-              series: [18, 19, 31, 8, 16, 37, 12, 33],
-            }}
-          />
-        </Grid>
+        {isSuperAdmin ||
+          (permissions.includes(requiredPermissions.statistics.viewAdminCount) && (
+            <Grid xs={12} md={4}>
+              <AppWidgetSummary
+                title="Total Admins"
+                href={paths.dashboard.user.list}
+                percent={-0.1}
+                total={
+                  data?.userTypeCounts?.filter((user) => user.userType === 'SYSTEM_ADMIN')[0]
+                    ?.count || 0
+                }
+                chart={{
+                  colors: [theme.vars.palette.error.main],
+                  categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                  series: [18, 19, 31, 8, 16, 37, 12, 33],
+                }}
+              />
+            </Grid>
+          ))}
 
         <Grid xs={12} md={4}>
           <AppWidgetSummary
@@ -162,19 +171,22 @@ export function OverviewAppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={4}>
-          <AppWidgetSummary
-            title="Total Cooperatives"
-            href={paths.dashboard.cooperative.root}
-            percent={-0.1}
-            total={data?.cooperativesCount || 0}
-            chart={{
-              colors: [theme.vars.palette.error.main],
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-              series: [18, 19, 31, 8, 16, 37, 12, 33],
-            }}
-          />
-        </Grid>
+        {isSuperAdmin ||
+          (permissions.includes(requiredPermissions.statistics.viewCooperativeCount) && (
+            <Grid xs={12} md={4}>
+              <AppWidgetSummary
+                title="Total Cooperatives"
+                href={paths.dashboard.cooperative.root}
+                percent={-0.1}
+                total={data?.cooperativesCount || 0}
+                chart={{
+                  colors: [theme.vars.palette.error.main],
+                  categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                  series: [18, 19, 31, 8, 16, 37, 12, 33],
+                }}
+              />
+            </Grid>
+          ))}
 
         {/* <Grid xs={12} md={6} lg={8}>
           <AppAreaInstalled
