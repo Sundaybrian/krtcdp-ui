@@ -37,7 +37,6 @@ import { exportExcel } from 'src/utils/xlsx';
 import { removeKeyFromArr } from 'src/utils/helper';
 import { TENANT_LOCAL_STORAGE, INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
 
-import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { approveCoopFarmer, searchCoopFarmers } from 'src/api/services';
 
@@ -48,7 +47,6 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { BulkFarmerUploadDialog } from './bulk-upload-farmer';
-import { CooperativeTableToolbar } from '../cooperative-table-toolbar';
 import { CooperativeTableFiltersResult } from '../cooperative-table-filters-result';
 import {
   RenderGeneric,
@@ -250,17 +248,18 @@ export function CooperativeFarmerListView() {
         <RenderCellProduct params={params} onViewRow={() => handleViewRow(params.row.id)} />
       ),
     },
-    {
-      field: 'accountState',
-      headerName: 'Status',
-      width: 160,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
+
     {
       field: 'mobilePhone',
       headerName: 'Phone Number',
       width: 160,
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
+    },
+    {
+      field: 'accountState',
+      headerName: 'Status',
+      width: 160,
+      renderCell: (params) => <RenderGeneric params={params} />,
     },
     {
       field: 'insuranceType',
@@ -513,10 +512,10 @@ function CustomToolbar({
   return (
     <>
       <GridToolbarContainer>
-        <CooperativeTableToolbar
+        {/* <CooperativeTableToolbar
           filters={filters}
           options={{ stocks: PRODUCT_STOCK_OPTIONS, publishs: PUBLISH_OPTIONS }}
-        />
+        /> */}
 
         <GridToolbarQuickFilter />
 

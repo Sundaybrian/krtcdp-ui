@@ -16,6 +16,10 @@ export type IProductTableFilters = {
   publish: string[];
 };
 
+export interface IFfarmerTableFilters {
+  searchValue: string;
+}
+
 export type IProductReviewNewForm = {
   rating: number | null;
   review: string;
