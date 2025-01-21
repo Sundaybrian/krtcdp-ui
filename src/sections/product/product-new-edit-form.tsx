@@ -72,11 +72,13 @@ export function ProductNewEditForm({ currentProduct }: Props) {
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [subCategories, setSubCategories] = useState<any[]>([]);
 
+  console.log(currentProduct, '------------');
+
   const defaultValues = useMemo(
     () => ({
       name: currentProduct?.name || '',
       description: currentProduct?.description || '',
-      images: currentProduct?.images || [],
+      images: (currentProduct?.images || []).map((img) => img.url) || [],
       //
       stockQuantity: currentProduct?.stockQuantity || 0,
       sku: currentProduct?.sku || '10',

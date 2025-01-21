@@ -242,11 +242,22 @@ export function FarmerListView() {
                       (tab.value === 'active' && 'success') ||
                       (tab.value === 'pending' && 'warning') ||
                       (tab.value === 'banned' && 'error') ||
+                      (tab.value === 'rejected' && 'error') ||
+                      (tab.value === 'blacklisted' && 'error') ||
+                      (tab.value === 'partialApplication' && 'primary') ||
                       'default'
                     }
                   >
-                    {['active', 'pending', 'banned', 'rejected'].includes(tab.value)
-                      ? tableData.filter((user) => user.userState === tab.value).length
+                    {[
+                      'active',
+                      'inactive',
+                      'exited',
+                      'rejected',
+                      'pendingApproval',
+                      'partialApplication',
+                      'blacklisted',
+                    ].includes(tab.value)
+                      ? tableData.filter((user) => user.accountState === tab.value).length
                       : tableData.length}
                   </Label>
                 }

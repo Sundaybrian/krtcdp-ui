@@ -5,10 +5,10 @@ import { _mock } from './_mock';
 export const USER_STATUS_OPTIONS = [
   { value: 'active', label: 'Active' },
   { value: 'inactive', label: 'Inactive' },
-  // { value: 'exited', label: 'Exited' },
-  { value: 'rejected', label: 'Rejected' },
+  { value: 'partialApplication', label: 'Partial application' },
   { value: 'pendingApproval', label: 'Pending approval' },
-  // { value: 'partialApplication', label: 'Partial application' },
+  { value: 'exited', label: 'Exited' },
+  { value: 'rejected', label: 'Rejected' },
   { value: 'blacklisted', label: 'Blaclisted' },
 ];
 
