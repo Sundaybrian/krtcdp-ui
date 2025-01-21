@@ -283,6 +283,7 @@ export function UserListView() {
             onResetPage={table.onResetPage}
             onExport={handleExport}
             options={{ roles: userTypes }}
+            statusLabel="User Type"
           />
 
           {canReset && (

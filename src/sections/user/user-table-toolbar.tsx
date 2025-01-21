@@ -28,9 +28,10 @@ type Props = {
   options: {
     roles: string[];
   };
+  statusLabel?: string;
 };
 
-export function UserTableToolbar({ filters, options, onResetPage, onExport }: Props) {
+export function UserTableToolbar({ filters, options, onResetPage, onExport, statusLabel }: Props) {
   const popover = usePopover();
 
   const handleFilterName = useCallback(
@@ -61,7 +62,9 @@ export function UserTableToolbar({ filters, options, onResetPage, onExport }: Pr
         sx={{ p: 2.5, pr: { xs: 2.5, md: 1 } }}
       >
         <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 200 } }}>
-          <InputLabel htmlFor="user-filter-role-select-label">Marital Status</InputLabel>
+          <InputLabel htmlFor="user-filter-role-select-label">
+            {statusLabel || 'Marital Status'}
+          </InputLabel>
           <Select
             multiple
             value={filters.state.role}
