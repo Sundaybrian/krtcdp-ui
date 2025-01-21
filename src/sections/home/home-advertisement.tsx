@@ -64,9 +64,8 @@ export function HomeAdvertisement({ sx, ...other }: StackProps) {
             color="primary"
             size="large"
             variant="contained"
-            target="_blank"
             rel="noopener"
-            href={paths.minimalStore}
+            href={paths.auth.jwt.signIn}
           >
             Login
           </Button>
@@ -77,9 +76,8 @@ export function HomeAdvertisement({ sx, ...other }: StackProps) {
             color="inherit"
             size="large"
             variant="outlined"
-            target="_blank"
             rel="noopener"
-            href={paths.freeUI}
+            href={paths.auth.jwt.signUp}
             endIcon={<Iconify width={16} icon="eva:external-link-fill" sx={{ mr: 0.5 }} />}
             sx={{
               color: 'common.white',

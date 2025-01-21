@@ -80,22 +80,17 @@ export function UserListView() {
   const confirm = useBoolean();
 
   const [tableData, setTableData] = useState<IUserItem[]>([]);
-  const [dataFiltered, setDataFiltered] = useState<IUserItem[]>([]);
   const [userTypes, setUserTypes] = useState<string[]>([]);
 
   const filters = useSetState<IUserTableFilters>({ name: '', role: [], status: 'all' });
 
-  const applyNewFilter = (data: IUserItem[]) => {
-    const filteredData = applyFilter({
-      inputData: data,
-      comparator: getComparator(table.order, table.orderBy),
-      filters: filters.state,
-    });
-
-    setDataFiltered(filteredData);
-  };
-
   const table = useTable({ defaultOrderBy: 'creationDate', defaultOrder: 'desc' });
+
+  const dataFiltered = applyFilter({
+    inputData: tableData,
+    comparator: getComparator(table.order, table.orderBy),
+    filters: filters.state,
+  });
 
   const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 
@@ -139,8 +134,6 @@ export function UserListView() {
 
   const handleFilterStatus = useCallback(
     (event: React.SyntheticEvent, newValue: string) => {
-      console.log('here', newValue);
-
       table.onResetPage();
       filters.setState({ status: newValue });
     },
@@ -189,7 +182,6 @@ export function UserListView() {
     getUsers()
       .then((data) => {
         setTableData(data.results);
-        applyNewFilter(data.results);
       })
       .catch((error) => {
         toast.error('Failed to fetch users!');
@@ -431,7 +423,12 @@ function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
 
   if (name) {
     inputData = inputData.filter(
-      (user) => user.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (user) =>
+        user.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user.lastName.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user.mobilePhone.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user.county.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user.subCounty.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
