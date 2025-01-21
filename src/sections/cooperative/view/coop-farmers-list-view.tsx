@@ -215,7 +215,7 @@ export function CooperativeFarmerListView() {
       'deletedAt',
       'lastLoginDate',
       'lastModifiedDate',
-      // 'Farmer',
+      'Farmer',
     ]);
     exportExcel(exportData, 'Farmers');
   };
@@ -233,7 +233,7 @@ export function CooperativeFarmerListView() {
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filters.state, selectedRowIds]
+    [filters.state, selectedRowIds, dataFiltered]
   );
 
   const columns: GridColDef[] = [
