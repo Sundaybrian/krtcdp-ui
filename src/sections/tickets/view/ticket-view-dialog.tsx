@@ -235,11 +235,12 @@ export function TicketViewDialog({ ticket, open, onClose }: Props) {
             Close
           </Button>
 
-          {ticket.approvalState !== 'COMPLETED' && ticket.approvalState !== 'APPROVED_BY_COOP' && (
-            <Button color="error" type="button" variant="outlined" onClick={handleReject}>
-              Reject
-            </Button>
-          )}
+          {ticket?.approvalState !== 'COMPLETED' &&
+            ticket?.approvalState !== 'APPROVED_BY_COOP' && (
+              <Button color="error" type="button" variant="outlined" onClick={handleReject}>
+                Reject
+              </Button>
+            )}
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
             Assign and approve

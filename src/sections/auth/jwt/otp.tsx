@@ -97,10 +97,10 @@ export function OtpVerify() {
       <EmailInboxIcon sx={{ mx: 'auto' }} />
 
       <Stack spacing={1} sx={{ mt: 3, mb: 5, textAlign: 'center', whiteSpace: 'pre-line' }}>
-        <Typography variant="h5">Please SMS</Typography>
+        <Typography variant="h5">OTP signin</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {`We've sent a 4-digit confirmation code. \nPlease enter the code to verify your signin.`}
+          {`We've sent a 6-digit confirmation code. \nPlease enter the code to verify your signin.`}
         </Typography>
       </Stack>
     </>
