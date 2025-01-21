@@ -241,7 +241,7 @@ export function CooperativeFarmerListView() {
       field: 'name',
       headerName: 'Name',
       flex: 1,
-      minWidth: 8,
+      minWidth: 150,
       width: 200,
       hideable: false,
       renderCell: (params) => (
