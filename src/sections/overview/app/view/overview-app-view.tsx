@@ -160,7 +160,7 @@ export function OverviewAppView() {
         <Grid xs={12} md={4}>
           <AppWidgetSummary
             title="Total Farms"
-            href={paths.dashboard.cooperative.coopFarmers}
+            href={paths.dashboard.farmer.coopFarmers}
             percent={-0.1}
             total={data?.farmsCount || 0}
             chart={{

@@ -27,7 +27,7 @@ export default function Error({
         action={
           <Button
             component={RouterLink}
-            href={paths.dashboard.cooperative.coopFarmers}
+            href={paths.dashboard.farmer.coopFarmers}
             startIcon={<Iconify width={16} icon="eva:arrow-ios-back-fill" />}
             sx={{ mt: 3 }}
           >
