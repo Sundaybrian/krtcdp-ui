@@ -15,10 +15,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-import { toast } from 'src/components/snackbar';
 import { chnageUserState } from 'src/api/services';
-import { Form, Field } from 'src/components/hook-form';
 import { USER_STATUS_OPTIONS } from 'src/_mock/_user';
+
+import { toast } from 'src/components/snackbar';
+import { Form, Field } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -71,15 +72,14 @@ export function UserManageStateForm({ currentUser, open, onClose }: Props) {
 
       toast.promise(promise, {
         loading: 'Loading...',
-        success: 'Profile created successfully',
-        error: 'Profile could not be created!',
+        success: 'User status updated successfully',
+        error: 'Failed to update user status',
       });
 
       await promise;
-
-      console.info('DATA', data);
     } catch (error) {
       console.error(error);
+      toast.error(error.message || 'Failed to update user status');
     }
   });
 

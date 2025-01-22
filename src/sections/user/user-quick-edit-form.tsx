@@ -42,7 +42,7 @@ export const UserQuickEditSchema = zod.object({
   company: zod.string().min(1, { message: 'Company is required!' }),
   role: zod.string().min(1, { message: 'Role is required!' }),
   // Not required
-  status: zod.string(),
+  accountState: zod.string(),
 });
 
 // ----------------------------------------------------------------------
@@ -64,7 +64,7 @@ export function UserQuickEditForm({ currentUser, open, onClose }: Props) {
       state: currentUser?.subCounty || '',
       city: currentUser?.ward || '',
       zipCode: currentUser?.birthDate || '',
-      status: currentUser?.userState,
+      accountState: currentUser?.accountState || '',
       company: currentUser?.middleName || '',
       role: currentUser?.userType || '',
     }),
@@ -126,7 +126,7 @@ export function UserQuickEditForm({ currentUser, open, onClose }: Props) {
             display="grid"
             gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
           >
-            <Field.Select name="status" label="Status">
+            <Field.Select name="accountState" label="Status">
               {USER_STATUS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
