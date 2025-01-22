@@ -254,13 +254,13 @@ export function TasksListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Farmers', href: paths.dashboard.farner.root },
+            { name: 'Farmers', href: paths.dashboard.farmer.root },
             { name: 'Tasks' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.farner.newTask}
+              href={paths.dashboard.farmer.newTask}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >

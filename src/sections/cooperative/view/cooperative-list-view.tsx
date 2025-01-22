@@ -175,7 +175,7 @@ export function CooperativeListView() {
       field: 'groupName',
       headerName: 'Cooperative',
       flex: 1,
-      minWidth: 8,
+      minWidth: 180,
       hideable: false,
       renderCell: (params) => (
         <RenderCellProduct params={params} onViewRow={() => handleViewRow(params.row.id)} />

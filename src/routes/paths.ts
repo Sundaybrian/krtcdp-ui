@@ -133,11 +133,12 @@ export const paths = {
       union: `${ROOTS.DASHBOARD}/cooperative/union`,
       newUnion: `${ROOTS.DASHBOARD}/cooperative/union/new`,
     },
-    farner: {
-      root: `${ROOTS.DASHBOARD}/cooperative/coop-farmers`,
-      newCoopFarmer: `${ROOTS.DASHBOARD}/cooperative/new-farmer`,
+    farmer: {
+      root: `${ROOTS.DASHBOARD}/farmer`,
+      newCoopFarmer: `${ROOTS.DASHBOARD}/farmer/new-farmer`,
       coopFarmers: `${ROOTS.DASHBOARD}/cooperative/coop-farmers`,
       grn: `${ROOTS.DASHBOARD}/farmer/grn`,
+      invoice: `${ROOTS.DASHBOARD}/farmer/invoice`,
       harvest: `${ROOTS.DASHBOARD}/farmer/harvest`,
       warehouse: `${ROOTS.DASHBOARD}/farmer/warehouse`,
       newWarehouse: `${ROOTS.DASHBOARD}/farmer/warehouse/new`,

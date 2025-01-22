@@ -402,7 +402,7 @@ export function CooperativeFarmerListView() {
             <Stack direction="row" spacing={2}>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.farner.newCoopFarmer}
+                href={paths.dashboard.farmer.newCoopFarmer}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >

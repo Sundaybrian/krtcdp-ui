@@ -147,7 +147,7 @@ export function WarehouseReceiptListView() {
       field: 'warehouseName',
       headerName: 'Warehouse Name',
       flex: 1,
-      minWidth: 8,
+      minWidth: 150,
       hideable: false,
       renderCell: (params) => (
         <RenderCellProduct params={params} onViewRow={() => handleViewRow(params.row.id)} />
@@ -324,13 +324,13 @@ export function WarehouseReceiptListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Warehouse', href: paths.dashboard.farner.warehouse },
+            { name: 'Warehouse', href: paths.dashboard.farmer.warehouse },
             { name: 'Warehouse Receipts' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.farner.newWarehouse}
+              href={paths.dashboard.farmer.newWarehouse}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
