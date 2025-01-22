@@ -172,7 +172,7 @@ export function HarvestListView() {
 
   const handleViewRow = useCallback(
     (id: number) => {
-      router.push(paths.dashboard.farner.detailsParam(id as any));
+      router.push(paths.dashboard.farmer.detailsParam(id as any));
     },
     [router]
   );
