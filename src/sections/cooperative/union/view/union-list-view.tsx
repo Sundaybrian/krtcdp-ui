@@ -156,7 +156,7 @@ export function UnionListView() {
       field: 'name',
       headerName: 'Name',
       flex: 1,
-      minWidth: 8,
+      minWidth: 150,
       width: 160,
       hideable: false,
       renderCell: (params) => (
