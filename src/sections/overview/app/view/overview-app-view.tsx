@@ -127,7 +127,7 @@ export function OverviewAppView() {
           <AppWidgetSummary
             title="Total Farmers"
             percent={0.2}
-            href={paths.dashboard.farner.coopFarmers}
+            href={paths.dashboard.farmer.coopFarmers}
             total={data?.farmersCount || 0}
             chart={{
               colors: [theme.vars.palette.info.main],

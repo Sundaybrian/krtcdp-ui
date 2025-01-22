@@ -17,7 +17,7 @@ export function NewCoopWareHouseCreateView() {
         heading="Add Receipt"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Warehouse Receipts', href: paths.dashboard.farner.warehouse },
+          { name: 'Warehouse Receipts', href: paths.dashboard.farmer.warehouse },
           { name: 'New Receipt' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

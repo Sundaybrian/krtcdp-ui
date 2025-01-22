@@ -16,7 +16,7 @@ export function TaskCreateView() {
         heading="Task"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Task', href: paths.dashboard.farner.tasks },
+          { name: 'Task', href: paths.dashboard.farmer.tasks },
           { name: 'Assign Task' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
