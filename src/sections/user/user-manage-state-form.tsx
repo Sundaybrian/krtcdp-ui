@@ -73,7 +73,7 @@ export function UserManageStateForm({ currentUser, open, onClose }: Props) {
       toast.promise(promise, {
         loading: 'Loading...',
         success: 'User status updated successfully',
-        error: 'Failed to update user status',
+        // error: 'Failed to update user status',
       });
 
       await promise;
