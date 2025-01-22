@@ -407,12 +407,16 @@ function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
 
   if (name) {
     inputData = inputData.filter(
-      (user) => user.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (user) =>
+        user.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user.lastName.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user.maritalStatus.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user.county.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
   if (status !== 'all') {
-    inputData = inputData.filter((user) => user.userState === status);
+    inputData = inputData.filter((user) => user.accountState === status);
   }
 
   if (role.length) {

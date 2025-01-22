@@ -54,8 +54,6 @@ type Props = {
 };
 
 export function UserQuickEditForm({ currentUser, open, onClose }: Props) {
-  console.log('currentUser', currentUser);
-
   const defaultValues = useMemo(
     () => ({
       name: currentUser?.firstName || '',
