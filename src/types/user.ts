@@ -161,6 +161,7 @@ export type CoopFarmerList = {
       | 'INACTIVE'
       | 'PENDINGEXITAPPROVAL';
   }[];
+  cooperative: Cooperative;
 };
 
 export type NewFarmer = {

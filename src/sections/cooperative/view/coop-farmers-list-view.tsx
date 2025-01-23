@@ -49,6 +49,7 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { BulkFarmerUploadDialog } from './bulk-upload-farmer';
 import { CooperativeTableFiltersResult } from '../cooperative-table-filters-result';
 import {
+  RenderCoop,
   RenderGeneric,
   RenderCellStock,
   RenderCellPrice,
@@ -97,7 +98,6 @@ export function CooperativeFarmerListView() {
     searchCoopFarmers(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
       if (data.results.length) {
         setTableData(data.results);
-        console.log(data.results);
       }
     });
   }, [state.coopId]);
@@ -110,8 +110,6 @@ export function CooperativeFarmerListView() {
     async (id: string) => {
       try {
         const data = tableData.find((row) => row.id === id)!;
-        console.log(data, 'Data');
-
         if (!data.Farmer?.cooperativeId) {
           toast.error('Farmer does not belong to a cooperative!');
           return;
@@ -216,6 +214,7 @@ export function CooperativeFarmerListView() {
       'lastLoginDate',
       'lastModifiedDate',
       'Farmer',
+      'cooperative',
     ]);
     exportExcel(exportData, 'Farmers');
   };
@@ -260,6 +259,12 @@ export function CooperativeFarmerListView() {
       headerName: 'Status',
       width: 160,
       renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'coperative',
+      headerName: 'Cooperative',
+      width: 160,
+      renderCell: (params) => <RenderCoop params={params} />,
     },
     {
       field: 'insuranceType',

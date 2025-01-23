@@ -3,12 +3,8 @@ import type { GridCellParams } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
 import ListItemText from '@mui/material/ListItemText';
 import LinearProgress from '@mui/material/LinearProgress';
-
-import { fCurrency } from 'src/utils/format-number';
-import { fTime, fDate } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 
@@ -24,6 +20,10 @@ export function RenderCellPrice({ params }: ParamsProps) {
 
 export function RenderCellPublish({ params }: ParamsProps) {
   return params.row.residence;
+}
+
+export function RenderCoop({ params }: ParamsProps) {
+  return params.row?.cooperative?.groupName || 'No Cooperative';
 }
 
 export function RenderGeneric({ params }: ParamsProps) {
