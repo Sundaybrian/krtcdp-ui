@@ -17,6 +17,11 @@ export type SignInParams = {
   user: UserAccount;
 };
 
+export type SignInWithPasswordParams = {
+  email: string;
+  password: string;
+};
+
 export type SignUpParams = {
   email: string;
   password: string;
@@ -24,6 +29,11 @@ export type SignUpParams = {
   lastName: string;
 };
 
+export type AuthResponse = {
+  access_token: string;
+  refresh_token: string;
+  user: UserAccount;
+};
 /** **************************************
  * Sign in
  *************************************** */
@@ -58,6 +68,20 @@ export const signInWithPassword = async (auth: SignInParams): Promise<void> => {
       });
 
     // save to cache
+  } catch (error) {
+    console.error('Error during sign in:', error);
+    throw error;
+  }
+};
+/** **************************************
+ * Sign in with userbame and pass
+ *************************************** */
+export const signInWithEmailPassword = async (
+  data: SignInWithPasswordParams
+): Promise<AuthResponse> => {
+  try {
+    const response = await axios.post(endpoints.auth.signIn, data);
+    return response.data;
   } catch (error) {
     console.error('Error during sign in:', error);
     throw error;

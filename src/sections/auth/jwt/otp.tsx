@@ -47,11 +47,6 @@ export function OtpVerify() {
   const searchParams = useSearchParams();
   const { state } = useLocalStorage('otp', { otp: { userId: 0 } });
 
-  console.log('-------------');
-
-  console.log(state);
-  console.log('-------------');
-
   const email = searchParams.get('email');
 
   const { countdown, counting, startCountdown } = useCountdownSeconds(60);
