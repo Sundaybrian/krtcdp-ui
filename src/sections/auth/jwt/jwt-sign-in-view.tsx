@@ -45,6 +45,8 @@ export type EmailSignInSchemaType = zod.infer<typeof EmailSignInSchema>;
 export const EmailSignInSchema = zod.object({
   email: zod.string().email({ message: 'Invalid email address' }),
   password: zod.string().min(1, { message: 'Required' }),
+
+  mobilePhone: zod.string(),
 });
 
 // ----------------------------------------------------------------------
@@ -87,7 +89,7 @@ export function JwtSignInView() {
         router.push('/dashboard');
         router.refresh();
       } else {
-        const response = await signInWithMobilePhone(data);
+        const response = await signInWithMobilePhone({ mobilePhone: data.mobilePhone });
         // save to loca storage
         store.setField('otp', { userId: response.userId } as any);
         store.setState({ otp: { userId: response.userId } });

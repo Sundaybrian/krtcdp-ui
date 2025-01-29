@@ -34,7 +34,7 @@ export function Section({
   methods,
   title = 'Register in seconds.',
   imgUrl = `${CONFIG.site.basePath}/assets/illustrations/illustration-dashboard.webp`,
-  subtitle = 'One step away from endless posibilities.',
+  subtitle = 'Supporting Farmers. Sustaining Kenya.',
   ...other
 }: SectionProps) {
   const theme = useTheme();
@@ -43,8 +43,8 @@ export function Section({
     <Box
       sx={{
         ...bgGradient({
-          color: `0deg, ${varAlpha(theme.vars.palette.background.defaultChannel, 0.92)}, ${varAlpha(theme.vars.palette.background.defaultChannel, 0.92)}`,
-          imgUrl: `${CONFIG.site.basePath}/assets/background/background-3-blur.webp`,
+          color: `0deg, ${varAlpha(theme.vars.palette.success.lighterChannel, 0.92)}, ${varAlpha(theme.vars.palette.success.lighterChannel, 0.92)}`,
+          imgUrl: `${CONFIG.site.basePath}/assets/background/background-3-green.png`,
         }),
         px: 3,
         pb: 3,
@@ -60,6 +60,7 @@ export function Section({
           flexDirection: 'column',
           justifyContent: 'center',
         },
+        backgroundColor: 'darkgreen',
         ...sx,
       }}
       {...other}
@@ -69,11 +70,7 @@ export function Section({
           {title}
         </Typography>
 
-        {subtitle && (
-          <Typography sx={{ color: 'text.secondary', textAlign: 'center', mt: 2 }}>
-            {subtitle}
-          </Typography>
-        )}
+        {subtitle && <Typography sx={{ textAlign: 'center', mt: 2 }}>{subtitle}</Typography>}
       </div>
 
       <Box
@@ -120,6 +117,22 @@ export function Section({
           })}
         </Box>
       )}
+
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          m: 3,
+          color: 'text.secondary',
+          textAlign: 'right',
+        }}
+      >
+        <Typography variant="body2">
+          Access resources, tools, and insights to empower farmers and ensure sustainable
+          agricultural development in Kenya.
+        </Typography>
+      </Box>
     </Box>
   );
 }
