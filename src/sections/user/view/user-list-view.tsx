@@ -425,11 +425,11 @@ function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
   if (name) {
     inputData = inputData.filter(
       (user) =>
-        user.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        user.lastName.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        user.mobilePhone.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        user.county.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        user.subCounty.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        user?.firstName?.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user?.lastName?.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user?.mobilePhone?.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        (user?.county || '').toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        (user?.subCounty || '').toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
