@@ -73,7 +73,9 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.county}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.subCounty}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.subCounty || 'N/A'}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.userType}</TableCell>
 
         <TableCell>
           <Label

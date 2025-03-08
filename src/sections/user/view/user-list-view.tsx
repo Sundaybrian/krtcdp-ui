@@ -65,7 +65,7 @@ const TABLE_HEAD = [
   { id: 'maritalStatus', label: 'Marital Status' },
   { id: 'county', label: 'County', width: 220 },
   { id: 'subCounty', label: 'Sub County', width: 180 },
-  // { id: 'userType', label: 'User Type', width: 100 },
+  { id: 'userType', label: 'User Type', width: 100 },
   { id: 'accountState', label: 'Account State', width: 100 },
   { id: '', width: 88 },
 ];
