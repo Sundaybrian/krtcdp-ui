@@ -61,11 +61,11 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
-  // { id: 'lastName', label: 'Last Name' },
   { id: 'mobilePhone', label: 'Phone number', width: 180 },
+  { id: 'maritalStatus', label: 'Marital Status' },
   { id: 'county', label: 'County', width: 220 },
   { id: 'subCounty', label: 'Sub County', width: 180 },
-  { id: 'userType', label: 'User Type', width: 100 },
+  // { id: 'userType', label: 'User Type', width: 100 },
   { id: 'accountState', label: 'Account State', width: 100 },
   { id: '', width: 88 },
 ];

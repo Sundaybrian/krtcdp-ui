@@ -66,14 +66,14 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
             </Stack>
           </Stack>
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.maritalStatus}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.mobilePhone}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.maritalStatus || 'N/A'}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.county}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.subCounty}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.userType}</TableCell>
 
         <TableCell>
           <Label
