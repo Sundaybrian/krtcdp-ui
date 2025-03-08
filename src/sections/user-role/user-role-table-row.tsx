@@ -1,7 +1,6 @@
 import type { GridCellParams } from '@mui/x-data-grid';
 
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import ListItemText from '@mui/material/ListItemText';
 
@@ -54,17 +53,7 @@ export function RenderCellProduct({
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
       <ListItemText
         disableTypography
-        primary={
-          <Link
-            noWrap
-            color="inherit"
-            variant="subtitle2"
-            onClick={onViewRow}
-            sx={{ cursor: 'pointer' }}
-          >
-            {params?.row.role?.name}
-          </Link>
-        }
+        primary={<Label>{params?.row.role?.name}</Label>}
         secondary={
           <Box component="div" sx={{ typography: 'body2', color: 'text.disabled' }}>
             <Label>{params.row?.role?.isSuperadmin ? 'Super admin' : '--'}</Label>

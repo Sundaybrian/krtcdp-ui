@@ -1,8 +1,8 @@
 import type { GridCellParams } from '@mui/x-data-grid';
 
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
+import { Typography } from '@mui/material';
 import ListItemText from '@mui/material/ListItemText';
 
 import { fDate, fTime, fToNow } from 'src/utils/format-time';
@@ -55,15 +55,9 @@ export function RenderCellProduct({
       <ListItemText
         disableTypography
         primary={
-          <Link
-            noWrap
-            color="inherit"
-            variant="subtitle2"
-            onClick={onViewRow}
-            sx={{ cursor: 'pointer' }}
-          >
+          <Typography noWrap color="inherit" variant="subtitle2" sx={{ cursor: 'pointer' }}>
             {params.row.title}
-          </Link>
+          </Typography>
         }
         secondary={
           <Box component="div" sx={{ typography: 'body2', color: 'text.disabled' }}>

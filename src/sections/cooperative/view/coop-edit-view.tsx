@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getCooperativeById } from 'src/api/services';
 
 import { paths } from 'src/routes/paths';
 
+import { getCooperativeById } from 'src/api/services';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -35,7 +35,7 @@ export function CooperativeEditView({ cooperativeId }: Props) {
         heading="Cooperative Edit"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Cooperative', href: paths.dashboard.user.root },
+          { name: 'Cooperative', href: paths.dashboard.cooperative.root },
           { name: cooperative?.groupName || 'Edit' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
