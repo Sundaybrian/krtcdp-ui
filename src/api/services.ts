@@ -56,7 +56,7 @@ export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
   try {
     const response = await axios.post(endpoints.users.search, {
       page: 1,
-      limit: 200,
+      limit: 500,
       ...query,
     });
     return response.data;
