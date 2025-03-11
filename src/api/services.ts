@@ -25,7 +25,7 @@ import type {
   NewStakeholder,
 } from 'src/types/user';
 
-import axios, { endpoints } from 'src/axios/axios';
+import axios, { endpoints, pageLimit } from 'src/axios/axios';
 
 import type { Otp, Page, Ward, County } from './data.inteface';
 
@@ -55,8 +55,8 @@ export const validateOtp = async (data: any) => {
 export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
   try {
     const response = await axios.post(endpoints.users.search, {
-      page: 1,
-      limit: 500,
+      page: 0,
+      limit: pageLimit,
       ...query,
     });
     return response.data;
@@ -202,7 +202,7 @@ export const getFarmers = async (query = {}): Promise<Page<IUserItem[]>> => {
     const response = await axios.get(endpoints.farmer.search, {
       params: {
         page: 0,
-        limit: 20,
+        limit: pageLimit,
         ...query,
       },
     });
@@ -257,7 +257,7 @@ export const getStakeholders = async (query = {}): Promise<Page<Stakeholder[]>> 
     const response = await axios.get(endpoints.stakeholder.search, {
       params: {
         page: 0,
-        limit: 20,
+        limit: pageLimit,
         ...query,
       },
     });
@@ -315,7 +315,7 @@ export const getCooperatives = async (query = {}): Promise<Page<Cooperative[]>> 
     const response = await axios.get(endpoints.cooperative.search, {
       params: {
         page: 0,
-        limit: 200,
+        limit: pageLimit,
         ...query,
       },
     });
@@ -474,12 +474,12 @@ export const searchCategories = async (query = {}): Promise<Page<CategoryData[]>
       endpoints.category.search,
       {
         page: 1,
-        limit: 20,
+        limit: pageLimit,
       },
       {
         params: {
           page: 1,
-          limit: 20,
+          limit: pageLimit,
           ...query,
         },
       }
@@ -498,7 +498,7 @@ export const searchFarms = async (query = {}): Promise<Page<Farm[]>> => {
       endpoints.farmer.searchFarms,
       {
         page: 1,
-        limit: 20,
+        limit: pageLimit,
         ...query,
       },
       {
@@ -519,7 +519,7 @@ export const searchHarvests = async (query = {}): Promise<Page<Harvest[]>> => {
       endpoints.farmer.searchHarvests,
       {
         page: 1,
-        limit: 200,
+        limit: pageLimit,
         ...query,
       },
       {
@@ -561,8 +561,8 @@ export const searchFarmValueChain = async (query = {}): Promise<Page<ValueChain[
     const response = await axios.post(
       endpoints.farmer.searchFarmValueChain,
       {
-        page: 1,
-        limit: 20,
+        page: 0,
+        limit: pageLimit,
         ...query,
       },
       {
@@ -583,7 +583,7 @@ export const searchGrn = async (query = {}): Promise<Page<Grn[]>> => {
       endpoints.farmer.searchGrn,
       {
         page: 1,
-        limit: 20,
+        limit: pageLimit,
         ...query,
       },
       {
@@ -615,7 +615,7 @@ export const searchPurchaseOrder = async (query = {}): Promise<Page<PurchaseOrde
       endpoints.purchaseOrder.search,
       {
         page: 1,
-        limit: 20,
+        limit: pageLimit,
         ...query,
       },
       {
@@ -635,7 +635,7 @@ export const getUserOrders = async (query = {}): Promise<Page<Order[]>> => {
     const response = await axios.get(endpoints.orders.myOrders, {
       params: {
         page: 0,
-        limit: 20,
+        limit: pageLimit,
         ...query,
       },
     });
@@ -653,7 +653,7 @@ export const searchInvoice = async (query = {}): Promise<Page<InvoiceItem[]>> =>
       endpoints.invoice.search,
       {
         page: 1,
-        limit: 20,
+        limit: pageLimit,
         ...query,
       },
       {
@@ -674,7 +674,7 @@ export const searchWarehouseReceipts = async (query = {}): Promise<Page<Warehous
       endpoints.farmer.searchWarehouseReceipt,
       {
         page: 1,
-        limit: 20,
+        limit: pageLimit,
         ...query,
       },
       {
@@ -815,7 +815,7 @@ export const searchFarmExpense = async (query = {}): Promise<Page<Expense[]>> =>
       endpoints.farmer.searchExpense,
       {
         page: 1,
-        limit: 20,
+        limit: pageLimit,
         ...query,
       },
       {
@@ -834,7 +834,7 @@ export const searchNotifications = async (query = {}): Promise<Page<INotificatio
   try {
     const response = await axios.post(endpoints.notification.search, {
       page: 1,
-      limit: 200,
+      limit: pageLimit,
       ...query,
     });
     return response.data;
@@ -908,7 +908,7 @@ export const searchFarmerBalance = async (query = {}): Promise<Page<FamerBalace[
       endpoints.farmer.searchBalance,
       {
         page: 1,
-        limit: 20,
+        limit: pageLimit,
         ...query,
       },
       {
@@ -940,7 +940,7 @@ export const searchInsuranceProviders = async (query = {}): Promise<Page<Insuran
       endpoints.insuranceProvider.search,
       {
         page: 1,
-        limit: 20,
+        limit: pageLimit,
         ...query,
       },
       {
@@ -971,7 +971,7 @@ export const searchProducts = async (query = {}): Promise<Page<IProductItem[]>> 
     const response = await axios.get(endpoints.product.search, {
       params: {
         page: 0,
-        limit: 20,
+        limit: pageLimit,
         ...query,
       },
     });
@@ -1037,7 +1037,7 @@ export const searchTickets = async (query = {}): Promise<Page<ITicket[]>> => {
       endpoints.ticket.search,
       {
         page: 1,
-        limit: 20,
+        limit: pageLimit,
         ...query,
       },
       {
@@ -1104,7 +1104,7 @@ export const searchCart = async (query = {}): Promise<IcartItem> => {
       {
         params: {
           page: 0,
-          limit: 20,
+          limit: pageLimit,
           ...query,
         },
       }

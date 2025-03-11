@@ -75,7 +75,7 @@ export function RenderCellProduct({
         }
         secondary={
           <Box component="div" sx={{ typography: 'body2', color: 'text.disabled' }}>
-            {`${params.row.firstName} ${params.row.lastName}`}
+            {`${params.row.firstName || 'User'} ${params.row.lastName || 'Not recorded'} `}
           </Box>
         }
         sx={{ display: 'flex', flexDirection: 'column' }}

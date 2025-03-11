@@ -196,3 +196,5 @@ export const endpoints = {
     approve: (id: number) => `/ticket/${id}/approve`,
   },
 };
+
+export const pageLimit = 1000;
