@@ -172,13 +172,13 @@ export function StakeholderListView() {
           heading="Stakeholders"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Stakeholder', href: paths.dashboard.user.root },
+            { name: 'Stakeholder', href: paths.dashboard.user.stakeholder },
             { name: 'List' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.user.list}
+              href={paths.dashboard.user.stakeholder}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >

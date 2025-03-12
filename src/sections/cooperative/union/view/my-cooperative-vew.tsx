@@ -23,6 +23,8 @@ import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import useAuthUser from 'src/auth/hooks/use-auth-user';
+
 import { EnrolledCoop } from '../enrolled-coop';
 import { CoopJoinUnionForm } from '../coop-join-union-form';
 
@@ -31,15 +33,17 @@ import { CoopJoinUnionForm } from '../coop-join-union-form';
 export function MyCooperativeListView() {
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
+  const auth = useAuthUser();
+
   const [cooperative, setCooperative] = useState<Cooperative[] | null>(null);
 
   const quickEdit = useBoolean();
 
   useEffect(() => {
-    getCooperativeByUnionId(state.coopId).then((response) => {
+    getCooperativeByUnionId(auth.coopId!).then((response) => {
       setCooperative(response);
     });
-  }, [state.coopId]);
+  }, [auth.coopId]);
 
   return (
     <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
