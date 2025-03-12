@@ -1,6 +1,8 @@
+import type { UserAccount } from 'src/types/user';
+
 import { useState, useEffect } from 'react';
+
 import { getCurrentUser } from 'src/api/services';
-import { UserAccount } from 'src/types/user';
 
 const useAuthUser = (): UserAccount => {
   const [authUser, setAuthUser] = useState<UserAccount>({
