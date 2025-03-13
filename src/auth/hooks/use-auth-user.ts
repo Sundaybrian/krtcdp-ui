@@ -16,6 +16,8 @@ const useAuthUser = (): UserAccount => {
     userType: 'USER',
     verified: false,
     id: 0,
+    coopId: 0,
+    coopUnionId: 0,
   });
 
   useEffect(() => {

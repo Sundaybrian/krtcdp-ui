@@ -43,6 +43,7 @@ import {
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
+import PasswordMeter from 'src/components/password/password-meter';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 import { Stepper } from '../_examples/extra/form-wizard-view/form-steps';
@@ -327,24 +328,28 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
                 <Field.Text name="lastName" label="Last name" InputLabelProps={{ shrink: true }} />
 
                 <Field.Text name="email" label="Email address" />
-                <Field.Text
-                  name="password"
-                  label="Password"
-                  placeholder="6+ characters"
-                  type={password.value ? 'text' : 'password'}
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={password.onToggle} edge="end">
-                          <Iconify
-                            icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
-                          />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                <Stack direction={{ xs: 'column', sm: 'column' }} spacing={2}>
+                  <Field.Text
+                    name="password"
+                    label="Password"
+                    placeholder="6+ characters"
+                    type={password.value ? 'text' : 'password'}
+                    InputLabelProps={{ shrink: true }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={password.onToggle} edge="end">
+                            <Iconify
+                              icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
+                            />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+
+                  <PasswordMeter userPassword={values.password} />
+                </Stack>
 
                 <Field.Phone name="mobilePhone" country="KE" label="Phone number" />
 
