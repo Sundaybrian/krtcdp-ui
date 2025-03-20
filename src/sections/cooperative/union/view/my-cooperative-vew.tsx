@@ -38,15 +38,12 @@ export function MyCooperativeListView() {
   const [cooperative, setCooperative] = useState<Cooperative[] | null>(null);
 
   const quickEdit = useBoolean();
-  console.log('auth.coopId', auth);
 
   useEffect(() => {
     // console.log('auth.coopId', auth.coopId);
     console.log('auth.coopId', auth.coopUnionId);
 
-    getCooperativeByUnionId(1).then((response) => {
-      console.log('response', response);
-
+    getCooperativeByUnionId(auth.coopUnionId || 1).then((response) => {
       setCooperative(response);
     });
   }, [auth.coopUnionId]);
