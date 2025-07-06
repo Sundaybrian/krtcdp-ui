@@ -1126,3 +1126,64 @@ export const cartCheckout = async (data: any) => {
     throw error;
   }
 };
+
+//  routes
+export const getRoutes = async (query = {}): Promise<Page<any[]>> => {
+  try {
+    const response = await axios.get(endpoints.routes.search, {
+      params: {
+        page: 0,
+        limit: pageLimit,
+        ...query,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching routes:', error);
+    throw error;
+  }
+};
+
+// create route
+export const createRoute = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.routes.new, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding route:', error);
+    throw error;
+  }
+};
+
+// update route
+export const updateRoute = async (id: number, data: any) => {
+  try {
+    const response = await axios.patch(`${endpoints.routes.update(id)}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating route:', error);
+    throw error;
+  }
+};
+
+// assign farmer to route
+export const assignFarmerToRoute = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.routes.assignFarmer, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error assigning farmer to route:', error);
+    throw error;
+  }
+};
+
+//assign collector
+export const assignCollectorToRoute = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.routes.assignCollector, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error assigning collector to route:', error);
+    throw error;
+  }
+};

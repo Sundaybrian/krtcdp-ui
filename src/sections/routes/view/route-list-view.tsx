@@ -3,6 +3,9 @@
 import type { ITicket } from 'src/types/notification';
 import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
+import { z as zod } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import type {
   GridSlots,
   GridColDef,
@@ -48,16 +51,20 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { PermissionDeniedView } from 'src/sections/permission/view';
 
-import { TicketViewDialog } from './ticket-view-dialog';
-import { CooperativeTableToolbar } from '../ticket-table-toolbar';
-import { CooperativeTableFiltersResult } from '../ticket-table-filters-result';
+import { TicketViewDialog } from './route-view-dialog';
+import { CooperativeTableToolbar } from '../route-table-toolbar';
+import { CooperativeTableFiltersResult } from '../route-table-filters-result';
 import {
   RenderAgent,
   RenderGeneric,
   RenderCreatedAt,
   RenderCellStatus,
   RenderCellProduct,
-} from '../ticket-table-row';
+} from '../route-table-row';
+import { useSearchRoutes } from 'src/actions/route';
+import { Box, Chip, MenuItem, Divider } from '@mui/material';
+import { Field, Form } from 'src/components/hook-form';
+import { useForm } from 'react-hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -77,8 +84,18 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-export function TicketListView() {
+export type CollectorSchemaType = zod.infer<typeof CollectorSchema>;
+
+export const CollectorSchema = zod.object({
+  routeId: zod.number().optional(),
+  collectorId: zod.number().optional(),
+});
+
+// ----------------------------------------------------------------------
+
+export function RouteListView() {
   const confirmRows = useBoolean();
+  const farmerAssign = useBoolean();
   const quickView = useBoolean();
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
@@ -86,7 +103,7 @@ export function TicketListView() {
 
   const router = useRouter();
 
-  const { searchResults, searchLoading } = useSearchTickets({ coopId: state.coopId });
+  const { searchResults, searchLoading } = useSearchRoutes({ cooperativeId: state.coopId });
   const [selectedTicket, setSelectedTicket] = useState<ITicket>();
 
   const filters = useSetState<IProductTableFilters>({ publish: [], stock: [] });
@@ -162,6 +179,15 @@ export function TicketListView() {
     [filters.state, selectedRowIds]
   );
 
+  const methods = useForm<CollectorSchemaType>({
+    mode: 'onSubmit',
+    resolver: zodResolver(CollectorSchema),
+    defaultValues: {
+      routeId: 0,
+      collectorId: 0,
+    },
+  });
+
   //  handle permission
   const { permissions = [], isSuperAdmin = false } = perms;
 
@@ -171,53 +197,52 @@ export function TicketListView() {
 
   const columns: GridColDef[] = [
     {
-      field: 'locationName',
+      field: 'name',
       headerName: 'Location name',
-      flex: 1,
-      // maxWidth: 8,
-      // width: 70,
+      // flex: 1,
+      maxWidth: 180,
+      width: 150,
       hideable: false,
       renderCell: (params) => (
         <RenderCellProduct params={params} onViewRow={() => handleViewRow(params.row.id)} />
       ),
     },
     {
-      field: 'phoneNumber',
-      headerName: 'Phone Number',
+      field: 'county',
+      headerName: 'County',
       width: 160,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
     {
-      field: 'agent',
-      headerName: 'Assigned To',
+      field: 'subCounty',
+      headerName: 'Sub County',
       width: 160,
       renderCell: (params) => <RenderAgent params={params} />,
     },
     {
-      field: 'issueSummary',
-      headerName: 'Summary',
+      field: 'ward',
+      headerName: 'Ward',
       width: 140,
       editable: true,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
-    // {
-    //   field: 'location',
-    //   headerName: 'Location',
-    //   width: 110,
-    //   type: 'singleSelect',
-    //   editable: true,
-    //   renderCell: (params) => <RenderCellLocation params={params} />,
-    // },
-
     {
-      field: 'source',
-      headerName: 'Source',
-      width: 110,
+      field: 'estimatedDistance',
+      headerName: 'Estimated Distance(Km)',
+      width: 160,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
+
     {
-      field: 'farmType',
-      headerName: 'Farm Type',
+      field: 'estimatedDuration',
+      headerName: 'Estimated Duration',
+      width: 160,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+
+    {
+      field: 'maxCapacity',
+      headerName: 'Max Capacity',
       width: 160,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
@@ -230,26 +255,8 @@ export function TicketListView() {
     },
 
     {
-      field: 'whoPays',
-      headerName: 'Who Pays',
-      width: 160,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
-    {
-      field: 'pestorDiseaseName',
-      headerName: 'Pest or Disease Name',
-      width: 160,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
-    {
       field: 'description',
       headerName: 'Description',
-      width: 160,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
-    {
-      field: 'cropAnimalName',
-      headerName: 'Crop/Animal Name',
       width: 160,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
@@ -274,18 +281,16 @@ export function TicketListView() {
       getActions: (params) => [
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          onClick={() => handleViewRow(params.row.id)}
+          icon={<Iconify icon="solar:user-plus-bold" />}
+          label="Assign Collector"
+          onClick={confirmRows.onTrue}
         />,
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => {
-            handleDeleteRow(params.row.id);
-          }}
-          sx={{ color: 'error.main' }}
+          icon={<Iconify icon="solar:user-plus-bold" />}
+          label="Assign Farmer"
+          onClick={farmerAssign.onTrue}
+          sx={{ color: 'info.main' }}
         />,
       ],
     },
@@ -300,16 +305,16 @@ export function TicketListView() {
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading="List"
+          heading="Routes"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Tickets', href: paths.dashboard.product.root },
-            { name: 'Tickets' },
+            { name: 'Routes', href: paths.dashboard.routes.root },
+            { name: 'Listed Routes' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.tickets.new}
+              href={paths.dashboard.routes.new}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
@@ -357,22 +362,119 @@ export function TicketListView() {
       <ConfirmDialog
         open={confirmRows.value}
         onClose={confirmRows.onFalse}
-        title="Delete"
+        title="Assign Collector"
         content={
           <>
-            Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
+            <Stack spacing={2}>
+              <p>Select Collector?</p>
+              <Form methods={methods} onSubmit={methods.handleSubmit(() => {})}>
+                <Box
+                  rowGap={3}
+                  columnGap={2}
+                  display="grid"
+                  gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
+                >
+                  <Field.Autocomplete
+                    name="collectorId"
+                    label="Select Collector"
+                    placeholder="Collector"
+                    freeSolo
+                    disableCloseOnSelect
+                    options={searchResults.map((user) => user)}
+                    getOptionLabel={(option) => option?.firstName || ''}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.email || option.id}>
+                        {option.firstName}--{option.email}
+                      </li>
+                    )}
+                    renderTags={(selected, getTagProps) =>
+                      selected.map((option, index) => (
+                        <Chip
+                          {...getTagProps({ index })}
+                          key={option.email}
+                          label={option.email}
+                          size="small"
+                          color="info"
+                          variant="soft"
+                        />
+                      ))
+                    }
+                  />
+                </Box>
+              </Form>
+            </Stack>
           </>
         }
         action={
           <Button
             variant="contained"
-            color="error"
+            // color="error"
             onClick={() => {
               handleDeleteRows();
               confirmRows.onFalse();
             }}
           >
-            Delete
+            Assign
+          </Button>
+        }
+      />
+
+      <ConfirmDialog
+        open={farmerAssign.value}
+        onClose={farmerAssign.onFalse}
+        title="Assign Farmer"
+        content={
+          <>
+            <Stack spacing={2}>
+              <p>Select Farmer</p>
+              <Form methods={methods} onSubmit={methods.handleSubmit(() => {})}>
+                <Box
+                  rowGap={3}
+                  columnGap={2}
+                  display="grid"
+                  gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
+                >
+                  <Field.Autocomplete
+                    name="farmerId"
+                    label="Select farmer"
+                    placeholder="Farmer"
+                    freeSolo
+                    disableCloseOnSelect
+                    options={searchResults.map((user) => user)}
+                    getOptionLabel={(option) => option?.firstName || ''}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.email || option.id}>
+                        {option.firstName}--{option.email}
+                      </li>
+                    )}
+                    renderTags={(selected, getTagProps) =>
+                      selected.map((option, index) => (
+                        <Chip
+                          {...getTagProps({ index })}
+                          key={option.email}
+                          label={option.email}
+                          size="small"
+                          color="info"
+                          variant="soft"
+                        />
+                      ))
+                    }
+                  />
+                </Box>
+              </Form>
+            </Stack>
+          </>
+        }
+        action={
+          <Button
+            variant="contained"
+            // color="error"
+            onClick={() => {
+              handleDeleteRows();
+              farmerAssign.onFalse();
+            }}
+          >
+            Assign
           </Button>
         }
       />

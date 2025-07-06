@@ -6,18 +6,18 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { NotificationForm } from '../new-ticket-form';
+import { NotificationForm } from '../new-route-form';
 // ----------------------------------------------------------------------
 
-export function NotificationCreateView() {
+export function RouteCreateView() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="New Ticket"
+        heading="New Route"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Tickets', href: paths.dashboard.tickets.root },
-          { name: 'New Ticket' },
+          { name: 'Routes', href: paths.dashboard.tickets.root },
+          { name: 'New Route' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

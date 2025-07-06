@@ -1,0 +1,75 @@
+import type { GridCellParams } from '@mui/x-data-grid';
+
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import ListItemText from '@mui/material/ListItemText';
+
+import { fDate, fTime } from 'src/utils/format-time';
+
+import { Label } from 'src/components/label';
+import { Badge } from '@mui/material';
+
+// ----------------------------------------------------------------------
+
+type ParamsProps = {
+  params: GridCellParams;
+};
+
+export function RenderCellStatus({ params }: ParamsProps) {
+  return (
+    <Label
+      variant="soft"
+      color={
+        (params.row.isActive && 'success') ||
+        (params.row.isActive === false && 'error') ||
+        'default'
+      }
+    >
+      {params.row.isActive ? 'ACTIVE' : 'INACTIVE'}
+    </Label>
+  );
+}
+
+export function RenderCellLocation({ params }: ParamsProps) {
+  return (
+    <Label color="success" title="Latitude and Longitude respectively">
+      {params.row.latitude} : {params.row.longitude}
+    </Label>
+  );
+}
+
+export function RenderGeneric({ params }: ParamsProps) {
+  return params.row[params.field];
+}
+
+export function RenderAgent({ params }: ParamsProps) {
+  return params.row?.subCounty || 'Not assigned';
+}
+
+export function RenderHasInsurance({ params }: ParamsProps) {
+  return <Label>{params.row.hasInsurance ? 'YES' : 'NO'}</Label>;
+}
+
+export function RenderCreatedAt({ params }: ParamsProps) {
+  return (
+    <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+      {fDate(params.row.creationDate)}
+      {fTime(params.row.creationDate)}
+    </Box>
+  );
+}
+
+export function RenderCellProduct({
+  params,
+  onViewRow,
+}: ParamsProps & {
+  onViewRow: () => void;
+}) {
+  return (
+    <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
+      <Label color="success" title="Latitude and Longitude respectively">
+        {params.row.name}
+      </Label>
+    </Stack>
+  );
+}

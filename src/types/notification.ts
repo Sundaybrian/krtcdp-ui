@@ -57,3 +57,16 @@ export interface IcartItem {
   unit: string;
   colors: string[];
 }
+
+export interface RouteItem {
+  name: string;
+  description: string;
+  cooperativeId: number;
+  county: string;
+  subCounty: string;
+  ward: string;
+  estimatedDistance: number;
+  estimatedDuration: number;
+  maxCapacity: number;
+  isActive: boolean;
+}

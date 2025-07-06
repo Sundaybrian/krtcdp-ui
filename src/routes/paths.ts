@@ -221,6 +221,10 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/tickets`,
       new: `${ROOTS.DASHBOARD}/tickets/new`,
     },
+    routes: {
+      root: `${ROOTS.DASHBOARD}/routes`,
+      new: `${ROOTS.DASHBOARD}/routes/new`,
+    },
     post: {
       root: `${ROOTS.DASHBOARD}/post`,
       new: `${ROOTS.DASHBOARD}/post/new`,

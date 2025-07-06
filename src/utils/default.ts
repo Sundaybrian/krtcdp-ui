@@ -127,6 +127,9 @@ export const VALUE_CHAIN_TYPES = [
 ];
 
 export const requiredPermissions = {
+  general: {
+    viewApp: 'viewUser',
+  },
   users: {
     viewUser: 'viewUser',
     createUser: 'createUser',

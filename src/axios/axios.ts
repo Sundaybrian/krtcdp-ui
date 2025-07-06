@@ -195,6 +195,15 @@ export const endpoints = {
     update: (id: number) => `/ticket/${id}`,
     approve: (id: number) => `/ticket/${id}/approve`,
   },
+  routes: {
+    new: '/routes',
+    search: '/routes',
+    assignCollector: `/routes/assign-collector`,
+    assignFarmer: `/routes/assign-farmer`,
+    get: (id: number) => `/routes/${id}`,
+    update: (id: number) => `/routes/${id}`,
+    approve: (id: number) => `/routes/${id}/approve`,
+  },
 };
 
-export const pageLimit = 1000;
+export const pageLimit = 10000;

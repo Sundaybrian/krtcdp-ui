@@ -22,6 +22,7 @@ const ICONS = {
   lock: icon('ic-lock'),
   tour: icon('ic-tour'),
   order: icon('ic-order'),
+  route: icon('ic-analytics'),
   label: icon('ic-label'),
   blank: icon('ic-blank'),
   kanban: icon('ic-kanban'),
@@ -166,6 +167,16 @@ export const navData = [
         path: paths.dashboard.insuranceProviders.root,
         icon: ICONS.kanban,
         children: [{ title: 'Providers', path: paths.dashboard.insuranceProviders.root }],
+      },
+      {
+        title: 'Routes',
+        path: paths.dashboard.routes.root,
+        icon: ICONS.route,
+        permission: requiredPermissions.general.viewApp,
+        children: [
+          { title: 'List', path: paths.dashboard.routes.root },
+          // { title: 'Details', path: paths.dashboard.order.demo.details },
+        ],
       },
       // {
       //   title: 'Product',
