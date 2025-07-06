@@ -117,8 +117,8 @@ export function NotificationForm({ selectedAdmin }: Props) {
     }
   });
 
-  const handleCountyChange = (id: number) => {
-    setSubCounties(counties.find((county) => county.id === id)?.subCounties || []);
+  const handleCountyChange = (idNo: number) => {
+    setSubCounties(counties.find((county) => county.id === idNo)?.subCounties || []);
   };
 
   // fetch counties
@@ -134,8 +134,8 @@ export function NotificationForm({ selectedAdmin }: Props) {
       });
   };
 
-  const fetchWards = (id: number) => {
-    getWards(id)
+  const fetchWards = (idNew: number) => {
+    getWards(idNew)
       .then((data) => {
         setWards(data);
       })
@@ -151,8 +151,8 @@ export function NotificationForm({ selectedAdmin }: Props) {
   }, [state.coopId]);
 
   // methods
-  const handleSubCountyChange = (id: number) => {
-    fetchWards(id);
+  const handleSubCountyChange = (idN: number) => {
+    fetchWards(idN);
   };
 
   return (
