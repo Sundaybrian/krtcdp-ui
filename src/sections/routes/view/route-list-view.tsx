@@ -1,6 +1,6 @@
 'use client';
 
-import type { ITicket, RouteItem } from 'src/types/notification';
+import type { RouteItem } from 'src/types/notification';
 import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
 import { z as zod } from 'zod';
@@ -477,12 +477,6 @@ export function RouteListView() {
             Assign
           </Button>
         }
-      />
-
-      <TicketViewDialog
-        open={quickView.value}
-        onClose={quickView.onFalse}
-        ticket={selectedTicket!}
       />
     </>
   );
