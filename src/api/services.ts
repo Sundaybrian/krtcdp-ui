@@ -1177,7 +1177,7 @@ export const assignFarmerToRoute = async (data: any) => {
   }
 };
 
-//assign collector
+// assign collector
 export const assignCollectorToRoute = async (data: any) => {
   try {
     const response = await axios.post(endpoints.routes.assignCollector, data);
