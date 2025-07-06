@@ -82,7 +82,7 @@ export function NotificationForm({ selectedAdmin }: Props) {
       isActive: true,
       estimatedDuration: '',
     }),
-    [id]
+    [id, state.coopId]
   );
 
   const methods = useForm<NewUserSchemaType>({
