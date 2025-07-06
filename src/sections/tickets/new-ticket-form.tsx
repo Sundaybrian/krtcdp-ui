@@ -74,7 +74,7 @@ export function NotificationForm({ selectedAdmin }: Props) {
       latitude: '',
       longitude: '',
     }),
-    [id]
+    [id, state.coopId]
   );
 
   const methods = useForm<NewUserSchemaType>({
