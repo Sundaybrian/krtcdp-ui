@@ -45,6 +45,7 @@ export const NewUserSchema = zod.object({
   estimatedDistance: zod.string().optional(),
   maxCapacity: zod.string().optional(),
   isActive: zod.boolean().optional(),
+  estimatedDuration: zod.string().optional(),
 });
 
 // ----------------------------------------------------------------------
@@ -76,9 +77,10 @@ export function NotificationForm({ selectedAdmin }: Props) {
       county: '',
       subCounty: '',
       ward: '',
-      estimatedDistance: 0,
-      maxCapacity: 0,
+      estimatedDistance: '',
+      maxCapacity: '',
       isActive: true,
+      estimatedDuration: '',
     }),
     [id]
   );
@@ -146,7 +148,7 @@ export function NotificationForm({ selectedAdmin }: Props) {
   // use effect
   useEffect(() => {
     getchCounties();
-  }, []);
+  }, [state.coopId]);
 
   // methods
   const handleSubCountyChange = (id: number) => {

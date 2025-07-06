@@ -1,6 +1,6 @@
 'use client';
 
-import type { ITicket } from 'src/types/notification';
+import type { ITicket, RouteItem } from 'src/types/notification';
 import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
 import { z as zod } from 'zod';
@@ -13,6 +13,8 @@ import type {
   GridColumnVisibilityModel,
 } from '@mui/x-data-grid';
 import { RouterLink } from 'src/routes/components';
+import { Field, Form } from 'src/components/hook-form';
+import { useSearchRoutes } from 'src/actions/route';
 
 import { useState, useEffect, useCallback } from 'react';
 
@@ -41,7 +43,6 @@ import { requiredPermissions, TENANT_LOCAL_STORAGE } from 'src/utils/default';
 
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useSearchTickets } from 'src/actions/notification';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -61,9 +62,7 @@ import {
   RenderCellStatus,
   RenderCellProduct,
 } from '../route-table-row';
-import { useSearchRoutes } from 'src/actions/route';
-import { Box, Chip, MenuItem, Divider } from '@mui/material';
-import { Field, Form } from 'src/components/hook-form';
+import { Box, Chip } from '@mui/material';
 import { useForm } from 'react-hook-form';
 
 // ----------------------------------------------------------------------
@@ -104,11 +103,11 @@ export function RouteListView() {
   const router = useRouter();
 
   const { searchResults, searchLoading } = useSearchRoutes({ cooperativeId: state.coopId });
-  const [selectedTicket, setSelectedTicket] = useState<ITicket>();
+  const [selectedTicket, setSelectedTicket] = useState<RouteItem>();
 
   const filters = useSetState<IProductTableFilters>({ publish: [], stock: [] });
 
-  const [tableData, setTableData] = useState<ITicket[]>([]);
+  const [tableData, setTableData] = useState<RouteItem[]>([]);
 
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>([]);
 
@@ -555,7 +554,7 @@ function CustomToolbar({
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: ITicket[];
+  inputData: RouteItem[];
   filters: IProductTableFilters;
 };
 
@@ -563,11 +562,7 @@ function applyFilter({ inputData, filters }: ApplyFilterProps) {
   const { stock, publish } = filters;
 
   if (stock.length) {
-    inputData = inputData.filter((product) => stock.includes(product.description));
-  }
-
-  if (publish.length) {
-    inputData = inputData.filter((product) => publish.includes(product.status));
+    inputData = inputData.filter((product) => stock.includes(product.name));
   }
 
   return inputData;
