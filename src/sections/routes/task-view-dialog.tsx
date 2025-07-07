@@ -111,6 +111,18 @@ export function TaskViewDialog({ county, open, onClose }: Props) {
                       color: 'text.secondary',
                     }}
                   >
+                    Quantity
+                  </Box>
+                  <Box
+                    component="th"
+                    sx={{
+                      borderBottom: 1,
+                      py: 1,
+                      px: 1,
+                      textAlign: 'left',
+                      color: 'text.secondary',
+                    }}
+                  >
                     Cow health
                   </Box>
                   <Box
@@ -171,6 +183,10 @@ export function TaskViewDialog({ county, open, onClose }: Props) {
                     </Box>
                     <Box component="td" sx={{ py: 1, px: 1 }}>
                       {task.dueDate ? fDateTime(task.dueDate) : 'Not recorded'}
+                    </Box>
+
+                    <Box component="td" sx={{ py: 1, px: 1 }}>
+                      {task.quantity || 'Not recorded'}
                     </Box>
                     <Box component="td" sx={{ py: 1, px: 1 }}>
                       {task.cowHealth || 'Not recorded'}

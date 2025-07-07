@@ -83,4 +83,5 @@ export interface RouteTask {
   milkTemperature: number;
   organolepticTest: boolean;
   treatmentType: string;
+  quantity: number;
 }
