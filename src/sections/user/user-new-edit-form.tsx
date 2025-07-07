@@ -82,6 +82,7 @@ type Props = {
 export function UserNewEditForm({ currentUser }: Props) {
   const router = useRouter();
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
+
   const password = useBoolean();
   const [counties, setCounties] = useState<County[]>([]);
   const [subCounties, setSubCounties] = useState<SubCounty[]>([]);
@@ -149,6 +150,7 @@ export function UserNewEditForm({ currentUser }: Props) {
       // assignAdminToCoop
     } catch (error) {
       console.error(error);
+      toast.error(error?.message || 'Failed to create user');
     }
   });
 
