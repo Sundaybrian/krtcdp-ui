@@ -46,7 +46,7 @@ export const PERMISSIONS = [
   {
     role: 'COOPERATIVE_ADMIN',
     permissions: [
-      'AccessApp',
+      'accessApp',
       'ViewUser',
       'CreateUser',
       'ViewFarmer',
@@ -137,7 +137,7 @@ export const VALUE_CHAIN_TYPES = [
 
 export const requiredPermissions = {
   general: {
-    viewApp: 'AccessApp',
+    viewApp: 'accessApp',
   },
   users: {
     viewUser: 'viewUser',
