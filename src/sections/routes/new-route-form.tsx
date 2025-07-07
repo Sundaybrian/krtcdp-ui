@@ -102,6 +102,7 @@ export function NotificationForm({ selectedAdmin }: Props) {
       ...data,
       estimatedDistance: Number(data.estimatedDistance),
       maxCapacity: Number(data.maxCapacity),
+      estimatedDuration: Number(data.estimatedDuration),
       cooperativeId: state.coopId ? Number(state.coopId) : 0,
     };
 
