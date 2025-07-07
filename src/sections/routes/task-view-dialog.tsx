@@ -43,7 +43,7 @@ export function TaskViewDialog({ county, open, onClose }: Props) {
   return (
     <Dialog
       fullWidth
-      maxWidth={'md'}
+      maxWidth="md"
       open={open}
       onClose={onClose}
       PaperProps={{ sx: { maxWidth: 1400 } }}
