@@ -506,7 +506,6 @@ export function RouteListView() {
                     label="Select Collector"
                     placeholder="Collector"
                     freeSolo
-                    disableCloseOnSelect
                     options={userResults.map((user) => user)}
                     getOptionLabel={(option) => option?.firstName || ''}
                     renderOption={(props, option) => (
@@ -565,9 +564,8 @@ export function RouteListView() {
                     label="Select farmer"
                     placeholder="Farmer"
                     freeSolo
-                    disableCloseOnSelect
                     options={farmers.map((user) => user)}
-                    getOptionLabel={(option) => option?.firstName || ''}
+                    getOptionLabel={(option) => option?.email || ''}
                     renderOption={(props, option) => (
                       <li {...props} key={option.email || option.id}>
                         {option.firstName}--{option.email}
