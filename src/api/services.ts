@@ -369,12 +369,12 @@ export const searchCoopFarmers = async (query = {}): Promise<Page<CoopFarmerList
       endpoints.cooperative.searchCoopFarmer,
       {
         page: 1,
-        limit: 1000,
+        limit: 10000,
       },
       {
         params: {
           page: 1,
-          limit: 1000,
+          limit: 10000,
           ...query,
         },
       }
