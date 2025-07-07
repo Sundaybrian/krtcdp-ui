@@ -206,4 +206,4 @@ export const endpoints = {
   },
 };
 
-export const pageLimit = 10000;
+export const pageLimit = 1000;
