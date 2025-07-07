@@ -108,8 +108,8 @@ export function UserNewEditForm({ currentUser }: Props) {
       county: '',
       subCounty: '',
       ward: '',
-      isAdministrator: true,
-      isSupport: true,
+      isAdministrator: false,
+      isSupport: false,
       acceptTerms: true,
       coopId: state.coopId || null,
     }),
@@ -135,9 +135,11 @@ export function UserNewEditForm({ currentUser }: Props) {
   const onSubmit = handleSubmit(async (data) => {
     // birthdate to utc
     data.birthDate = new Date(data.birthDate).toISOString();
+    if (state.coopId) {
+      data.coopId = state.coopId;
+    }
     try {
       const user = await addUser(data);
-      reset();
       toast.success(currentUser ? 'Update success!' : 'User created successfully!');
       // router.push(paths.dashboard.user.list);
       if (values.userType === 'COOPERATIVE_ADMIN') {
@@ -147,6 +149,9 @@ export function UserNewEditForm({ currentUser }: Props) {
         };
         assignAdminToCoop(state.coopId || data.coopId, submitData);
       }
+
+      reset();
+
       // assignAdminToCoop
     } catch (error) {
       console.error(error);
