@@ -127,7 +127,7 @@ export const navData = [
       },
       {
         title: 'Cooperative Mgt',
-        permission: 'view:cooperative',
+        permission: requiredPermissions.general.viewApp,
         path: paths.dashboard.cooperative.root,
         icon: ICONS.banking,
         children: [
