@@ -66,7 +66,10 @@ export const signInWithPassword = async (auth: SignInParams): Promise<void> => {
         localStorage.setItem(
           'permissions',
           JSON.stringify({
-            permissions: [...permissions?.data?.permissions, ...defaultCoopAdminPermissions],
+            permissions: [
+              ...permissions?.data?.permissions,
+              ...(defaultCoopAdminPermissions || []),
+            ],
             isSuperAdmin: permissions?.data?.isSuperAdmin || auth.user.userType === 'SYSTEM_ADMIN',
           })
         );
