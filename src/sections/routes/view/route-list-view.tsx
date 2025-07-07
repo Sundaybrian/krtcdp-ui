@@ -568,10 +568,12 @@ export function RouteListView() {
                     placeholder="Farmer"
                     freeSolo
                     options={farmers.map((user) => user)}
-                    getOptionLabel={(option) => option?.email || ''}
+                    getOptionLabel={(option) =>
+                      `${option.firstName || ''} ${option.lastName || ''}`
+                    }
                     renderOption={(props, option) => (
                       <li {...props} key={option.id || option.id}>
-                        {option.firstName}--{option.lastName}--{option.email}
+                        {option.firstName}--{option.lastName}--{option.mobilePhone}
                       </li>
                     )}
                     renderTags={(selected, getTagProps) =>
