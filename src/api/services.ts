@@ -1187,3 +1187,14 @@ export const assignCollectorToRoute = async (data: any) => {
     throw error;
   }
 };
+
+// create milk task
+export const createMilkTask = async (routeId: number) => {
+  try {
+    const response = await axios.post(endpoints.routes.milkTask(routeId), {});
+    return response.data;
+  } catch (error) {
+    console.error('Error adding milk task:', error);
+    throw error;
+  }
+};

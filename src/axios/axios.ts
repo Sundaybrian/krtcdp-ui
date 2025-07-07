@@ -203,6 +203,8 @@ export const endpoints = {
     get: (id: number) => `/routes/${id}`,
     update: (id: number) => `/routes/${id}`,
     approve: (id: number) => `/routes/${id}/approve`,
+    getRouteTasks: (routeId: string) => `/task/routes/${routeId}`,
+    milkTask: (routeId: number) => `/task/routes/${routeId}/create-milk-tasks`,
   },
 };
 

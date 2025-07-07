@@ -1,5 +1,5 @@
 import type { Page } from 'src/api/data.inteface';
-import type { ITicket, INotification, RouteItem } from 'src/types/notification';
+import type { ITicket, INotification, RouteItem, RouteTask } from 'src/types/notification';
 
 import useSWR from 'swr';
 import { useMemo } from 'react';
@@ -35,3 +35,25 @@ export function useSearchRoutes(query: any = {}) {
 
   return memoizedValue;
 }
+
+export const useGetRouteTasks = (routeId: string) => {
+  const url = routeId ? [endpoints.routes.getRouteTasks(routeId)] : '';
+
+  const { data, isLoading, error, isValidating } = useSWR<RouteTask[]>(url, fetcher, {
+    ...swrOptions,
+    keepPreviousData: true,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      tasks: data || [],
+      tasksLoading: isLoading,
+      tasksError: error,
+      tasksValidating: isValidating,
+      tasksEmpty: !isLoading && !data?.length,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+};

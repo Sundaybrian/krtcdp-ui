@@ -55,7 +55,12 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { PermissionDeniedView } from 'src/sections/permission/view';
 import { useSearchAdmins } from 'src/actions/user';
-import { assignCollectorToRoute, assignFarmerToRoute, searchCoopFarmers } from 'src/api/services';
+import {
+  assignCollectorToRoute,
+  assignFarmerToRoute,
+  createMilkTask,
+  searchCoopFarmers,
+} from 'src/api/services';
 import { CoopFarmerList } from 'src/types/user';
 
 import { TicketViewDialog } from './route-view-dialog';
@@ -67,6 +72,7 @@ import {
   RenderCreatedAt,
   RenderCellStatus,
   RenderCellProduct,
+  RenderTasks,
 } from '../route-table-row';
 
 // ----------------------------------------------------------------------
@@ -272,6 +278,21 @@ export function RouteListView() {
     }
   };
 
+  const handleMilkTask = async (routeId: number) => {
+    if (!routeId) {
+      toast.error('Please select a route');
+      return;
+    }
+
+    try {
+      await createMilkTask(routeId);
+      toast.success('Milk task created successfully');
+    } catch (error) {
+      console.error('Error creating milk task:', error);
+      toast.error(error.message || 'Failed to create milk task');
+    }
+  };
+
   //  handle permission
   const { permissions = [], isSuperAdmin = false } = perms;
 
@@ -290,6 +311,13 @@ export function RouteListView() {
       renderCell: (params) => (
         <RenderCellProduct params={params} onViewRow={() => handleViewRow(params.row.id)} />
       ),
+    },
+
+    {
+      field: 'task',
+      headerName: 'View Tasks',
+      width: 160,
+      renderCell: (params) => <RenderTasks params={params} />,
     },
     {
       field: 'county',
@@ -382,6 +410,15 @@ export function RouteListView() {
           }}
           sx={{ color: 'info.main' }}
         />,
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="solar:cup-star-bold" />}
+          label="New Milk Task"
+          onClick={() => {
+            handleMilkTask(params.row.id!);
+          }}
+          // sx={{ color: 'i' }}
+        />,
       ],
     },
   ];
@@ -418,7 +455,7 @@ export function RouteListView() {
           sx={{
             flexGrow: { md: 1 },
             display: { md: 'flex' },
-            height: { xs: 800, md: 2 },
+            // height: { xs: 800, md: 2 },
             flexDirection: { md: 'column' },
           }}
         >

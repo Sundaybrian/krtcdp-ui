@@ -71,3 +71,16 @@ export interface RouteItem {
   maxCapacity: number;
   isActive: boolean;
 }
+
+export interface RouteTask {
+  id: string;
+  title: string;
+  description: string;
+  status: 'New' | 'Assigned' | 'Inprogress' | 'OnHold' | 'Resolved' | 'Closed';
+  priority: 'Low' | 'Medium' | 'High';
+  dueDate: string;
+  cowHealth: string;
+  milkTemperature: number;
+  organolepticTest: boolean;
+  treatmentType: string;
+}

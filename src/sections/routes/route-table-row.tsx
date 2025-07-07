@@ -3,11 +3,16 @@ import type { GridCellParams } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
 
 import { fDate, fTime } from 'src/utils/format-time';
+import { Iconify } from 'src/components/iconify';
 
 import { Label } from 'src/components/label';
 import { Badge } from '@mui/material';
+import { useBoolean } from 'src/hooks/use-boolean';
+
+import { TaskViewDialog } from './task-view-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -46,8 +51,18 @@ export function RenderAgent({ params }: ParamsProps) {
   return params.row?.subCounty || 'Not assigned';
 }
 
-export function RenderHasInsurance({ params }: ParamsProps) {
-  return <Label>{params.row.hasInsurance ? 'YES' : 'NO'}</Label>;
+export function RenderTasks({ params }: ParamsProps) {
+  const quickEdit = useBoolean();
+
+  return (
+    <Label>
+      <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
+        <Iconify icon="solar:eye-bold" />
+      </IconButton>
+
+      <TaskViewDialog county={params.row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+    </Label>
+  );
 }
 
 export function RenderCreatedAt({ params }: ParamsProps) {
