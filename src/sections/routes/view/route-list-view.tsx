@@ -117,11 +117,14 @@ export function RouteListView() {
 
   const userSearch = {
     userType: 'MILK_MAN',
+    coopId: state.coopId,
   };
 
   const { userResults } = useSearchAdmins({ ...userSearch });
   const [selectedTicket, setSelectedTicket] = useState<RouteItem>();
   const [farmers, setFarmers] = useState<CoopFarmerList[]>([]);
+
+  console.log(farmers);
 
   const filters = useSetState<IProductTableFilters>({ publish: [], stock: [] });
 
@@ -567,8 +570,8 @@ export function RouteListView() {
                     options={farmers.map((user) => user)}
                     getOptionLabel={(option) => option?.email || ''}
                     renderOption={(props, option) => (
-                      <li {...props} key={option.email || option.id}>
-                        {option.firstName}--{option.email}
+                      <li {...props} key={option.id || option.id}>
+                        {option.firstName}--{option.lastName}--{option.email}
                       </li>
                     )}
                     renderTags={(selected, getTagProps) =>
