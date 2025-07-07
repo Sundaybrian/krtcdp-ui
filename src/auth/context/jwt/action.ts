@@ -58,7 +58,9 @@ export const signInWithPassword = async (auth: SignInParams): Promise<void> => {
         let defaultCoopAdminPermissions: any = [];
         if (auth.user.userType === 'COOPERATIVE_ADMIN') {
           const perms = PERMISSIONS.find((permission) => permission.role === 'COOPERATIVE_ADMIN');
-          defaultCoopAdminPermissions = perms?.permissions || [];
+          if (perms?.permissions) {
+            defaultCoopAdminPermissions = perms?.permissions || [];
+          }
         }
         // save to cache
         localStorage.setItem(
