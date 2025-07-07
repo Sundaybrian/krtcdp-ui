@@ -25,33 +25,43 @@ export const PERMISSIONS = [
   {
     role: 'SYSTEM_ADMIN',
     permissions: [
-      'view:county',
       'view:dashboard',
-      // 'view:user',
+      'view:users',
       'view:cooperative',
-      'view:management',
-      'view:permission',
+      'view:cooperativeUnion',
+      'view:county',
       'view:valuechain',
       'view:product',
-      'view:order',
       'view:category',
-      'view:farmer',
+      'view:insuranceProvider',
+      'view:ticket',
+      'view:statistics',
       'view:invoice',
+      'view:order',
+      // 'createUser', // Uncomment if needed
+      // 'createCooperative', // Uncomment if needed
     ],
+    superAdmin: true,
   },
   {
     role: 'COOPERATIVE_ADMIN',
     permissions: [
-      'view:dashboard',
-      // 'view:cooperative',
-      'view:farmer',
-      'view:product',
-      'view:category',
-      'view:invoice',
-      'view:order',
-      'view:category',
-      'view:users',
-      'view:myUnions',
+      'AccessApp',
+      'ViewUser',
+      'CreateUser',
+      'ViewFarmer',
+      'ViewInsuranceProvider',
+      'ViewProduct',
+      'CreateProduct',
+      'UpdateProduct',
+      'ViewTicket',
+      'CreateTicket',
+      'ViewCooperative',
+      'CreateInsuranceProvider',
+      'ViewCounty',
+      'ViewFarmer',
+      'ViewAdminCount',
+      'ViewCooperativeCount',
     ],
   },
   {
@@ -128,7 +138,7 @@ export const VALUE_CHAIN_TYPES = [
 
 export const requiredPermissions = {
   general: {
-    viewApp: 'viewUser',
+    viewApp: 'AccessApp',
   },
   users: {
     viewUser: 'viewUser',

@@ -276,7 +276,14 @@ export type UserAccount = {
   id: number;
   lastName: string;
   phonenumber: string;
-  userType: 'SYSTEM_ADMIN' | 'ADMIN' | 'SUPPORT' | 'USER' | 'FARMER';
+  userType:
+    | 'SYSTEM_ADMIN'
+    | 'ADMIN'
+    | 'SUPPORT'
+    | 'USER'
+    | 'FARMER'
+    | 'COOPERATIVE_ADMIN'
+    | 'COOPERATIVE_UNION_ADMIN';
   verified: boolean;
   coopId?: number;
   coopUnionId?: number;

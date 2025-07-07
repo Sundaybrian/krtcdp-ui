@@ -8,6 +8,7 @@ import { authorizeUser } from 'src/api/permission';
 
 import { setSession } from './utils';
 import { STORAGE_KEY } from './constant';
+import { PERMISSIONS } from 'src/utils/default';
 
 // ----------------------------------------------------------------------
 
@@ -54,12 +55,17 @@ export const signInWithPassword = async (auth: SignInParams): Promise<void> => {
     // get user permissions
     authorizeUser({ username: auth.user.email, action: 'accessApp' })
       .then((permissions) => {
+        let defaultCoopAdminPermissions: any = [];
+        if (auth.user.userType === 'COOPERATIVE_ADMIN') {
+          const perms = PERMISSIONS.find((permission) => permission.role === 'COOPERATIVE_ADMIN');
+          defaultCoopAdminPermissions = perms?.permissions || [];
+        }
         // save to cache
         localStorage.setItem(
           'permissions',
           JSON.stringify({
-            permissions: permissions?.data?.permissions || [],
-            isSuperAdmin: permissions?.data?.isSuperAdmin,
+            permissions: [...permissions?.data?.permissions, ...defaultCoopAdminPermissions],
+            isSuperAdmin: permissions?.data?.isSuperAdmin || auth.user.userType === 'SYSTEM_ADMIN',
           })
         );
       })
