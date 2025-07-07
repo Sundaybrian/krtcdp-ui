@@ -18,7 +18,6 @@ import { useLocalStorage } from 'src/hooks/use-local-storage';
 
 import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
 
-import { useSearchAdmins } from 'src/actions/user';
 import {
   createNotification,
   createRoute,
@@ -57,14 +56,6 @@ type Props = {
 export function NotificationForm({ selectedAdmin }: Props) {
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
-  const { id } = useAuthUser();
-
-  const userSearch = state.coopId
-    ? {
-        coopId: Number(state.coopId),
-      }
-    : {};
-  const { userResults } = useSearchAdmins({ ...userSearch });
   const [counties, setCounties] = useState<County[]>([]);
   const [subCounties, setSubCounties] = useState<SubCounty[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);

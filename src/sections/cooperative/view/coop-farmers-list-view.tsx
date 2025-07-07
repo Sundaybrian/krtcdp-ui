@@ -94,10 +94,14 @@ export function CooperativeFarmerListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
+  const [rowCount, setRowCount] = useState<number>(0);
+
   useEffect(() => {
     searchCoopFarmers(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
+      console.log('Cooperative Farmers Data:', data);
       if (data.results.length) {
         setTableData(data.results);
+        setRowCount(data.totalItems);
       }
     });
   }, [state.coopId]);
@@ -430,7 +434,7 @@ export function CooperativeFarmerListView() {
           sx={{
             flexGrow: { md: 1 },
             display: { md: 'flex' },
-            height: { xs: 800, md: 2 },
+            // height: { xs: 800, md: 2 },
             flexDirection: { md: 'column' },
           }}
         >
@@ -442,6 +446,7 @@ export function CooperativeFarmerListView() {
             loading={false}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 25]}
+            rowCount={rowCount}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
             onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
             columnVisibilityModel={columnVisibilityModel}

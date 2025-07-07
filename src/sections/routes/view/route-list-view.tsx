@@ -54,6 +54,9 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { PermissionDeniedView } from 'src/sections/permission/view';
+import { useSearchAdmins } from 'src/actions/user';
+import { assignCollectorToRoute, assignFarmerToRoute, searchCoopFarmers } from 'src/api/services';
+import { CoopFarmerList } from 'src/types/user';
 
 import { TicketViewDialog } from './route-view-dialog';
 import { CooperativeTableToolbar } from '../route-table-toolbar';
@@ -88,7 +91,8 @@ export type CollectorSchemaType = zod.infer<typeof CollectorSchema>;
 
 export const CollectorSchema = zod.object({
   routeId: zod.number().optional(),
-  collectorId: zod.number().optional(),
+  collectorId: zod.any().optional(),
+  farmerId: zod.any().optional(),
 });
 
 // ----------------------------------------------------------------------
@@ -104,7 +108,14 @@ export function RouteListView() {
   const router = useRouter();
 
   const { searchResults, searchLoading } = useSearchRoutes({ cooperativeId: state.coopId });
+
+  const userSearch = {
+    userType: 'MILK_MAN',
+  };
+
+  const { userResults } = useSearchAdmins({ ...userSearch });
   const [selectedTicket, setSelectedTicket] = useState<RouteItem>();
+  const [farmers, setFarmers] = useState<CoopFarmerList[]>([]);
 
   const filters = useSetState<IProductTableFilters>({ publish: [], stock: [] });
 
@@ -119,10 +130,14 @@ export function RouteListView() {
 
   useEffect(() => {
     if (searchResults.length) {
-      console.log('searchResults', searchResults);
-
       setTableData(searchResults);
     }
+
+    searchCoopFarmers(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
+      if (data.results.length) {
+        setFarmers(data.results);
+      }
+    });
   }, [searchResults, state.coopId]);
 
   const canReset = filters.state.publish.length > 0 || filters.state.stock.length > 0;
@@ -180,13 +195,82 @@ export function RouteListView() {
   );
 
   const methods = useForm<CollectorSchemaType>({
-    mode: 'onSubmit',
+    mode: 'onChange',
     resolver: zodResolver(CollectorSchema),
     defaultValues: {
       routeId: 0,
       collectorId: 0,
     },
   });
+
+  const fMethods = useForm<CollectorSchemaType>({
+    mode: 'onChange',
+    resolver: zodResolver(CollectorSchema),
+    defaultValues: {
+      routeId: 0,
+      farmerId: 0,
+    },
+  });
+
+  const handleAssignCollector = async () => {
+    const { collectorId } = methods.getValues();
+
+    if (!collectorId) {
+      toast.error('Please select a collector');
+      return;
+    }
+
+    const selectedRows = tableData.filter((row) => selectedRowIds.includes(row.id!));
+    if (selectedRows.length === 0) {
+      toast.error('Please select at least one route');
+      return;
+    }
+
+    try {
+      await assignCollectorToRoute({
+        collectorId: Number(collectorId.id),
+        routeId: selectedRows.map((row) => row.id!)[0],
+      });
+      console.log('Assigning collector:', collectorId, 'to routes:', selectedRows);
+      confirmRows.onFalse();
+      // clear selected rows
+      setSelectedRowIds([]);
+      methods.reset();
+      toast.success('Collector assigned successfully');
+    } catch (error) {
+      console.error('Error assigning collector:', error);
+      toast.error(error.message || 'Failed to assign collector:');
+    }
+  };
+
+  // handle farmer assign
+  const handleAssignFarmer = async () => {
+    const { farmerId } = fMethods.getValues();
+    if (!farmerId) {
+      toast.error('Please select a farmer');
+      return;
+    }
+    const selectedRows = tableData.filter((row) => selectedRowIds.includes(row.id!));
+    if (selectedRows.length === 0) {
+      toast.error('Please select at least one route');
+      return;
+    }
+    try {
+      await assignFarmerToRoute({
+        farmerId: Number(farmerId.id),
+        routeId: selectedRows.map((row) => row.id!)[0],
+      });
+      console.log('Assigning farmer:', farmerId, 'to routes:', selectedRows);
+      farmerAssign.onFalse();
+      // clear selected rows
+      setSelectedRowIds([]);
+      fMethods.reset();
+      toast.success('Farmer assigned successfully');
+    } catch (error) {
+      console.error('Error assigning farmer:', error);
+      toast.error(error.message || 'Failed to assign farmer:');
+    }
+  };
 
   //  handle permission
   const { permissions = [], isSuperAdmin = false } = perms;
@@ -283,13 +367,19 @@ export function RouteListView() {
           showInMenu
           icon={<Iconify icon="solar:user-plus-bold" />}
           label="Assign Collector"
-          onClick={confirmRows.onTrue}
+          onClick={() => {
+            setSelectedRowIds([params.row.id!]);
+            confirmRows.onTrue();
+          }}
         />,
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:user-plus-bold" />}
           label="Assign Farmer"
-          onClick={farmerAssign.onTrue}
+          onClick={() => {
+            farmerAssign.onTrue();
+            setSelectedRowIds([params.row.id!]);
+          }}
           sx={{ color: 'info.main' }}
         />,
       ],
@@ -380,7 +470,7 @@ export function RouteListView() {
                     placeholder="Collector"
                     freeSolo
                     disableCloseOnSelect
-                    options={searchResults.map((user) => user)}
+                    options={userResults.map((user) => user)}
                     getOptionLabel={(option) => option?.firstName || ''}
                     renderOption={(props, option) => (
                       <li {...props} key={option.email || option.id}>
@@ -410,8 +500,7 @@ export function RouteListView() {
             variant="contained"
             // color="error"
             onClick={() => {
-              handleDeleteRows();
-              confirmRows.onFalse();
+              handleAssignCollector();
             }}
           >
             Assign
@@ -427,7 +516,7 @@ export function RouteListView() {
           <>
             <Stack spacing={2}>
               <p>Select Farmer</p>
-              <Form methods={methods} onSubmit={methods.handleSubmit(() => {})}>
+              <Form methods={fMethods} onSubmit={methods.handleSubmit(() => {})}>
                 <Box
                   rowGap={3}
                   columnGap={2}
@@ -440,7 +529,7 @@ export function RouteListView() {
                     placeholder="Farmer"
                     freeSolo
                     disableCloseOnSelect
-                    options={searchResults.map((user) => user)}
+                    options={farmers.map((user) => user)}
                     getOptionLabel={(option) => option?.firstName || ''}
                     renderOption={(props, option) => (
                       <li {...props} key={option.email || option.id}>
@@ -470,7 +559,7 @@ export function RouteListView() {
             variant="contained"
             // color="error"
             onClick={() => {
-              handleDeleteRows();
+              handleAssignFarmer();
               farmerAssign.onFalse();
             }}
           >
