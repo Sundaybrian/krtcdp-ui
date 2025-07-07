@@ -43,10 +43,10 @@ export function TaskViewDialog({ county, open, onClose }: Props) {
   return (
     <Dialog
       fullWidth
-      maxWidth={false}
+      maxWidth={'md'}
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { maxWidth: 1000 } }}
+      PaperProps={{ sx: { maxWidth: 1400 } }}
     >
       <>
         <DialogTitle>Tasks for {county?.name}</DialogTitle>
@@ -198,7 +198,7 @@ export function TaskViewDialog({ county, open, onClose }: Props) {
                       {task.milkTemperature ?? 'Not recorded'}
                     </Box>
                     <Box component="td" sx={{ py: 1, px: 1 }}>
-                      {typeof task.organolepticTest || 'Not recorded'}
+                      {task.organolepticTest || 'Not recorded'}
                     </Box>
                   </Box>
                 ))}
