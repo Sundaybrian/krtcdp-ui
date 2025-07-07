@@ -167,7 +167,11 @@ export function TaskViewDialog({ county, open, onClose }: Props) {
                 {tasks.map((task) => (
                   <Box component="tr" key={task.id}>
                     <Box component="td" sx={{ py: 1, px: 1 }}>
-                      <p>{task?.farmer?.firstName + task?.farmer?.lastName || 'Not recorded'}</p>
+                      <p>
+                        {task?.farmer?.firstName || task?.farmer?.lastName
+                          ? `${task?.farmer?.firstName ?? ''} ${task?.farmer?.lastName ?? ''}`.trim()
+                          : 'Not recorded'}
+                      </p>
 
                       <Label>{task?.farmer?.mobilePhone || ''}</Label>
                     </Box>
