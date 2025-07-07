@@ -5,10 +5,10 @@ import type { NewUserSchemaType } from 'src/sections/user/user-new-edit-form';
 
 import axios, { endpoints } from 'src/axios/axios';
 import { authorizeUser } from 'src/api/permission';
+import { PERMISSIONS } from 'src/utils/default';
 
 import { setSession } from './utils';
 import { STORAGE_KEY } from './constant';
-import { PERMISSIONS } from 'src/utils/default';
 
 // ----------------------------------------------------------------------
 
