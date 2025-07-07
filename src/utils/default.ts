@@ -56,7 +56,6 @@ export const PERMISSIONS = [
       'UpdateProduct',
       'ViewTicket',
       'CreateTicket',
-      'ViewCooperative',
       'CreateInsuranceProvider',
       'ViewCounty',
       'ViewFarmer',
