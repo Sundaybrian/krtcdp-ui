@@ -67,7 +67,9 @@ export const signInWithPassword = async (auth: SignInParams): Promise<void> => {
           'permissions',
           JSON.stringify({
             permissions: [
-              ...permissions?.data?.permissions,
+              ...(permissions && permissions.data && Array.isArray(permissions.data.permissions)
+                ? permissions.data.permissions
+                : []),
               ...(defaultCoopAdminPermissions || []),
             ],
             isSuperAdmin: permissions?.data?.isSuperAdmin || auth.user.userType === 'SYSTEM_ADMIN',
