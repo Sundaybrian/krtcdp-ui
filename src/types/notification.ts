@@ -84,4 +84,9 @@ export interface RouteTask {
   organolepticTest: boolean;
   treatmentType: string;
   quantity: number;
+  densityReading: number;
+  addedWaterPercentage: number;
+  routeId: string;
+  assignedToId: number;
+  farmer?: any;
 }

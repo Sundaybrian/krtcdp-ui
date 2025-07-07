@@ -17,6 +17,7 @@ import { Form, Field } from 'src/components/hook-form';
 import { County } from 'src/api/data.inteface';
 import { useGetRouteTasks } from 'src/actions/route';
 import { fDateTime } from 'src/utils/format-time';
+import { Label } from 'src/components/label';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +39,7 @@ type Props = {
 
 export function TaskViewDialog({ county, open, onClose }: Props) {
   const { tasks, tasksLoading } = useGetRouteTasks(county?.id || '');
+
   return (
     <Dialog
       fullWidth
@@ -77,6 +79,7 @@ export function TaskViewDialog({ county, open, onClose }: Props) {
                   >
                     Status
                   </Box>
+
                   <Box
                     component="th"
                     sx={{
@@ -87,7 +90,33 @@ export function TaskViewDialog({ county, open, onClose }: Props) {
                       color: 'text.secondary',
                     }}
                   >
-                    Priority
+                    Quantity
+                  </Box>
+
+                  <Box
+                    component="th"
+                    sx={{
+                      borderBottom: 1,
+                      py: 1,
+                      px: 1,
+                      textAlign: 'left',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    Density Reading
+                  </Box>
+
+                  <Box
+                    component="th"
+                    sx={{
+                      borderBottom: 1,
+                      py: 1,
+                      px: 1,
+                      textAlign: 'left',
+                      color: 'text.secondary',
+                    }}
+                  >
+                    Added water(%)
                   </Box>
                   <Box
                     component="th"
@@ -101,30 +130,7 @@ export function TaskViewDialog({ county, open, onClose }: Props) {
                   >
                     Due Date
                   </Box>
-                  <Box
-                    component="th"
-                    sx={{
-                      borderBottom: 1,
-                      py: 1,
-                      px: 1,
-                      textAlign: 'left',
-                      color: 'text.secondary',
-                    }}
-                  >
-                    Quantity
-                  </Box>
-                  <Box
-                    component="th"
-                    sx={{
-                      borderBottom: 1,
-                      py: 1,
-                      px: 1,
-                      textAlign: 'left',
-                      color: 'text.secondary',
-                    }}
-                  >
-                    Cow health
-                  </Box>
+
                   <Box
                     component="th"
                     sx={{
@@ -149,18 +155,6 @@ export function TaskViewDialog({ county, open, onClose }: Props) {
                   >
                     Org. Test
                   </Box>
-                  <Box
-                    component="th"
-                    sx={{
-                      borderBottom: 1,
-                      py: 1,
-                      px: 1,
-                      textAlign: 'left',
-                      color: 'text.secondary',
-                    }}
-                  >
-                    Treatment
-                  </Box>
                 </Box>
               </Box>
 
@@ -173,36 +167,34 @@ export function TaskViewDialog({ county, open, onClose }: Props) {
                 {tasks.map((task) => (
                   <Box component="tr" key={task.id}>
                     <Box component="td" sx={{ py: 1, px: 1 }}>
-                      {task.title || 'Not recorded'}
+                      <p>{task?.farmer?.firstName + task?.farmer?.lastName || 'Not recorded'}</p>
+
+                      <Label>{task?.farmer?.mobilePhone || ''}</Label>
                     </Box>
                     <Box component="td" sx={{ py: 1, px: 1 }}>
                       {task.status || 'Not recorded'}
-                    </Box>
-                    <Box component="td" sx={{ py: 1, px: 1 }}>
-                      {task.priority || 'Not recorded'}
-                    </Box>
-                    <Box component="td" sx={{ py: 1, px: 1 }}>
-                      {task.dueDate ? fDateTime(task.dueDate) : 'Not recorded'}
                     </Box>
 
                     <Box component="td" sx={{ py: 1, px: 1 }}>
                       {task.quantity || 'Not recorded'}
                     </Box>
+
                     <Box component="td" sx={{ py: 1, px: 1 }}>
-                      {task.cowHealth || 'Not recorded'}
+                      {task.densityReading || 'Not recorded'}
+                    </Box>
+
+                    <Box component="td" sx={{ py: 1, px: 1 }}>
+                      {task.addedWaterPercentage || 'Not recorded'}
+                    </Box>
+
+                    <Box component="td" sx={{ py: 1, px: 1 }}>
+                      {task.dueDate ? fDateTime(task.dueDate) : 'Not recorded'}
                     </Box>
                     <Box component="td" sx={{ py: 1, px: 1 }}>
                       {task.milkTemperature ?? 'Not recorded'}
                     </Box>
                     <Box component="td" sx={{ py: 1, px: 1 }}>
-                      {typeof task.organolepticTest === 'boolean'
-                        ? task.organolepticTest
-                          ? 'Yes'
-                          : 'No'
-                        : 'Not recorded'}
-                    </Box>
-                    <Box component="td" sx={{ py: 1, px: 1 }}>
-                      {task.treatmentType || 'Not recorded'}
+                      {typeof task.organolepticTest || 'Not recorded'}
                     </Box>
                   </Box>
                 ))}
