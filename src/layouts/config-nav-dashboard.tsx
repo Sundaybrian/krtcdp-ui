@@ -94,7 +94,7 @@ export const navData = [
           { title: 'Users', path: paths.dashboard.user.list },
           { title: 'Create', path: paths.dashboard.user.new },
           // { title: 'Edit', path: paths.dashboard.user.demo.edit },
-          { title: 'Farmers', path: paths.dashboard.user.farmer },
+          // { title: 'Farmers', path: paths.dashboard.user.farmer },
           { title: 'Stakeholders', path: paths.dashboard.user.stakeholder },
         ],
       },
@@ -127,7 +127,7 @@ export const navData = [
       },
       {
         title: 'Cooperative Mgt',
-        permission: requiredPermissions.cooperative.viewCooperative,
+        permission: 'view:cooperative',
         path: paths.dashboard.cooperative.root,
         icon: ICONS.banking,
         children: [

@@ -34,7 +34,7 @@ import { useSetState } from 'src/hooks/use-set-state';
 
 import { exportExcel } from 'src/utils/xlsx';
 import { removeKeyFromArr } from 'src/utils/helper';
-import { INSURANCE_TYPE_OPTIONS } from 'src/utils/default';
+import { INSURANCE_TYPE_OPTIONS, requiredPermissions } from 'src/utils/default';
 
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -45,6 +45,8 @@ import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { getStorage } from 'src/hooks/use-local-storage';
+import { PermissionDeniedView } from 'src/sections/permission/view';
 
 import { CooperativeTableToolbar } from '../cooperative-table-toolbar';
 import { CooperativeTableFiltersResult } from '../cooperative-table-filters-result';
@@ -81,6 +83,7 @@ export function CooperativeListView() {
   const quickEdit = useBoolean();
 
   const router = useRouter();
+  const perms = getStorage('permissions');
 
   const { searchResults, searchLoading } = useSearchCooperative();
 
@@ -169,6 +172,15 @@ export function CooperativeListView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [filters.state, selectedRowIds, dataFiltered]
   );
+
+  const { permissions = [], isSuperAdmin = false } = perms;
+
+  if (
+    permissions.includes(requiredPermissions.cooperative.viewCooperative) === false &&
+    !isSuperAdmin
+  ) {
+    return <PermissionDeniedView permission="viewCooperative" />;
+  }
 
   const columns: GridColDef[] = [
     {
