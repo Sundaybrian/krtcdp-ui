@@ -20,11 +20,11 @@ import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
-import { getStorage } from 'src/hooks/use-local-storage';
+import { getStorage, useLocalStorage } from 'src/hooks/use-local-storage';
 
 import { exportExcel } from 'src/utils/xlsx';
 import { removeKeyFromArr } from 'src/utils/helper';
-import { requiredPermissions } from 'src/utils/default';
+import { requiredPermissions, TENANT_LOCAL_STORAGE } from 'src/utils/default';
 
 import { varAlpha } from 'src/theme/styles';
 import { USER_STATUS_OPTIONS } from 'src/_mock';
@@ -76,6 +76,7 @@ export function UserListView() {
   const router = useRouter();
 
   const perms = getStorage('permissions');
+  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
   const confirm = useBoolean();
 
@@ -179,7 +180,7 @@ export function UserListView() {
 
   // fetch users
   const fetchUsers = () => {
-    getUsers()
+    getUsers(state.coopId ? { coopId: state.coopId } : {})
       .then((data) => {
         setTableData(data.results);
       })

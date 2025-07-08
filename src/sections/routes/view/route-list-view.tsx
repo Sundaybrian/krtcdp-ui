@@ -290,6 +290,8 @@ export function RouteListView() {
     try {
       await createMilkTask(routeId);
       toast.success('Milk task created successfully');
+
+      // fetch task
     } catch (error) {
       console.error('Error creating milk task:', error);
       toast.error(error.message || 'Failed to create milk task');

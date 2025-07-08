@@ -46,7 +46,17 @@ export const useGetRouteTasks = (routeId: string) => {
 
   const memoizedValue = useMemo(
     () => ({
-      tasks: data || [],
+      tasks:
+        data?.filter((task) => {
+          // created today
+          const today = new Date();
+          const taskDate = new Date(task.creationDate);
+          return (
+            taskDate.getDate() === today.getDate() &&
+            taskDate.getMonth() === today.getMonth() &&
+            taskDate.getFullYear() === today.getFullYear()
+          );
+        }) || [],
       tasksLoading: isLoading,
       tasksError: error,
       tasksValidating: isValidating,
