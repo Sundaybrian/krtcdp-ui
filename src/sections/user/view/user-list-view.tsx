@@ -206,7 +206,7 @@ export function UserListView() {
     fetchUsers();
     fetchUserTypes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [state.coopId]);
 
   const { permissions = [], isSuperAdmin = false } = perms;
 
