@@ -63,6 +63,7 @@ import {
   searchCoopFarmers,
 } from 'src/api/services';
 import { CoopFarmerList } from 'src/types/user';
+import { useSearchStages } from 'src/actions/collections';
 
 import { TicketViewDialog } from './stage-view-dialog';
 import { CooperativeTableToolbar } from '../stage-table-toolbar';
@@ -75,7 +76,6 @@ import {
   RenderCellProduct,
   RenderRoute,
 } from '../route-table-row';
-import { useSearchStages } from 'src/actions/collections';
 
 // ----------------------------------------------------------------------
 
@@ -100,7 +100,7 @@ export type CollectorSchemaType = zod.infer<typeof CollectorSchema>;
 export const CollectorSchema = zod.object({
   routeId: zod.number().optional(),
   collectorId: zod.any().optional(),
-  farmers: zod.array(zod.any()),
+  farmersList: zod.array(zod.any()),
 });
 
 // ----------------------------------------------------------------------
@@ -218,7 +218,7 @@ export function StageListView() {
     resolver: zodResolver(CollectorSchema),
     defaultValues: {
       routeId: 0,
-      farmers: [],
+      farmersList: [],
     },
   });
 
@@ -255,8 +255,8 @@ export function StageListView() {
 
   // handle farmer assign
   const handleAssignFarmer = async () => {
-    const { farmers } = fMethods.getValues();
-    if (!farmers || farmers.length === 0) {
+    const { farmersList } = fMethods.getValues();
+    if (!farmersList || farmersList.length === 0) {
       toast.error('Please select a farmer');
       return;
     }
@@ -268,7 +268,7 @@ export function StageListView() {
 
     try {
       await assignFarmerToStage(selectedStage!.id, {
-        farmerIds: farmers.map((f: any) => Number(f.id)),
+        farmerIds: farmersList.map((f: any) => Number(f.id)),
       });
       farmerAssign.onFalse();
       // clear selected rows
@@ -498,7 +498,7 @@ export function StageListView() {
                   gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
                 >
                   <Field.Autocomplete
-                    name="farmers"
+                    name="farmersList"
                     label="Select farmer"
                     placeholder="+ Farmer"
                     freeSolo

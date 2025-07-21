@@ -72,7 +72,7 @@ export function NewEditStageForm({ routeId }: Props) {
       estimatedDuration: '',
       areaBoundaries: '',
     }),
-    [state.coopId]
+    []
   );
 
   const methods = useForm<NewUserSchemaType>({

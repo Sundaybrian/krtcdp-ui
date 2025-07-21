@@ -6,28 +6,20 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
+
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import Divider from '@mui/material/Divider';
-import MenuItem from '@mui/material/MenuItem';
-import { Grid, List, ListItem } from '@mui/material';
-import CardHeader from '@mui/material/CardHeader';
-import Typography from '@mui/material/Typography';
+
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
 import { approveTicket, createStage } from 'src/api/services';
-import { useSearchAdmins } from 'src/actions/user';
 
 import { toast } from 'src/components/snackbar';
 import { Label } from 'src/components/label/label';
 import { Form, Field } from 'src/components/hook-form';
-import { NewEditStageForm } from 'src/sections/stages/new-stage-form';
 
 // ----------------------------------------------------------------------
 
