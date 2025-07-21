@@ -206,6 +206,12 @@ export const endpoints = {
     getRouteTasks: (routeId: string) => `/task/routes/${routeId}`,
     milkTask: (routeId: number) => `/task/routes/${routeId}/create-milk-tasks`,
   },
+  collections: {
+    search: '/milk-collections/search',
+    searchStages: '/milk-collections-stages',
+    newStage: '/milk-collections-stages',
+    assignFarmerToStage: (id: number) => `/milk-collections-stages/${id}/assign-farmers`,
+  },
 };
 
 export const pageLimit = 1000;

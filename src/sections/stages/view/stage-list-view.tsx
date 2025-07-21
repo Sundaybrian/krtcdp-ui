@@ -1,6 +1,6 @@
 'use client';
 
-import type { RouteItem, StageItem } from 'src/types/notification';
+import type { RouteItem } from 'src/types/notification';
 import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
 import { z as zod } from 'zod';
@@ -58,24 +58,24 @@ import { useSearchAdmins } from 'src/actions/user';
 import {
   assignCollectorToRoute,
   assignFarmerToRoute,
+  assignFarmerToStage,
   createMilkTask,
-  getStages,
   searchCoopFarmers,
 } from 'src/api/services';
 import { CoopFarmerList } from 'src/types/user';
 
-import { NewStageDialog } from './route-view-dialog';
-import { CooperativeTableToolbar } from '../route-table-toolbar';
-import { CooperativeTableFiltersResult } from '../route-table-filters-result';
+import { TicketViewDialog } from './stage-view-dialog';
+import { CooperativeTableToolbar } from '../stage-table-toolbar';
+import { CooperativeTableFiltersResult } from '../stage-table-filters-result';
 import {
   RenderAgent,
   RenderGeneric,
   RenderCreatedAt,
   RenderCellStatus,
   RenderCellProduct,
-  RenderTasks,
+  RenderRoute,
 } from '../route-table-row';
-import { NewEditStageForm } from 'src/sections/stages/new-stage-form';
+import { useSearchStages } from 'src/actions/collections';
 
 // ----------------------------------------------------------------------
 
@@ -100,12 +100,12 @@ export type CollectorSchemaType = zod.infer<typeof CollectorSchema>;
 export const CollectorSchema = zod.object({
   routeId: zod.number().optional(),
   collectorId: zod.any().optional(),
-  farmerId: zod.any().optional(),
+  farmers: zod.array(zod.any()),
 });
 
 // ----------------------------------------------------------------------
 
-export function RouteListView() {
+export function StageListView() {
   const confirmRows = useBoolean();
   const farmerAssign = useBoolean();
   const quickView = useBoolean();
@@ -115,7 +115,9 @@ export function RouteListView() {
 
   const router = useRouter();
 
-  const { searchResults, searchLoading } = useSearchRoutes({ cooperativeId: state.coopId });
+  const { searchResults, searchLoading } = useSearchStages({ cooperativeId: state.coopId });
+
+  console.log('searchResults stages', searchResults);
 
   const userSearch = {
     userType: 'MILK_MAN',
@@ -123,18 +125,14 @@ export function RouteListView() {
   };
 
   const { userResults } = useSearchAdmins({ ...userSearch });
-  const [selectedTicket, setSelectedTicket] = useState<RouteItem>();
+  const [selectedStage, setSelectedStage] = useState<RouteItem>();
   const [farmers, setFarmers] = useState<CoopFarmerList[]>([]);
-  const [stages, setStages] = useState<StageItem[]>([]);
-
-  console.log(stages, 'stages');
 
   const filters = useSetState<IProductTableFilters>({ publish: [], stock: [] });
 
   const [tableData, setTableData] = useState<RouteItem[]>([]);
 
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>([]);
-  const [selectedRouteId, setSelectedRouteId] = useState<number>(0);
 
   const [filterButtonEl, setFilterButtonEl] = useState<HTMLButtonElement | null>(null);
 
@@ -146,13 +144,12 @@ export function RouteListView() {
       setTableData(searchResults);
     }
 
-    getStages(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
-      console.log('Stages data:', data);
-      if (data?.results?.length) {
-        setStages(data.results);
+    searchCoopFarmers(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
+      if (data.results.length) {
+        setFarmers(data.results);
       }
     });
-  }, [searchResults, state.coopId]);
+  }, [state.coopId, searchResults]);
 
   const canReset = filters.state.publish.length > 0 || filters.state.stock.length > 0;
 
@@ -187,7 +184,6 @@ export function RouteListView() {
   const handleViewRow = useCallback(
     (id: string) => {
       const sTicket = tableData.find((row) => row.id === id);
-      setSelectedTicket(sTicket);
       quickView.onTrue();
     },
     [tableData, quickView]
@@ -222,7 +218,7 @@ export function RouteListView() {
     resolver: zodResolver(CollectorSchema),
     defaultValues: {
       routeId: 0,
-      farmerId: 0,
+      farmers: [],
     },
   });
 
@@ -259,22 +255,21 @@ export function RouteListView() {
 
   // handle farmer assign
   const handleAssignFarmer = async () => {
-    const { farmerId } = fMethods.getValues();
-    if (!farmerId) {
+    const { farmers } = fMethods.getValues();
+    if (!farmers || farmers.length === 0) {
       toast.error('Please select a farmer');
       return;
     }
     const selectedRows = tableData.filter((row) => selectedRowIds.includes(row.id!));
     if (selectedRows.length === 0) {
-      toast.error('Please select at least one route');
+      toast.error('Please select at least one stage');
       return;
     }
+
     try {
-      await assignFarmerToRoute({
-        farmerId: Number(farmerId.id),
-        routeId: selectedRows.map((row) => row.id!)[0],
+      await assignFarmerToStage(selectedStage!.id, {
+        farmerIds: farmers.map((f: any) => Number(f.id)),
       });
-      console.log('Assigning farmer:', farmerId, 'to routes:', selectedRows);
       farmerAssign.onFalse();
       // clear selected rows
       setSelectedRowIds([]);
@@ -313,7 +308,7 @@ export function RouteListView() {
   const columns: GridColDef[] = [
     {
       field: 'name',
-      headerName: 'Location name',
+      headerName: 'Name',
       // flex: 1,
       maxWidth: 180,
       width: 150,
@@ -324,65 +319,73 @@ export function RouteListView() {
     },
 
     {
-      field: 'task',
-      headerName: 'View Tasks',
-      width: 160,
-      renderCell: (params) => <RenderTasks params={params} />,
-    },
-    {
-      field: 'county',
-      headerName: 'County',
-      width: 160,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
-    {
-      field: 'subCounty',
-      headerName: 'Sub County',
-      width: 160,
-      renderCell: (params) => <RenderAgent params={params} />,
-    },
-    {
-      field: 'ward',
-      headerName: 'Ward',
-      width: 140,
-      editable: true,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
-    {
-      field: 'estimatedDistance',
-      headerName: 'Estimated Distance(Km)',
-      width: 160,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
-
-    {
-      field: 'estimatedDuration',
-      headerName: 'Estimated Duration',
-      width: 160,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
-
-    {
-      field: 'maxCapacity',
-      headerName: 'Max Capacity',
-      width: 160,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
-
-    {
-      field: 'status',
-      headerName: 'Status',
-      width: 160,
-      renderCell: (params) => <RenderCellStatus params={params} />,
-    },
-
-    {
       field: 'description',
       headerName: 'Description',
       width: 160,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
 
+    {
+      field: 'sequence',
+      headerName: 'Sequence',
+      width: 100,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'routeId',
+      headerName: 'Route ID',
+      width: 100,
+      renderCell: (params) => <RenderRoute params={params} />,
+    },
+    {
+      field: 'latitude',
+      headerName: 'Latitude',
+      width: 120,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'longitude',
+      headerName: 'Longitude',
+      width: 120,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'areaBoundaries',
+      headerName: 'Area Boundaries',
+      width: 180,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'estimatedDistance',
+      headerName: 'Est. Distance (km)',
+      width: 140,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'estimatedDuration',
+      headerName: 'Est. Duration (min)',
+      width: 140,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+
+    {
+      field: 'farmerCount',
+      headerName: 'Farmers',
+      width: 110,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'taskCount',
+      headerName: 'Tasks',
+      width: 110,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'collectionCount',
+      headerName: 'Collections',
+      width: 110,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
     {
       field: 'creationDate',
       headerName: 'Creation Date',
@@ -404,31 +407,13 @@ export function RouteListView() {
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:user-plus-bold" />}
-          label="Assign Collector"
-          onClick={() => {
-            setSelectedRowIds([params.row.id!]);
-            confirmRows.onTrue();
-          }}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:align-horizonta-spacing-line-duotone" />}
-          label="Add Stage"
+          label="Assign Farmer"
           onClick={() => {
             farmerAssign.onTrue();
             setSelectedRowIds([params.row.id!]);
-            setSelectedRouteId(params.row.id!);
+            setSelectedStage(params.row);
           }}
           sx={{ color: 'info.main' }}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:cup-star-bold" />}
-          label="New Milk Task"
-          onClick={() => {
-            handleMilkTask(params.row.id!);
-          }}
-          // sx={{ color: 'i' }}
         />,
       ],
     },
@@ -443,16 +428,16 @@ export function RouteListView() {
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading="Routes"
+          heading="Stages"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Routes', href: paths.dashboard.collections.routes.root },
-            { name: 'Listed Routes' },
+            { name: 'Stages', href: paths.dashboard.collections.routes.root },
+            { name: 'Listed Stages' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.collections.routes.new}
+              href={paths.dashboard.collections.stages.new}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
@@ -498,14 +483,14 @@ export function RouteListView() {
       </DashboardContent>
 
       <ConfirmDialog
-        open={confirmRows.value}
-        onClose={confirmRows.onFalse}
-        title="Assign Collector"
+        open={farmerAssign.value}
+        onClose={farmerAssign.onFalse}
+        title="Assign Farmer"
         content={
           <>
             <Stack spacing={2}>
-              <p>Select Collector?</p>
-              <Form methods={methods} onSubmit={methods.handleSubmit(() => {})}>
+              <p>Select Farmer</p>
+              <Form methods={fMethods} onSubmit={methods.handleSubmit(() => {})}>
                 <Box
                   rowGap={3}
                   columnGap={2}
@@ -513,15 +498,19 @@ export function RouteListView() {
                   gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
                 >
                   <Field.Autocomplete
-                    name="collectorId"
-                    label="Select Collector"
-                    placeholder="Collector"
+                    name="farmers"
+                    label="Select farmer"
+                    placeholder="+ Farmer"
                     freeSolo
-                    options={userResults.map((user) => user)}
-                    getOptionLabel={(option) => option?.firstName || ''}
+                    disableCloseOnSelect
+                    multiple
+                    options={farmers.map((user) => user)}
+                    getOptionLabel={(option) =>
+                      `${option.firstName || ''} ${option.lastName || ''}`
+                    }
                     renderOption={(props, option) => (
-                      <li {...props} key={option.email || option.id}>
-                        {option.firstName}--{option.email}
+                      <li {...props} key={option.id || option.id}>
+                        {option.firstName}--{option.lastName}--{option.mobilePhone}
                       </li>
                     )}
                     renderTags={(selected, getTagProps) =>
@@ -547,18 +536,13 @@ export function RouteListView() {
             variant="contained"
             // color="error"
             onClick={() => {
-              handleAssignCollector();
+              handleAssignFarmer();
+              farmerAssign.onFalse();
             }}
           >
             Assign
           </Button>
         }
-      />
-
-      <NewStageDialog
-        routeId={selectedRouteId}
-        open={farmerAssign.value}
-        onClose={farmerAssign.onFalse}
       />
     </>
   );

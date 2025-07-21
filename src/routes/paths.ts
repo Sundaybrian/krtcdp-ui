@@ -221,9 +221,21 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/tickets`,
       new: `${ROOTS.DASHBOARD}/tickets/new`,
     },
-    routes: {
-      root: `${ROOTS.DASHBOARD}/routes`,
-      new: `${ROOTS.DASHBOARD}/routes/new`,
+    collections: {
+      root: `${ROOTS.DASHBOARD}/collections`,
+      routes: {
+        root: `${ROOTS.DASHBOARD}/collections/routes`,
+        new: `${ROOTS.DASHBOARD}/collections/routes/new`,
+      },
+      stages: {
+        root: `${ROOTS.DASHBOARD}/collections/stages`,
+        new: `${ROOTS.DASHBOARD}/collections/stages/new`,
+        details: (id: string) => `${ROOTS.DASHBOARD}/collections/stages/${id}`,
+        edit: (id: string) => `${ROOTS.DASHBOARD}/collections/stages/${id}/edit`,
+      },
+      new: `${ROOTS.DASHBOARD}/collections/new`,
+      grn: `${ROOTS.DASHBOARD}/collections/grn`,
+      invoice: `${ROOTS.DASHBOARD}/collections/invoice`,
     },
     post: {
       root: `${ROOTS.DASHBOARD}/post`,

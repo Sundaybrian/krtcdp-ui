@@ -91,3 +91,31 @@ export interface RouteTask {
   farmer?: any;
   creationDate: string;
 }
+
+export interface Route {
+  id: string;
+  name: string;
+  description: string;
+  cooperativeId: number;
+  county: string;
+  subCounty: string;
+  ward: string;
+  estimatedDistance: number;
+  estimatedDuration: number;
+  maxCapacity: number;
+  isActive: boolean;
+  tasks?: RouteTask[];
+}
+
+export interface StageItem {
+  id: string;
+  name: string;
+  description?: string;
+  sequence?: number;
+  routeId?: string;
+  estimatedDistance?: string;
+  longitude?: string;
+  latitude?: string;
+  estimatedDuration?: string;
+  areaBoundaries?: string;
+}

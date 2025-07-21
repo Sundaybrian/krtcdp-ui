@@ -169,13 +169,16 @@ export const navData = [
         children: [{ title: 'Providers', path: paths.dashboard.insuranceProviders.root }],
       },
       {
-        title: 'Routes',
-        path: paths.dashboard.routes.root,
+        title: 'Milk Collection',
+        path: paths.dashboard.collections.routes.root,
         icon: ICONS.route,
         permission: requiredPermissions.general.viewApp,
         children: [
-          { title: 'List', path: paths.dashboard.routes.root },
-          // { title: 'Details', path: paths.dashboard.order.demo.details },
+          { title: 'Routes', path: paths.dashboard.collections.routes.root },
+          { title: 'Stages', path: paths.dashboard.collections.stages.root },
+          { title: 'Collections', path: paths.dashboard.collections.root },
+          { title: 'GRN', path: paths.dashboard.collections.grn },
+          { title: 'Invoice', path: paths.dashboard.collections.invoice },
         ],
       },
       // {

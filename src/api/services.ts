@@ -5,7 +5,7 @@ import type { CreateCooperative } from 'src/types/cooperative';
 import type { Order, PurchaseOrderItem } from 'src/types/order';
 import type { IProduct, IProductItem } from 'src/types/product';
 import type { ValueChain, NewValueChain } from 'src/types/value-chain';
-import type { ITicket, IcartItem, INotification } from 'src/types/notification';
+import type { ITicket, IcartItem, INotification, StageItem, Route } from 'src/types/notification';
 import type { Grn, Farm, Harvest, Expense, CreateExpense, WarehouseReceipt } from 'src/types/farm';
 import type {
   FamerBalace,
@@ -53,10 +53,12 @@ export const validateOtp = async (data: any) => {
 
 // Function to fetch users
 export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
+  console.log('Fetching users with query:', query);
+
   try {
     const response = await axios.post(endpoints.users.search, {
-      page: 0,
-      limit: 10000,
+      // page: 0,
+      // limit: 10000,
       ...query,
     });
     return response.data;
@@ -1128,11 +1130,11 @@ export const cartCheckout = async (data: any) => {
 };
 
 //  routes
-export const getRoutes = async (query = {}): Promise<Page<any[]>> => {
+export const getRoutes = async (query = {}): Promise<Page<Route[]>> => {
   try {
     const response = await axios.get(endpoints.routes.search, {
       params: {
-        page: 0,
+        // page: 0,
         limit: pageLimit,
         ...query,
       },
@@ -1195,6 +1197,45 @@ export const createMilkTask = async (routeId: number) => {
     return response.data;
   } catch (error) {
     console.error('Error adding milk task:', error);
+    throw error;
+  }
+};
+
+// stages
+export const getStages = async (query = {}): Promise<Page<StageItem[]>> => {
+  try {
+    const response = await axios.get(endpoints.collections.searchStages, {
+      params: {
+        page: 1,
+        limit: pageLimit,
+        ...query,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching stages:', error);
+    throw error;
+  }
+};
+
+// create stage
+export const createStage = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.collections.newStage, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding stage:', error);
+    throw error;
+  }
+};
+
+// assign farmer to stage
+export const assignFarmerToStage = async (stageId: number, data: any) => {
+  try {
+    const response = await axios.post(endpoints.collections.assignFarmerToStage(stageId), data);
+    return response.data;
+  } catch (error) {
+    console.error('Error assigning farmer to stage:', error);
     throw error;
   }
 };

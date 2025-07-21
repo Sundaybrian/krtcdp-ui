@@ -1,6 +1,6 @@
 'use client';
 
-import type { RouteItem, StageItem } from 'src/types/notification';
+import type { RouteItem } from 'src/types/notification';
 import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
 import { z as zod } from 'zod';
@@ -59,14 +59,13 @@ import {
   assignCollectorToRoute,
   assignFarmerToRoute,
   createMilkTask,
-  getStages,
   searchCoopFarmers,
 } from 'src/api/services';
 import { CoopFarmerList } from 'src/types/user';
 
-import { NewStageDialog } from './route-view-dialog';
-import { CooperativeTableToolbar } from '../route-table-toolbar';
-import { CooperativeTableFiltersResult } from '../route-table-filters-result';
+// import { TicketViewDialog } from './collection-view-dialog';
+import { CooperativeTableToolbar } from '../collection-table-toolbar';
+import { CooperativeTableFiltersResult } from '../collection-table-filters-result';
 import {
   RenderAgent,
   RenderGeneric,
@@ -74,8 +73,10 @@ import {
   RenderCellStatus,
   RenderCellProduct,
   RenderTasks,
-} from '../route-table-row';
-import { NewEditStageForm } from 'src/sections/stages/new-stage-form';
+  RenderRoute,
+  RenderCollectionTime,
+} from '../collection-table-row';
+import { useSearchCollections } from 'src/actions/collections';
 
 // ----------------------------------------------------------------------
 
@@ -105,7 +106,7 @@ export const CollectorSchema = zod.object({
 
 // ----------------------------------------------------------------------
 
-export function RouteListView() {
+export function CollectionsListView() {
   const confirmRows = useBoolean();
   const farmerAssign = useBoolean();
   const quickView = useBoolean();
@@ -115,7 +116,7 @@ export function RouteListView() {
 
   const router = useRouter();
 
-  const { searchResults, searchLoading } = useSearchRoutes({ cooperativeId: state.coopId });
+  const { searchResults, searchLoading } = useSearchCollections({ cooperativeId: state.coopId });
 
   const userSearch = {
     userType: 'MILK_MAN',
@@ -125,16 +126,14 @@ export function RouteListView() {
   const { userResults } = useSearchAdmins({ ...userSearch });
   const [selectedTicket, setSelectedTicket] = useState<RouteItem>();
   const [farmers, setFarmers] = useState<CoopFarmerList[]>([]);
-  const [stages, setStages] = useState<StageItem[]>([]);
 
-  console.log(stages, 'stages');
+  console.log(farmers);
 
   const filters = useSetState<IProductTableFilters>({ publish: [], stock: [] });
 
   const [tableData, setTableData] = useState<RouteItem[]>([]);
 
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>([]);
-  const [selectedRouteId, setSelectedRouteId] = useState<number>(0);
 
   const [filterButtonEl, setFilterButtonEl] = useState<HTMLButtonElement | null>(null);
 
@@ -146,10 +145,9 @@ export function RouteListView() {
       setTableData(searchResults);
     }
 
-    getStages(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
-      console.log('Stages data:', data);
-      if (data?.results?.length) {
-        setStages(data.results);
+    searchCoopFarmers(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
+      if (data.results.length) {
+        setFarmers(data.results);
       }
     });
   }, [searchResults, state.coopId]);
@@ -312,8 +310,8 @@ export function RouteListView() {
 
   const columns: GridColDef[] = [
     {
-      field: 'name',
-      headerName: 'Location name',
+      field: 'collector',
+      headerName: 'Collector Name',
       // flex: 1,
       maxWidth: 180,
       width: 150,
@@ -324,49 +322,71 @@ export function RouteListView() {
     },
 
     {
-      field: 'task',
-      headerName: 'View Tasks',
+      field: 'farmer',
+      headerName: 'Farmer Name',
       width: 160,
       renderCell: (params) => <RenderTasks params={params} />,
     },
     {
-      field: 'county',
-      headerName: 'County',
+      field: 'route',
+      headerName: 'Route Name',
       width: 160,
-      renderCell: (params) => <RenderGeneric params={params} />,
+      renderCell: (params) => <RenderRoute params={params} />,
     },
     {
-      field: 'subCounty',
-      headerName: 'Sub County',
+      field: 'container',
+      headerName: 'Container',
       width: 160,
       renderCell: (params) => <RenderAgent params={params} />,
     },
     {
-      field: 'ward',
-      headerName: 'Ward',
+      field: 'collectionTime',
+      headerName: 'Collection Time',
       width: 140,
-      editable: true,
+      renderCell: (params) => <RenderCollectionTime params={params} />,
+    },
+    {
+      field: 'latitude',
+      headerName: 'Latitude',
+      width: 120,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
     {
-      field: 'estimatedDistance',
-      headerName: 'Estimated Distance(Km)',
+      field: 'longitude',
+      headerName: 'Longitude',
+      width: 120,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'organolepticTest',
+      headerName: 'Organoleptic Test',
       width: 160,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
-
     {
-      field: 'estimatedDuration',
-      headerName: 'Estimated Duration',
-      width: 160,
+      field: 'densityReading',
+      headerName: 'Density Reading',
+      width: 140,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
-
     {
-      field: 'maxCapacity',
-      headerName: 'Max Capacity',
-      width: 160,
+      field: 'addedWaterPercentage',
+      headerName: 'Added Water (%)',
+      width: 140,
       renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'alcoholTestPassed',
+      headerName: 'Alcohol Test Passed',
+      width: 160,
+      renderCell: (params) => (
+        <Chip
+          label={params.value ? 'Yes' : 'No'}
+          color={params.value ? 'success' : 'error'}
+          size="small"
+          variant="soft"
+        />
+      ),
     },
 
     {
@@ -412,12 +432,11 @@ export function RouteListView() {
         />,
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:align-horizonta-spacing-line-duotone" />}
-          label="Add Stage"
+          icon={<Iconify icon="solar:user-plus-bold" />}
+          label="Assign Farmer"
           onClick={() => {
             farmerAssign.onTrue();
             setSelectedRowIds([params.row.id!]);
-            setSelectedRouteId(params.row.id!);
           }}
           sx={{ color: 'info.main' }}
         />,
@@ -443,11 +462,11 @@ export function RouteListView() {
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading="Routes"
+          heading="Collections"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Routes', href: paths.dashboard.collections.routes.root },
-            { name: 'Listed Routes' },
+            { name: 'Collections', href: paths.dashboard.collections.routes.root },
+            { name: 'Listed Collections' },
           ]}
           action={
             <Button
@@ -555,10 +574,65 @@ export function RouteListView() {
         }
       />
 
-      <NewStageDialog
-        routeId={selectedRouteId}
+      <ConfirmDialog
         open={farmerAssign.value}
         onClose={farmerAssign.onFalse}
+        title="Assign Farmer"
+        content={
+          <>
+            <Stack spacing={2}>
+              <p>Select Farmer</p>
+              <Form methods={fMethods} onSubmit={methods.handleSubmit(() => {})}>
+                <Box
+                  rowGap={3}
+                  columnGap={2}
+                  display="grid"
+                  gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
+                >
+                  <Field.Autocomplete
+                    name="farmerId"
+                    label="Select farmer"
+                    placeholder="Farmer"
+                    freeSolo
+                    options={farmers.map((user) => user)}
+                    getOptionLabel={(option) =>
+                      `${option.firstName || ''} ${option.lastName || ''}`
+                    }
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id || option.id}>
+                        {option.firstName}--{option.lastName}--{option.mobilePhone}
+                      </li>
+                    )}
+                    renderTags={(selected, getTagProps) =>
+                      selected.map((option, index) => (
+                        <Chip
+                          {...getTagProps({ index })}
+                          key={option.email}
+                          label={option.email}
+                          size="small"
+                          color="info"
+                          variant="soft"
+                        />
+                      ))
+                    }
+                  />
+                </Box>
+              </Form>
+            </Stack>
+          </>
+        }
+        action={
+          <Button
+            variant="contained"
+            // color="error"
+            onClick={() => {
+              handleAssignFarmer();
+              farmerAssign.onFalse();
+            }}
+          >
+            Assign
+          </Button>
+        }
       />
     </>
   );

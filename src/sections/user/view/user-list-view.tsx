@@ -76,7 +76,7 @@ export function UserListView() {
   const router = useRouter();
 
   const perms = getStorage('permissions');
-  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
+  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: -1 });
 
   const confirm = useBoolean();
 
@@ -180,13 +180,12 @@ export function UserListView() {
 
   // fetch users
   const fetchUsers = () => {
-    getUsers(state.coopId ? { coopId: state.coopId } : {})
+    getUsers(state.coopId > 0 ? { coopId: state.coopId } : {})
       .then((data) => {
         setTableData(data.results);
       })
-      .catch((error) => {
+      .catch(() => {
         toast.error('Failed to fetch users!');
-        console.error('Error fetching users:', error);
       });
   };
 
@@ -203,6 +202,7 @@ export function UserListView() {
 
   // use effect
   useEffect(() => {
+    // Only fetch users and user types once on mount
     fetchUsers();
     fetchUserTypes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
