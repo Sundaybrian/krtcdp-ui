@@ -52,7 +52,7 @@ export function NewStageDialog({ routeId, open, onClose }: Props) {
       name: '',
       description: '',
       sequence: '',
-      routeId: routeId ? routeId : 0,
+      routeId,
       estimatedDistance: '',
       longitude: '',
       latitude: '',
@@ -80,7 +80,7 @@ export function NewStageDialog({ routeId, open, onClose }: Props) {
       estimatedDistance: Number(data.estimatedDistance),
       estimatedDuration: Number(data.estimatedDuration),
       sequence: Number(data.sequence),
-      routeId: routeId ? routeId : 0,
+      routeId,
     };
 
     try {
