@@ -58,6 +58,7 @@ import { useSearchAdmins } from 'src/actions/user';
 import {
   assignCollectorToRoute,
   assignFarmerToRoute,
+  createContainer,
   createMilkTask,
   getStages,
   searchCoopFarmers,
@@ -75,6 +76,7 @@ import {
   RenderCellProduct,
   RenderTasks,
 } from '../route-table-row';
+import { NewRouteContainerDialog } from './new-container';
 
 // ----------------------------------------------------------------------
 
@@ -107,6 +109,7 @@ export const CollectorSchema = zod.object({
 export function RouteListView() {
   const confirmRows = useBoolean();
   const farmerAssign = useBoolean();
+  const containerAssign = useBoolean();
   const quickView = useBoolean();
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
@@ -302,6 +305,23 @@ export function RouteListView() {
     }
   };
 
+  const handleContainer = async (routeId: number) => {
+    if (!routeId) {
+      toast.error('Please select a route');
+      return;
+    }
+
+    try {
+      await createContainer(routeId);
+      toast.success('Container created successfully');
+
+      // fetch task
+    } catch (error) {
+      console.error('Error creating container:', error);
+      toast.error(error.message || 'Failed to create container');
+    }
+  };
+
   //  handle permission
   const { permissions = [], isSuperAdmin = false } = perms;
 
@@ -426,6 +446,16 @@ export function RouteListView() {
           label="New Milk Task"
           onClick={() => {
             handleMilkTask(params.row.id!);
+          }}
+          // sx={{ color: 'i' }}
+        />,
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="solar:cup-star-bold" />}
+          label="Add container"
+          onClick={() => {
+            containerAssign.onTrue();
+            setSelectedRouteId(params.row.id!);
           }}
           // sx={{ color: 'i' }}
         />,
@@ -558,6 +588,13 @@ export function RouteListView() {
         routeId={selectedRouteId}
         open={farmerAssign.value}
         onClose={farmerAssign.onFalse}
+      />
+
+      <NewRouteContainerDialog
+        open={containerAssign.value}
+        onClose={containerAssign.onFalse}
+        routeId={selectedRouteId}
+        cooperativeId={state.coopId}
       />
     </>
   );

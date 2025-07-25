@@ -119,3 +119,13 @@ export interface StageItem {
   estimatedDuration?: string;
   areaBoundaries?: string;
 }
+
+export interface Container {
+  containerNumber: string;
+  capacity: number;
+  cooperativeId: number;
+  condition: string;
+  routeId: number;
+  currentVolume: number;
+  isActive: boolean;
+}

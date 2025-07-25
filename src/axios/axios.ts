@@ -211,6 +211,8 @@ export const endpoints = {
     searchStages: '/milk-collections-stages',
     newStage: '/milk-collections-stages',
     assignFarmerToStage: (id: number) => `/milk-collections-stages/${id}/assign-farmers`,
+    searchContainers: '/milk-collections-containers/search',
+    newContainer: '/milk-collections-containers',
   },
 };
 

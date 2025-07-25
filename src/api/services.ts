@@ -5,7 +5,14 @@ import type { CreateCooperative } from 'src/types/cooperative';
 import type { Order, PurchaseOrderItem } from 'src/types/order';
 import type { IProduct, IProductItem } from 'src/types/product';
 import type { ValueChain, NewValueChain } from 'src/types/value-chain';
-import type { ITicket, IcartItem, INotification, StageItem, Route } from 'src/types/notification';
+import type {
+  ITicket,
+  IcartItem,
+  INotification,
+  StageItem,
+  Route,
+  Container,
+} from 'src/types/notification';
 import type { Grn, Farm, Harvest, Expense, CreateExpense, WarehouseReceipt } from 'src/types/farm';
 import type {
   FamerBalace,
@@ -1236,6 +1243,35 @@ export const assignFarmerToStage = async (stageId: number, data: any) => {
     return response.data;
   } catch (error) {
     console.error('Error assigning farmer to stage:', error);
+    throw error;
+  }
+};
+
+// containers
+
+export const getContainers = async (query = {}): Promise<Page<Container[]>> => {
+  try {
+    const response = await axios.get(endpoints.collections.searchContainers, {
+      params: {
+        page: 1,
+        limit: pageLimit,
+        ...query,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching containers:', error);
+    throw error;
+  }
+};
+
+// create container
+export const createContainer = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.collections.newContainer, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding container:', error);
     throw error;
   }
 };

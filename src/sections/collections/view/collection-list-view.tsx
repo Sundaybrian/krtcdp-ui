@@ -420,34 +420,34 @@ export function CollectionsListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:user-plus-bold" />}
-          label="Assign Collector"
-          onClick={() => {
-            setSelectedRowIds([params.row.id!]);
-            confirmRows.onTrue();
-          }}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:user-plus-bold" />}
-          label="Assign Farmer"
-          onClick={() => {
-            farmerAssign.onTrue();
-            setSelectedRowIds([params.row.id!]);
-          }}
-          sx={{ color: 'info.main' }}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:cup-star-bold" />}
-          label="New Milk Task"
-          onClick={() => {
-            handleMilkTask(params.row.id!);
-          }}
-          // sx={{ color: 'i' }}
-        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:user-plus-bold" />}
+        //   label="Assign Collector"
+        //   onClick={() => {
+        //     setSelectedRowIds([params.row.id!]);
+        //     confirmRows.onTrue();
+        //   }}
+        // />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:user-plus-bold" />}
+        //   label="Assign Farmer"
+        //   onClick={() => {
+        //     farmerAssign.onTrue();
+        //     setSelectedRowIds([params.row.id!]);
+        //   }}
+        //   sx={{ color: 'info.main' }}
+        // />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:cup-star-bold" />}
+        //   label="New Milk Task"
+        //   onClick={() => {
+        //     handleMilkTask(params.row.id!);
+        //   }}
+        // sx={{ color: 'i' }}
+        // />,
       ],
     },
   ];
