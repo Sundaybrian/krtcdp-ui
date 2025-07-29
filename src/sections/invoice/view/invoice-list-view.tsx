@@ -40,6 +40,8 @@ import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { RouterLink } from 'src/routes/components';
+
 import {
   useTable,
   emptyRows,
@@ -267,16 +269,16 @@ export function InvoiceListView() {
             { name: 'Invoice', href: paths.dashboard.invoice.root },
             { name: 'List' },
           ]}
-          // action={
-          //   <Button
-          //     component={RouterLink}
-          //     href={paths.dashboard.invoice.new}
-          //     variant="contained"
-          //     startIcon={<Iconify icon="mingcute:add-line" />}
-          //   >
-          //     New invoice
-          //   </Button>
-          // }
+          action={
+            <Button
+              component={RouterLink}
+              href={paths.dashboard.invoice.new}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+              New invoice
+            </Button>
+          }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
