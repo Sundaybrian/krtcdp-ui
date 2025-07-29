@@ -3,7 +3,7 @@
 import type { RouteItem } from 'src/types/notification';
 import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
-import { z as zod } from 'zod';
+import { number, z as zod } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import type {
@@ -61,11 +61,15 @@ import {
   searchCoopFarmers,
 } from 'src/api/services';
 import { CoopFarmerList } from 'src/types/user';
-import { useSearchCollections } from 'src/actions/collections';
+import {
+  useSearchCollections,
+  useSearchMilkAggregation,
+  useSearchMilkAggregationByDate,
+} from 'src/actions/collections';
 
 // import { TicketViewDialog } from './collection-view-dialog';
-import { CooperativeTableToolbar, Ifilter } from '../collection-table-toolbar';
-import { CooperativeTableFiltersResult } from '../collection-table-filters-result';
+import { CooperativeTableToolbar, Ifilter } from '../collectors-table-toolbar';
+import { CooperativeTableFiltersResult } from '../collectors-table-filters-result';
 import {
   RenderAgent,
   RenderGeneric,
@@ -75,7 +79,7 @@ import {
   RenderTasks,
   RenderRoute,
   RenderCollectionTime,
-} from '../collection-table-row';
+} from '../collectors-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -108,19 +112,15 @@ export const CollectorSchema = zod.object({
 export function CollectionsListView() {
   const confirmRows = useBoolean();
   const farmerAssign = useBoolean();
-  const quickView = useBoolean();
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
   const perms = getStorage('permissions');
 
   const router = useRouter();
-  const routerParams = useParams();
+  const routeParams = useParams();
 
-  // get route if from query params
-
-  const { searchResults, searchLoading } = useSearchCollections({
-    cooperativeId: state.coopId,
-    collectorId: Number(routerParams.id) || 0,
+  const { searchResults, searchLoading } = useSearchMilkAggregationByDate({
+    allocatedById: Number(routeParams.id),
   });
 
   const userSearch = {
@@ -129,10 +129,7 @@ export function CollectionsListView() {
   };
 
   const { userResults } = useSearchAdmins({ ...userSearch });
-  const [selectedTicket, setSelectedTicket] = useState<RouteItem>();
   const [farmers, setFarmers] = useState<CoopFarmerList[]>([]);
-
-  console.log(farmers);
 
   const filters = useSetState<Ifilter>({ publish: [], stock: [], startDate: null, endDate: null });
 
@@ -149,13 +146,7 @@ export function CollectionsListView() {
     if (searchResults.length) {
       setTableData(searchResults);
     }
-
-    searchCoopFarmers(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
-      if (data.results.length) {
-        setFarmers(data.results);
-      }
-    });
-  }, [searchResults, state.coopId]);
+  }, [searchResults]);
 
   const canReset = filters.state.publish.length > 0 || filters.state.stock.length > 0;
 
@@ -314,8 +305,8 @@ export function CollectionsListView() {
 
   const columns: GridColDef[] = [
     {
-      field: 'collector',
-      headerName: 'Collector Name',
+      field: 'batchNumber',
+      headerName: 'Batch Number',
       // flex: 1,
       maxWidth: 180,
       width: 150,
@@ -326,72 +317,42 @@ export function CollectionsListView() {
     },
 
     {
-      field: 'farmer',
-      headerName: 'Farmer Name',
+      field: 'recipientInfo',
+      headerName: 'Recipient Info',
       width: 160,
-      renderCell: (params) => <RenderTasks params={params} />,
-    },
-    {
-      field: 'route',
-      headerName: 'Route Name',
-      width: 160,
-      renderCell: (params) => <RenderRoute params={params} />,
-    },
-    {
-      field: 'container',
-      headerName: 'Container',
-      width: 160,
-      renderCell: (params) => <RenderAgent params={params} />,
-    },
-    {
-      field: 'collectionTime',
-      headerName: 'Collection Time',
-      width: 140,
-      renderCell: (params) => <RenderCollectionTime params={params} />,
+      renderCell: (params) => <RenderGeneric params={params} />,
     },
 
     {
-      field: 'quantity',
+      field: 'allocatedQuantity',
       headerName: 'Quantity (L)',
       width: 140,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
+
     {
-      field: 'temperature',
-      headerName: 'Temperature (°C)',
+      field: 'unitPrice',
+      headerName: 'Unit Price',
       width: 160,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
     {
-      field: 'organolepticTest',
-      headerName: 'Organoleptic Test',
+      field: 'totalValue',
+      headerName: 'Total Value',
       width: 160,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
     {
-      field: 'densityReading',
-      headerName: 'Density Reading',
-      width: 140,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
-    {
-      field: 'addedWaterPercentage',
-      headerName: 'Added Water (%)',
-      width: 140,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
-    {
-      field: 'alcoholTestPassed',
-      headerName: 'Alcohol Test Passed',
+      field: 'generalCategory',
+      headerName: 'General Category',
       width: 160,
-      renderCell: (params) => (
-        <Chip
-          label={params.value ? 'Yes' : 'No'}
-          color={params.value ? 'success' : 'error'}
-          size="small"
-          variant="soft"
-        />
-      ),
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'location',
+      headerName: 'Location',
+      width: 160,
+      renderCell: (params) => <RenderGeneric params={params} />,
     },
 
     {
@@ -402,8 +363,8 @@ export function CollectionsListView() {
     },
 
     {
-      field: 'description',
-      headerName: 'Description',
+      field: 'notes',
+      headerName: 'Notes',
       width: 160,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
@@ -426,31 +387,23 @@ export function CollectionsListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:eye-bold" />}
-        //   label=""
-        //   onClick={() => {}}
-        // />,
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:user-plus-bold" />}
-        //   label="Assign Farmer"
-        //   onClick={() => {
-        //     farmerAssign.onTrue();
-        //     setSelectedRowIds([params.row.id!]);
-        //   }}
-        //   sx={{ color: 'info.main' }}
-        // />,
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:cup-star-bold" />}
-        //   label="New Milk Task"
-        //   onClick={() => {
-        //     handleMilkTask(params.row.id!);
-        //   }}
-        // sx={{ color: 'i' }}
-        // />,
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="Approve"
+          onClick={() => {
+            // handleViewRow(params.row.collectorId);
+          }}
+        />,
+
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="View Shifts"
+          onClick={() => {
+            // handleViewRow(params.row.collectorId);
+          }}
+        />,
       ],
     },
   ];
@@ -464,22 +417,22 @@ export function CollectionsListView() {
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading="Collections"
+          heading="Milk allocations"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Collections', href: paths.dashboard.collections.routes.root },
-            { name: 'Listed Collections' },
+            { name: 'Listed allocations' },
           ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.collections.routes.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New
-            </Button>
-          }
+          // action={
+          //   <Button
+          //     component={RouterLink}
+          //     href={paths.dashboard.collections.routes.new}
+          //     variant="contained"
+          //     startIcon={<Iconify icon="mingcute:add-line" />}
+          //   >
+          //     New
+          //   </Button>
+          // }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
@@ -579,47 +532,43 @@ export function CollectionsListView() {
         onClose={farmerAssign.onFalse}
         title="Assign Farmer"
         content={
-          <>
-            <Stack spacing={2}>
-              <p>Select Farmer</p>
-              <Form methods={fMethods} onSubmit={methods.handleSubmit(() => {})}>
-                <Box
-                  rowGap={3}
-                  columnGap={2}
-                  display="grid"
-                  gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
-                >
-                  <Field.Autocomplete
-                    name="farmerId"
-                    label="Select farmer"
-                    placeholder="Farmer"
-                    freeSolo
-                    options={farmers.map((user) => user)}
-                    getOptionLabel={(option) =>
-                      `${option.firstName || ''} ${option.lastName || ''}`
-                    }
-                    renderOption={(props, option) => (
-                      <li {...props} key={option.id || option.id}>
-                        {option.firstName}--{option.lastName}--{option.mobilePhone}
-                      </li>
-                    )}
-                    renderTags={(selected, getTagProps) =>
-                      selected.map((option, index) => (
-                        <Chip
-                          {...getTagProps({ index })}
-                          key={option.email}
-                          label={option.email}
-                          size="small"
-                          color="info"
-                          variant="soft"
-                        />
-                      ))
-                    }
-                  />
-                </Box>
-              </Form>
-            </Stack>
-          </>
+          <Stack spacing={2}>
+            <p>Select Farmer</p>
+            <Form methods={fMethods} onSubmit={methods.handleSubmit(() => {})}>
+              <Box
+                rowGap={3}
+                columnGap={2}
+                display="grid"
+                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
+              >
+                <Field.Autocomplete
+                  name="farmerId"
+                  label="Select farmer"
+                  placeholder="Farmer"
+                  freeSolo
+                  options={farmers.map((user) => user)}
+                  getOptionLabel={(option) => `${option.firstName || ''} ${option.lastName || ''}`}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option.id || option.id}>
+                      {option.firstName}--{option.lastName}--{option.mobilePhone}
+                    </li>
+                  )}
+                  renderTags={(selected, getTagProps) =>
+                    selected.map((option, index) => (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={option.email}
+                        label={option.email}
+                        size="small"
+                        color="info"
+                        variant="soft"
+                      />
+                    ))
+                  }
+                />
+              </Box>
+            </Form>
+          </Stack>
         }
         action={
           <Button

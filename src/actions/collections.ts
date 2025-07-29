@@ -89,3 +89,53 @@ export function useSearchStages(query: any = {}) {
 
   return memoizedValue;
 }
+
+// use searh milk aggregation
+export function useSearchMilkAggregation(query: any = {}) {
+  const url = query ? [endpoints.collections.searchMilkAggregation, { params: { ...query } }] : '';
+
+  const { data, isLoading, error, isValidating } = useSWR<any>(url, fetcher, {
+    ...swrOptions,
+    keepPreviousData: true,
+  });
+
+  console.log('Milk Aggregation Data:', data);
+
+  const memoizedValue = useMemo(
+    () => ({
+      searchResults: data?.results || [],
+      searchLoading: isLoading,
+      searchError: error,
+      searchValidating: isValidating,
+      searchEmpty: !isLoading && !data?.results?.length,
+    }),
+    [data?.results, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+// use earch milk aggregation
+export function useSearchMilkAggregationByDate(query: any = {}) {
+  const url = query
+    ? [endpoints.collections.searchMilkAggregationByDate, { params: { ...query } }]
+    : '';
+
+  const { data, isLoading, error, isValidating } = useSWR<any>(url, fetcher, {
+    ...swrOptions,
+    keepPreviousData: true,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      searchResults: data?.results || [],
+      searchLoading: isLoading,
+      searchError: error,
+      searchValidating: isValidating,
+      searchEmpty: !isLoading && !data?.results?.length,
+    }),
+    [data?.results, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}

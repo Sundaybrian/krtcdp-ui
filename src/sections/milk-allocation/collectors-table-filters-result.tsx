@@ -9,7 +9,7 @@ import Chip from '@mui/material/Chip';
 import { sentenceCase } from 'src/utils/change-case';
 
 import { chipProps, FiltersBlock, FiltersResult } from 'src/components/filters-result';
-import { Ifilter } from './collection-table-toolbar';
+import { Ifilter } from './collectors-table-toolbar';
 
 // ----------------------------------------------------------------------
 
