@@ -176,6 +176,7 @@ export const navData = [
         children: [
           { title: 'Routes', path: paths.dashboard.collections.routes.root },
           { title: 'Stages', path: paths.dashboard.collections.stages.root },
+          { title: 'Shifts', path: paths.dashboard.collections.shift.root },
           { title: 'Collections', path: paths.dashboard.collections.root },
           { title: 'GRN', path: paths.dashboard.collections.grn },
           { title: 'Invoice', path: paths.dashboard.collections.invoice },

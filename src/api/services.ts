@@ -1275,3 +1275,31 @@ export const createContainer = async (data: any) => {
     throw error;
   }
 };
+
+// fetch shift
+export const fetchShifts = async (query = {}): Promise<Page<Container[]>> => {
+  try {
+    const response = await axios.get(endpoints.collections.searchShifts, {
+      params: {
+        page: 1,
+        limit: pageLimit,
+        ...query,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching containers:', error);
+    throw error;
+  }
+};
+
+// create shift
+export const createShift = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.collections.newShift, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding shift:', error);
+    throw error;
+  }
+};

@@ -139,3 +139,27 @@ export function useSearchMilkAggregationByDate(query: any = {}) {
 
   return memoizedValue;
 }
+
+export function useSearchShifts(query: any = {}) {
+  const url = query
+    ? [endpoints.collections.searchShifts, { params: { limit: 100, ...query } }]
+    : '';
+
+  const { data, isLoading, error, isValidating } = useSWR<Page<RouteItem[]>>(url, fetcher, {
+    ...swrOptions,
+    keepPreviousData: true,
+  });
+
+  const memoizedValue = useMemo(
+    () => ({
+      searchResults: data?.results || [],
+      searchLoading: isLoading,
+      searchError: error,
+      searchValidating: isValidating,
+      searchEmpty: !isLoading && !data?.results.length,
+    }),
+    [data?.results, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}

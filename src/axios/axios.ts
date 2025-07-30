@@ -215,6 +215,8 @@ export const endpoints = {
     newContainer: '/milk-collections-containers',
     searchMilkAggregation: '/milk-collections-aggregations',
     searchMilkAggregationByDate: '/milk-collections-allocations',
+    searchShifts: `/milk-collections-shifts`,
+    newShift: `/milk-collections-shifts`,
   },
 };
 

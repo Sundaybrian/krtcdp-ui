@@ -229,6 +229,10 @@ export const paths = {
         root: `${ROOTS.DASHBOARD}/collections/routes`,
         new: `${ROOTS.DASHBOARD}/collections/routes/new`,
       },
+      shift: {
+        root: `${ROOTS.DASHBOARD}/collections/shifts`,
+        new: `${ROOTS.DASHBOARD}/collections/shifts/new`,
+      },
       stages: {
         root: `${ROOTS.DASHBOARD}/collections/stages`,
         new: `${ROOTS.DASHBOARD}/collections/stages/new`,
