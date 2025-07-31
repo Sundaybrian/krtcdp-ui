@@ -43,7 +43,7 @@ export function RenderGeneric({ params }: ParamsProps) {
 export function RenderRoute({ params }: ParamsProps) {
   return (
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
-      <ListItemText primary={params.row.route.name} />
+      <ListItemText primary={params.row?.route?.name} />
     </Stack>
   );
 }
@@ -59,9 +59,9 @@ export function RenderAgent({ params }: ParamsProps) {
 export function RenderTasks({ params }: ParamsProps) {
   return (
     <Box>
-      <ListItemText primary={params.row.shift.name} />
+      <ListItemText primary={params.row?.shift?.name} />
       <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-        {params.row.shift.startTime} - {params.row.shift.endTime}
+        {params.row?.shift?.startTime} - {params.row?.shift?.endTime}
       </Box>
     </Box>
   );
@@ -94,7 +94,7 @@ export function RenderCellProduct({
   return (
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
       <Box color="success" title="Collector Name">
-        {params.row.collector.firstName} {params.row.collector.lastName}
+        {params.row?.collector?.firstName} {params.row?.collector?.lastName}
       </Box>
     </Stack>
   );
