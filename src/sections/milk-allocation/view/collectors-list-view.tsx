@@ -76,9 +76,6 @@ import {
   RenderCreatedAt,
   RenderCellStatus,
   RenderCellProduct,
-  RenderTasks,
-  RenderRoute,
-  RenderCollectionTime,
 } from '../collectors-table-row';
 import { ApproveAllocationDialog } from './collectors-view-dialog';
 
@@ -311,13 +308,6 @@ export function CollectionsListView() {
     },
 
     {
-      field: 'recipientInfo',
-      headerName: 'Recipient Info',
-      width: 160,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
-
-    {
       field: 'allocatedQuantity',
       headerName: 'Quantity (L)',
       width: 140,
@@ -343,8 +333,8 @@ export function CollectionsListView() {
       renderCell: (params) => <RenderGeneric params={params} />,
     },
     {
-      field: 'location',
-      headerName: 'Location',
+      field: 'specificType',
+      headerName: 'Specific Type',
       width: 160,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
@@ -369,6 +359,13 @@ export function CollectionsListView() {
       width: 110,
       editable: false,
       renderCell: (params) => <RenderCreatedAt params={params} />,
+    },
+
+    {
+      field: 'approvedBy',
+      headerName: 'Approved By',
+      width: 160,
+      renderCell: (params) => <RenderAgent params={params} />,
     },
     {
       type: 'actions',

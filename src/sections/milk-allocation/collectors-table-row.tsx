@@ -3,16 +3,10 @@ import type { GridCellParams } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
 
 import { fDate, fTime } from 'src/utils/format-time';
-import { Iconify } from 'src/components/iconify';
 
 import { Label } from 'src/components/label';
-import { Badge } from '@mui/material';
-import { useBoolean } from 'src/hooks/use-boolean';
-
-import { TaskViewDialog } from './collectors-view-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -51,7 +45,9 @@ export function RenderRoute({ params }: ParamsProps) {
 export function RenderAgent({ params }: ParamsProps) {
   return (
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
-      <ListItemText primary={params.row?.collections?.length} />
+      <ListItemText
+        primary={`${params.row?.approvedBy?.firstName} ${params.row?.approvedBy?.lastName}`}
+      />
     </Stack>
   );
 }
@@ -70,8 +66,8 @@ export function RenderTasks({ params }: ParamsProps) {
 export function RenderCreatedAt({ params }: ParamsProps) {
   return (
     <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-      {fDate(params.row.creationDate)}
-      {fTime(params.row.creationDate)}
+      {fDate(params.row.createdAt)}
+      {fTime(params.row.createdAt)}
     </Box>
   );
 }
@@ -93,8 +89,8 @@ export function RenderCellProduct({
 }) {
   return (
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
-      <Box color="success" title="Collector Name">
-        {params.row?.collector?.firstName} {params.row?.collector?.lastName}
+      <Box color="success" title="Batch No">
+        {params.row?.batchNumber}
       </Box>
     </Stack>
   );
