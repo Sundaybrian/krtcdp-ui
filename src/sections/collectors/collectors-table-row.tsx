@@ -22,7 +22,11 @@ type ParamsProps = {
 
 export function RenderCellStatus({ params }: ParamsProps) {
   return (
-    <Label variant="soft" color="primary" sx={{ textTransform: 'capitalize' }}>
+    <Label
+      variant="soft"
+      color={params.row.status === 'VERIFIED' ? 'success' : 'default'}
+      sx={{ textTransform: 'capitalize' }}
+    >
       {params.row.status}
     </Label>
   );

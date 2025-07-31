@@ -1303,3 +1303,15 @@ export const createShift = async (data: any) => {
     throw error;
   }
 };
+
+// milk aggregation approvals
+
+export const approveMilkAggregation = async (id: number, data: any) => {
+  try {
+    const response = await axios.patch(`${endpoints.collections.approval(id)}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
+  }
+};
