@@ -1315,3 +1315,14 @@ export const approveMilkAggregation = async (id: number, data: any) => {
     throw error;
   }
 };
+
+// allocation appproval
+export const approveMilkAllocation = async (id: number, data: any) => {
+  try {
+    const response = await axios.patch(`${endpoints.collections.milkAllocationApproval(id)}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
+  }
+};

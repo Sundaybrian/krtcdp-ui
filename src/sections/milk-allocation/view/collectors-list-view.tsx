@@ -80,6 +80,7 @@ import {
   RenderRoute,
   RenderCollectionTime,
 } from '../collectors-table-row';
+import { ApproveAllocationDialog } from './collectors-view-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -111,7 +112,7 @@ export const CollectorSchema = zod.object({
 
 export function CollectionsListView() {
   const confirmRows = useBoolean();
-  const farmerAssign = useBoolean();
+  const approvalDialog = useBoolean();
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
   const perms = getStorage('permissions');
@@ -123,14 +124,6 @@ export function CollectionsListView() {
     allocatedById: Number(routeParams.id),
   });
 
-  const userSearch = {
-    userType: 'MILK_MAN',
-    coopId: state.coopId,
-  };
-
-  const { userResults } = useSearchAdmins({ ...userSearch });
-  const [farmers, setFarmers] = useState<CoopFarmerList[]>([]);
-
   const filters = useSetState<Ifilter>({ publish: [], stock: [], startDate: null, endDate: null });
 
   const [tableData, setTableData] = useState<RouteItem[]>([]);
@@ -141,6 +134,8 @@ export function CollectionsListView() {
 
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
+
+  const [dialogData, setDialogData] = useState<{ item: any; status: string }>();
 
   useEffect(() => {
     if (searchResults.length) {
@@ -268,7 +263,6 @@ export function CollectionsListView() {
         routeId: selectedRows.map((row) => row.id!)[0],
       });
       console.log('Assigning farmer:', farmerId, 'to routes:', selectedRows);
-      farmerAssign.onFalse();
       // clear selected rows
       setSelectedRowIds([]);
       fMethods.reset();
@@ -389,19 +383,63 @@ export function CollectionsListView() {
       getActions: (params) => [
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
+          icon={<Iconify icon="solar:check-circle-bold" />}
           label="Approve"
           onClick={() => {
-            // handleViewRow(params.row.collectorId);
+            approvalDialog.onTrue();
+            setDialogData({
+              item: params.row,
+              status: 'APPROVED',
+            });
+          }}
+        />,
+
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify color="yellow" icon="solar:close-circle-bold" />}
+          label="Cancel"
+          onClick={() => {
+            approvalDialog.onTrue();
+            setDialogData({
+              item: params.row,
+              status: 'CANCELLED',
+            });
+          }}
+        />,
+
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="solar:pen-bold" />}
+          label="Mark as complete"
+          onClick={() => {
+            approvalDialog.onTrue();
+            setDialogData({
+              item: params.row,
+              status: 'COMPLETED ',
+            });
+          }}
+        />,
+
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="solar:close-circle-bold" />}
+          label="Reject"
+          onClick={() => {
+            approvalDialog.onTrue();
+            setDialogData({
+              item: params.row,
+              status: 'REJECTED ',
+            });
           }}
         />,
 
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:eye-bold" />}
-          label="View Shifts"
+          label="View Summary"
           onClick={() => {
             // handleViewRow(params.row.collectorId);
+            toast.info('No summary available');
           }}
         />,
       ],
@@ -423,16 +461,6 @@ export function CollectionsListView() {
             { name: 'Collections', href: paths.dashboard.collections.routes.root },
             { name: 'Listed allocations' },
           ]}
-          // action={
-          //   <Button
-          //     component={RouterLink}
-          //     href={paths.dashboard.collections.routes.new}
-          //     variant="contained"
-          //     startIcon={<Iconify icon="mingcute:add-line" />}
-          //   >
-          //     New
-          //   </Button>
-          // }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
@@ -471,117 +499,10 @@ export function CollectionsListView() {
         </Card>
       </DashboardContent>
 
-      <ConfirmDialog
-        open={confirmRows.value}
-        onClose={confirmRows.onFalse}
-        title="Assign Collector"
-        content={
-          <Stack spacing={2}>
-            <p>Select Collector?</p>
-            <Form methods={methods} onSubmit={methods.handleSubmit(() => {})}>
-              <Box
-                rowGap={3}
-                columnGap={2}
-                display="grid"
-                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
-              >
-                <Field.Autocomplete
-                  name="collectorId"
-                  label="Select Collector"
-                  placeholder="Collector"
-                  freeSolo
-                  options={userResults.map((user) => user)}
-                  getOptionLabel={(option) => option?.firstName || ''}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option.email || option.id}>
-                      {option.firstName}--{option.email}
-                    </li>
-                  )}
-                  renderTags={(selected, getTagProps) =>
-                    selected.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.email}
-                        label={option.email}
-                        size="small"
-                        color="info"
-                        variant="soft"
-                      />
-                    ))
-                  }
-                />
-              </Box>
-            </Form>
-          </Stack>
-        }
-        action={
-          <Button
-            variant="contained"
-            // color="error"
-            onClick={() => {
-              handleAssignCollector();
-            }}
-          >
-            Assign
-          </Button>
-        }
-      />
-
-      <ConfirmDialog
-        open={farmerAssign.value}
-        onClose={farmerAssign.onFalse}
-        title="Assign Farmer"
-        content={
-          <Stack spacing={2}>
-            <p>Select Farmer</p>
-            <Form methods={fMethods} onSubmit={methods.handleSubmit(() => {})}>
-              <Box
-                rowGap={3}
-                columnGap={2}
-                display="grid"
-                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
-              >
-                <Field.Autocomplete
-                  name="farmerId"
-                  label="Select farmer"
-                  placeholder="Farmer"
-                  freeSolo
-                  options={farmers.map((user) => user)}
-                  getOptionLabel={(option) => `${option.firstName || ''} ${option.lastName || ''}`}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option.id || option.id}>
-                      {option.firstName}--{option.lastName}--{option.mobilePhone}
-                    </li>
-                  )}
-                  renderTags={(selected, getTagProps) =>
-                    selected.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.email}
-                        label={option.email}
-                        size="small"
-                        color="info"
-                        variant="soft"
-                      />
-                    ))
-                  }
-                />
-              </Box>
-            </Form>
-          </Stack>
-        }
-        action={
-          <Button
-            variant="contained"
-            // color="error"
-            onClick={() => {
-              handleAssignFarmer();
-              farmerAssign.onFalse();
-            }}
-          >
-            Assign
-          </Button>
-        }
+      <ApproveAllocationDialog
+        data={dialogData!}
+        onClose={approvalDialog.onFalse}
+        open={approvalDialog.value}
       />
     </>
   );

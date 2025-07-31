@@ -218,6 +218,7 @@ export const endpoints = {
     searchShifts: `/milk-collections-shifts`,
     newShift: `/milk-collections-shifts`,
     approval: (id: number) => `/milk-collections-aggregations/${id}/head-clerk-approval`,
+    milkAllocationApproval: (id: number) => `/milk-collections-allocations/${id}/approve`,
   },
 };
 
