@@ -72,8 +72,6 @@ export function AggregationVerifyDialog({ data, open, onClose }: Props) {
     formState: { isSubmitting },
   } = methods;
 
-  console.log(methods.getValues());
-
   const onSubmit = handleSubmit(async (d) => {
     d.status = data?.status;
     const promise = approveMilkAggregation(data?.item?.id!, d);
@@ -82,7 +80,7 @@ export function AggregationVerifyDialog({ data, open, onClose }: Props) {
       toast.promise(promise, {
         loading: 'Loading...',
         success: 'Milk aggregation status updated',
-        error: 'Update failed!',
+        error: 'You request could not be completed at the moment',
       });
 
       await promise;
@@ -91,6 +89,7 @@ export function AggregationVerifyDialog({ data, open, onClose }: Props) {
       onClose();
     } catch (error) {
       console.error(error);
+      toast.error(error.message);
     }
   });
 

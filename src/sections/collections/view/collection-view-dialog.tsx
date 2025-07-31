@@ -93,14 +93,21 @@ export function TicketViewDialog({ ticket, open, onClose }: Props) {
     const promise = approveTicket(ticket?.id, {
       agentId: data.agentId,
       approved: true,
+    }).catch((error) => {
+      toast.error(error.nessage);
+      return error;
     });
+
     try {
       reset();
       // onClose();
       toast.promise(promise, {
         loading: 'Loading...',
         success: 'Ticked status updated',
-        error: 'Update failed!',
+        error: promise.catch((error) => {
+          console.log(error.message);
+          return error.message || 'Your request could not be completed at the moment';
+        }),
       });
 
       await promise;

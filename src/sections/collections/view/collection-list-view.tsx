@@ -13,7 +13,6 @@ import type {
   GridColumnVisibilityModel,
 } from '@mui/x-data-grid';
 import { RouterLink } from 'src/routes/components';
-import { Field, Form } from 'src/components/hook-form';
 
 import { useState, useEffect, useCallback } from 'react';
 
@@ -129,7 +128,6 @@ export function CollectionsListView() {
   };
 
   const { userResults } = useSearchAdmins({ ...userSearch });
-  const [selectedTicket, setSelectedTicket] = useState<RouteItem>();
   const [farmers, setFarmers] = useState<CoopFarmerList[]>([]);
 
   console.log(farmers);
@@ -425,33 +423,7 @@ export function CollectionsListView() {
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
-      getActions: (params) => [
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:eye-bold" />}
-        //   label=""
-        //   onClick={() => {}}
-        // />,
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:user-plus-bold" />}
-        //   label="Assign Farmer"
-        //   onClick={() => {
-        //     farmerAssign.onTrue();
-        //     setSelectedRowIds([params.row.id!]);
-        //   }}
-        //   sx={{ color: 'info.main' }}
-        // />,
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:cup-star-bold" />}
-        //   label="New Milk Task"
-        //   onClick={() => {
-        //     handleMilkTask(params.row.id!);
-        //   }}
-        // sx={{ color: 'i' }}
-        // />,
-      ],
+      getActions: (params) => [],
     },
   ];
 
@@ -461,180 +433,61 @@ export function CollectionsListView() {
       .map((column) => column.field);
 
   return (
-    <>
-      <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <CustomBreadcrumbs
-          heading="Collections"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Collections', href: paths.dashboard.collections.routes.root },
-            { name: 'Listed Collections' },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.collections.routes.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New
-            </Button>
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
-        />
+    <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <CustomBreadcrumbs
+        heading="Collections"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Collections', href: paths.dashboard.collections.routes.root },
+          { name: 'Listed Collections' },
+        ]}
+        action={
+          <Button
+            component={RouterLink}
+            href={paths.dashboard.collections.routes.new}
+            variant="contained"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          >
+            New
+          </Button>
+        }
+        sx={{ mb: { xs: 3, md: 5 } }}
+      />
 
-        <Card
-          sx={{
-            flexGrow: { md: 1 },
-            display: { md: 'flex' },
-            // height: { xs: 800, md: 2 },
-            flexDirection: { md: 'column' },
+      <Card
+        sx={{
+          flexGrow: { md: 1 },
+          display: { md: 'flex' },
+          // height: { xs: 800, md: 2 },
+          flexDirection: { md: 'column' },
+        }}
+      >
+        <DataGrid
+          checkboxSelection
+          disableRowSelectionOnClick
+          rows={dataFiltered}
+          columns={columns}
+          loading={searchLoading}
+          getRowHeight={() => 'auto'}
+          pageSizeOptions={[5, 10, 25]}
+          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+          onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
+          columnVisibilityModel={columnVisibilityModel}
+          onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
+          slots={{
+            toolbar: CustomToolbarCallback as GridSlots['toolbar'],
+            noRowsOverlay: () => <EmptyContent />,
+            noResultsOverlay: () => <EmptyContent title="No results found" />,
           }}
-        >
-          <DataGrid
-            checkboxSelection
-            disableRowSelectionOnClick
-            rows={dataFiltered}
-            columns={columns}
-            loading={searchLoading}
-            getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 25]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
-            columnVisibilityModel={columnVisibilityModel}
-            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            slots={{
-              toolbar: CustomToolbarCallback as GridSlots['toolbar'],
-              noRowsOverlay: () => <EmptyContent />,
-              noResultsOverlay: () => <EmptyContent title="No results found" />,
-            }}
-            slotProps={{
-              panel: { anchorEl: filterButtonEl },
-              toolbar: { setFilterButtonEl },
-              columnsManagement: { getTogglableColumns },
-            }}
-            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
-          />
-        </Card>
-      </DashboardContent>
-
-      <ConfirmDialog
-        open={confirmRows.value}
-        onClose={confirmRows.onFalse}
-        title="Assign Collector"
-        content={
-          <Stack spacing={2}>
-            <p>Select Collector?</p>
-            <Form methods={methods} onSubmit={methods.handleSubmit(() => {})}>
-              <Box
-                rowGap={3}
-                columnGap={2}
-                display="grid"
-                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
-              >
-                <Field.Autocomplete
-                  name="collectorId"
-                  label="Select Collector"
-                  placeholder="Collector"
-                  freeSolo
-                  options={userResults.map((user) => user)}
-                  getOptionLabel={(option) => option?.firstName || ''}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option.email || option.id}>
-                      {option.firstName}--{option.email}
-                    </li>
-                  )}
-                  renderTags={(selected, getTagProps) =>
-                    selected.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.email}
-                        label={option.email}
-                        size="small"
-                        color="info"
-                        variant="soft"
-                      />
-                    ))
-                  }
-                />
-              </Box>
-            </Form>
-          </Stack>
-        }
-        action={
-          <Button
-            variant="contained"
-            // color="error"
-            onClick={() => {
-              handleAssignCollector();
-            }}
-          >
-            Assign
-          </Button>
-        }
-      />
-
-      <ConfirmDialog
-        open={farmerAssign.value}
-        onClose={farmerAssign.onFalse}
-        title="Assign Farmer"
-        content={
-          <>
-            <Stack spacing={2}>
-              <p>Select Farmer</p>
-              <Form methods={fMethods} onSubmit={methods.handleSubmit(() => {})}>
-                <Box
-                  rowGap={3}
-                  columnGap={2}
-                  display="grid"
-                  gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
-                >
-                  <Field.Autocomplete
-                    name="farmerId"
-                    label="Select farmer"
-                    placeholder="Farmer"
-                    freeSolo
-                    options={farmers.map((user) => user)}
-                    getOptionLabel={(option) =>
-                      `${option.firstName || ''} ${option.lastName || ''}`
-                    }
-                    renderOption={(props, option) => (
-                      <li {...props} key={option.id || option.id}>
-                        {option.firstName}--{option.lastName}--{option.mobilePhone}
-                      </li>
-                    )}
-                    renderTags={(selected, getTagProps) =>
-                      selected.map((option, index) => (
-                        <Chip
-                          {...getTagProps({ index })}
-                          key={option.email}
-                          label={option.email}
-                          size="small"
-                          color="info"
-                          variant="soft"
-                        />
-                      ))
-                    }
-                  />
-                </Box>
-              </Form>
-            </Stack>
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            // color="error"
-            onClick={() => {
-              handleAssignFarmer();
-              farmerAssign.onFalse();
-            }}
-          >
-            Assign
-          </Button>
-        }
-      />
-    </>
+          slotProps={{
+            panel: { anchorEl: filterButtonEl },
+            toolbar: { setFilterButtonEl },
+            columnsManagement: { getTogglableColumns },
+          }}
+          sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+        />
+      </Card>
+    </DashboardContent>
   );
 }
 
