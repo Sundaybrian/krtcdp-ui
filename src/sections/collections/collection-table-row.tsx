@@ -59,10 +59,10 @@ export function RenderAgent({ params }: ParamsProps) {
   return (
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
       <ListItemText
-        primary={params.row.container.containerNumber}
+        primary={params?.row?.container?.containerNumber}
         secondary={
           <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-            {params.row.container.capacit}
+            {params.row?.container?.capacity}
           </Box>
         }
       />
@@ -73,7 +73,7 @@ export function RenderAgent({ params }: ParamsProps) {
 export function RenderTasks({ params }: ParamsProps) {
   return (
     <Box>
-      {params.row.farmer.firstName} {params.row.farmer.lastName}
+      {params.row?.farmer?.firstName} {params.row?.farmer?.lastName}
     </Box>
   );
 }
@@ -105,7 +105,7 @@ export function RenderCellProduct({
   return (
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
       <Box color="success" title="Collector Name">
-        {params.row.collector.firstName} {params.row.collector.lastName}
+        {params.row?.collector?.firstName} {params.row?.collector?.lastName}
       </Box>
     </Stack>
   );
