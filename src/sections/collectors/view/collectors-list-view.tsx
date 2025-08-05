@@ -23,7 +23,6 @@ import Button from '@mui/material/Button';
 import {
   DataGrid,
   gridClasses,
-  GridToolbarExport,
   GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarQuickFilter,
@@ -37,10 +36,12 @@ import { useForm } from 'react-hook-form';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useBoolean } from 'src/hooks/use-boolean';
+import { useBoolean, UseBooleanReturn } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 import { getStorage, useLocalStorage } from 'src/hooks/use-local-storage';
 
+import { exportExcel } from 'src/utils/xlsx';
+import { removeKeyFromArr } from 'src/utils/helper';
 import { requiredPermissions, TENANT_LOCAL_STORAGE } from 'src/utils/default';
 
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
@@ -77,6 +78,7 @@ import {
   RenderCollectionTime,
 } from '../collectors-table-row';
 import { AggregationVerifyDialog } from './collectors-view-dialog';
+import { Filter, FilterDialog } from './filter-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -108,7 +110,6 @@ export const CollectorSchema = zod.object({
 
 export function CollectionsListView() {
   const confirmRows = useBoolean();
-  const farmerAssign = useBoolean();
   const verifyDialog = useBoolean();
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
@@ -116,11 +117,37 @@ export function CollectionsListView() {
 
   const router = useRouter();
 
-  const { searchResults, searchLoading } = useSearchMilkAggregation({
-    cooperativeId: state.coopId,
+  const filters = useSetState<Filter>({
+    startDate: '',
+    endDate: '',
+    route: 0,
+    collector: 0,
+    shift: 0,
+    status: '',
   });
 
-  const filters = useSetState<Ifilter>({ publish: [], stock: [], startDate: null, endDate: null });
+  const query: any = {};
+  if (filters.state.route) {
+    query.routeId = filters.state.route;
+  }
+  if (filters.state.collector) {
+    query.collectorId = filters.state.collector;
+  }
+  if (filters.state.shift) {
+    query.shiftId = filters.state.shift;
+  }
+  if (filters.state.startDate) {
+    query.dateFrom = new Date(filters.state.startDate).toISOString();
+  }
+
+  if (filters.state.endDate) {
+    query.dateTo = new Date(filters.state.endDate).toISOString();
+  }
+
+  const { searchResults, searchLoading } = useSearchMilkAggregation({
+    cooperativeId: state.coopId,
+    ...query,
+  });
 
   const [tableData, setTableData] = useState<RouteItem[]>([]);
 
@@ -137,9 +164,9 @@ export function CollectionsListView() {
     if (searchResults.length) {
       setTableData(searchResults);
     }
-  }, [searchResults]);
+  }, [searchResults, filters]);
 
-  const canReset = filters.state.publish.length > 0 || filters.state.stock.length > 0;
+  const canReset = filters.state.endDate == null;
 
   const dataFiltered = applyFilter({ inputData: tableData, filters: filters.state });
 
@@ -186,106 +213,12 @@ export function CollectionsListView() {
         setFilterButtonEl={setFilterButtonEl}
         filteredResults={dataFiltered.length}
         onOpenConfirmDeleteRows={confirmRows.onTrue}
+        data={dataFiltered}
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filters.state, selectedRowIds]
+    [filters.state, selectedRowIds, dataFiltered]
   );
-
-  const methods = useForm<CollectorSchemaType>({
-    mode: 'onChange',
-    resolver: zodResolver(CollectorSchema),
-    defaultValues: {
-      routeId: 0,
-      collectorId: 0,
-    },
-  });
-
-  const fMethods = useForm<CollectorSchemaType>({
-    mode: 'onChange',
-    resolver: zodResolver(CollectorSchema),
-    defaultValues: {
-      routeId: 0,
-      farmerId: 0,
-    },
-  });
-
-  const handleAssignCollector = async () => {
-    const { collectorId } = methods.getValues();
-
-    if (!collectorId) {
-      toast.error('Please select a collector');
-      return;
-    }
-
-    const selectedRows = tableData.filter((row) => selectedRowIds.includes(row.id!));
-    if (selectedRows.length === 0) {
-      toast.error('Please select at least one route');
-      return;
-    }
-
-    try {
-      await assignCollectorToRoute({
-        collectorId: Number(collectorId.id),
-        routeId: selectedRows.map((row) => row.id!)[0],
-      });
-      console.log('Assigning collector:', collectorId, 'to routes:', selectedRows);
-      confirmRows.onFalse();
-      // clear selected rows
-      setSelectedRowIds([]);
-      methods.reset();
-      toast.success('Collector assigned successfully');
-    } catch (error) {
-      console.error('Error assigning collector:', error);
-      toast.error(error.message || 'Failed to assign collector:');
-    }
-  };
-
-  // handle farmer assign
-  const handleAssignFarmer = async () => {
-    const { farmerId } = fMethods.getValues();
-    if (!farmerId) {
-      toast.error('Please select a farmer');
-      return;
-    }
-    const selectedRows = tableData.filter((row) => selectedRowIds.includes(row.id!));
-    if (selectedRows.length === 0) {
-      toast.error('Please select at least one route');
-      return;
-    }
-    try {
-      await assignFarmerToRoute({
-        farmerId: Number(farmerId.id),
-        routeId: selectedRows.map((row) => row.id!)[0],
-      });
-      console.log('Assigning farmer:', farmerId, 'to routes:', selectedRows);
-      farmerAssign.onFalse();
-      // clear selected rows
-      setSelectedRowIds([]);
-      fMethods.reset();
-      toast.success('Farmer assigned successfully');
-    } catch (error) {
-      console.error('Error assigning farmer:', error);
-      toast.error(error.message || 'Failed to assign farmer:');
-    }
-  };
-
-  const handleMilkTask = async (routeId: number) => {
-    if (!routeId) {
-      toast.error('Please select a route');
-      return;
-    }
-
-    try {
-      await createMilkTask(routeId);
-      toast.success('Milk task created successfully');
-
-      // fetch task
-    } catch (error) {
-      console.error('Error creating milk task:', error);
-      toast.error(error.message || 'Failed to create milk task');
-    }
-  };
 
   //  handle permission
   const { permissions = [], isSuperAdmin = false } = perms;
@@ -551,7 +484,8 @@ interface CustomToolbarProps {
   filteredResults: number;
   selectedRowIds: GridRowSelectionModel;
   onOpenConfirmDeleteRows: () => void;
-  filters: UseSetStateReturn<Ifilter>;
+  data: any[];
+  filters: UseSetStateReturn<Filter>;
   setFilterButtonEl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
 }
 
@@ -562,16 +496,62 @@ function CustomToolbar({
   filteredResults,
   setFilterButtonEl,
   onOpenConfirmDeleteRows,
+  data,
 }: CustomToolbarProps) {
+  const filterDialog = useBoolean();
+
+  // handle export
+  const handleExport = () => {
+    const exportData = removeKeyFromArr(data, [
+      'id',
+      'createdAt',
+      'updatedAt',
+      'deletedAt',
+      'cooperativeId',
+      'allocatedById',
+      'approvedById',
+      'rejectedById',
+      'completedById',
+      'cancelledById',
+      'routeId',
+      'shiftId',
+      'collectorId',
+      'evidencePhotoUrl',
+      'verifiedBy',
+      'approvedBy',
+      'verifiedById',
+    ]);
+
+    const finalExportData = exportData.map((aggCol) => ({
+      ...aggCol,
+      collector: `${aggCol?.collector?.firstName} ${aggCol?.collector?.lastName}`,
+      shift: aggCol?.shift?.name,
+      route: aggCol?.route?.name,
+      cooperative: aggCol?.cooperative?.groupName,
+      collections: aggCol?.collections?.length,
+    }));
+
+    exportExcel(finalExportData, 'Collections');
+  };
+
   return (
     <>
       <GridToolbarContainer>
-        <CooperativeTableToolbar
-          filters={filters}
-          options={{ stocks: PRODUCT_STOCK_OPTIONS, publishs: PUBLISH_OPTIONS }}
-        />
-
         <GridToolbarQuickFilter />
+
+        {/* <CooperativeTableToolbar filters={filters} /> */}
+
+        {/* Add button for more filter that opens a dialog with  status collector and route */}
+
+        <Button
+          size="small"
+          color="primary"
+          startIcon={<Iconify icon="solar:filter-bold" />}
+          onClick={filterDialog.onTrue}
+        >
+          More Filters
+        </Button>
+        <FilterDialog open={filterDialog.value} onClose={filterDialog.onFalse} filters={filters} />
 
         <Stack
           spacing={1}
@@ -593,7 +573,15 @@ function CustomToolbar({
 
           <GridToolbarColumnsButton />
           <GridToolbarFilterButton ref={setFilterButtonEl} />
-          <GridToolbarExport />
+
+          <Button
+            size="small"
+            color="primary"
+            startIcon={<Iconify icon="solar:export-bold" />}
+            onClick={handleExport}
+          >
+            Export
+          </Button>
         </Stack>
       </GridToolbarContainer>
 
@@ -612,15 +600,9 @@ function CustomToolbar({
 
 type ApplyFilterProps = {
   inputData: RouteItem[];
-  filters: IProductTableFilters;
+  filters: any;
 };
 
 function applyFilter({ inputData, filters }: ApplyFilterProps) {
-  const { stock, publish } = filters;
-
-  if (stock.length) {
-    inputData = inputData.filter((product) => stock.includes(product.name));
-  }
-
   return inputData;
 }

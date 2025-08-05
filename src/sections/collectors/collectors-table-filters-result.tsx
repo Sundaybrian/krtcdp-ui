@@ -10,56 +10,34 @@ import { sentenceCase } from 'src/utils/change-case';
 
 import { chipProps, FiltersBlock, FiltersResult } from 'src/components/filters-result';
 import { Ifilter } from './collectors-table-toolbar';
+import { Filter } from './view/filter-dialog';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   totalResults: number;
   sx?: SxProps<Theme>;
-  filters: UseSetStateReturn<Ifilter>;
+  filters: UseSetStateReturn<Filter>;
 };
 
 export function CooperativeTableFiltersResult({ filters, totalResults, sx }: Props) {
-  const handleRemoveStock = useCallback(
+  const handleRemoveDates = useCallback(
     (inputValue: string) => {
-      const newValue = filters.state.stock.filter((item) => item !== inputValue);
+      const newValue = filters.state.endDate;
 
-      filters.setState({ stock: newValue });
-    },
-    [filters]
-  );
-
-  const handleRemovePublish = useCallback(
-    (inputValue: string) => {
-      const newValue = filters.state.publish.filter((item) => item !== inputValue);
-
-      filters.setState({ publish: newValue });
+      filters.setState({ endDate: newValue });
     },
     [filters]
   );
 
   return (
     <FiltersResult totalResults={totalResults} onReset={filters.onResetState} sx={sx}>
-      <FiltersBlock label="Stock:" isShow={!!filters.state.stock.length}>
-        {filters.state.stock.map((item) => (
-          <Chip
-            {...chipProps}
-            key={item}
-            label={sentenceCase(item)}
-            onDelete={() => handleRemoveStock(item)}
-          />
-        ))}
-      </FiltersBlock>
-
-      <FiltersBlock label="Publish:" isShow={!!filters.state.publish.length}>
-        {filters.state.publish.map((item) => (
-          <Chip
-            {...chipProps}
-            key={item}
-            label={sentenceCase(item)}
-            onDelete={() => handleRemovePublish(item)}
-          />
-        ))}
+      <FiltersBlock label="Publish:" isShow={!!filters?.state?.endDate?.length}>
+        <Chip
+          {...chipProps}
+          label={filters?.state?.endDate}
+          onDelete={() => handleRemoveDates(filters?.state?.endDate)}
+        />
       </FiltersBlock>
     </FiltersResult>
   );
