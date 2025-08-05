@@ -1,7 +1,6 @@
 'use client';
 
 import type { RouteItem } from 'src/types/notification';
-import type { IProductTableFilters } from 'src/types/product';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
 import { z as zod } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +13,7 @@ import type {
 } from '@mui/x-data-grid';
 import { RouterLink } from 'src/routes/components';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -22,7 +21,6 @@ import Button from '@mui/material/Button';
 import {
   DataGrid,
   gridClasses,
-  GridToolbarExport,
   GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarQuickFilter,
@@ -40,6 +38,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 import { getStorage, useLocalStorage } from 'src/hooks/use-local-storage';
 
+import { exportExcel } from 'src/utils/xlsx';
+import { removeKeyFromArr } from 'src/utils/helper';
 import { requiredPermissions, TENANT_LOCAL_STORAGE } from 'src/utils/default';
 
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
@@ -75,6 +75,7 @@ import {
   RenderRoute,
   RenderCollectionTime,
 } from '../collection-table-row';
+import { FilterDialog } from './filter-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -107,7 +108,6 @@ export const CollectorSchema = zod.object({
 export function CollectionsListView() {
   const confirmRows = useBoolean();
   const farmerAssign = useBoolean();
-  const quickView = useBoolean();
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
   const perms = getStorage('permissions');
@@ -115,24 +115,43 @@ export function CollectionsListView() {
   const router = useRouter();
   const routerParams = useParams();
 
-  // get route if from query params
+  const filters = useSetState<Ifilter>({
+    publish: [],
+    stock: [],
+    startDate: null,
+    endDate: null,
+    collector: undefined,
+    shift: undefined,
+    route: undefined,
+    status: undefined,
+  });
+
+  const query: any = {};
+  if (filters.state.route) {
+    query.routeId = filters.state.route;
+  }
+  if (filters.state.shift) {
+    query.shiftId = filters.state.shift;
+  }
+  if (filters.state.startDate) {
+    query.collectionTimeFrom = new Date(filters.state.startDate).toISOString();
+  }
+
+  if (filters.state.endDate) {
+    query.collectionTimeTo = new Date(filters.state.endDate).toISOString();
+  }
+
+  if (filters.state.status) {
+    query.status = filters.state.status;
+  }
+
+  console.log(filters.state, 'Filters');
 
   const { searchResults, searchLoading } = useSearchCollections({
     cooperativeId: state.coopId,
     collectorId: Number(routerParams.id) || 0,
+    ...query,
   });
-
-  const userSearch = {
-    userType: 'MILK_MAN',
-    coopId: state.coopId,
-  };
-
-  const { userResults } = useSearchAdmins({ ...userSearch });
-  const [farmers, setFarmers] = useState<CoopFarmerList[]>([]);
-
-  console.log(farmers);
-
-  const filters = useSetState<Ifilter>({ publish: [], stock: [], startDate: null, endDate: null });
 
   const [tableData, setTableData] = useState<RouteItem[]>([]);
 
@@ -143,21 +162,28 @@ export function CollectionsListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
+  const dataFiltered = useMemo(
+    () => applyFilter({ inputData: tableData, filters: filters.state }),
+    [tableData, filters.state]
+  );
+
   useEffect(() => {
     if (searchResults.length) {
       setTableData(searchResults);
     }
+  }, [searchResults, state.coopId, filters]);
 
-    searchCoopFarmers(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
-      if (data.results.length) {
-        setFarmers(data.results);
-      }
-    });
-  }, [searchResults, state.coopId]);
+  const canReset =
+    filters.state.publish.length > 0 ||
+    filters.state.stock.length > 0 ||
+    !!filters.state.collector ||
+    !!filters.state.shift ||
+    !!filters.state.route ||
+    !!filters.state.status ||
+    !!filters.state.startDate ||
+    !!filters.state.endDate;
 
-  const canReset = filters.state.publish.length > 0 || filters.state.stock.length > 0;
-
-  const dataFiltered = applyFilter({ inputData: tableData, filters: filters.state });
+  console.log(dataFiltered, 'dataFilter');
 
   const handleDeleteRow = useCallback(
     (id: any) => {
@@ -193,6 +219,44 @@ export function CollectionsListView() {
     [router]
   );
 
+  // handle export
+  const handleExport = useCallback(() => {
+    const exportData = removeKeyFromArr(dataFiltered, [
+      'id',
+      'createdAt',
+      'updatedAt',
+      'deletedAt',
+      'cooperativeId',
+      'allocatedById',
+      'approvedById',
+      'rejectedById',
+      'completedById',
+      'cancelledById',
+      'farmerId',
+      'containerId',
+      'shiftId',
+      'routeId',
+      'collectorId',
+      'originalRouteId',
+      'isAdHocCollection',
+      'taskId',
+      'stageId',
+      'routeAggregationId',
+    ]);
+
+    const finalExport = exportData.map((col) => ({
+      ...col,
+      farmer: `${col?.farmer?.firstName} ${col?.farmer?.lalstName}`,
+      collector: `${col?.collector?.firstName} ${col?.collector?.lastName}`,
+      container: col?.container?.containerNumber,
+      stage: col?.stage?.name,
+      shift: col?.shift?.name,
+      route: col?.route?.name,
+    }));
+
+    exportExcel(finalExport, 'Collections');
+  }, [dataFiltered]);
+
   const CustomToolbarCallback = useCallback(
     () => (
       <CustomToolbar
@@ -202,10 +266,11 @@ export function CollectionsListView() {
         setFilterButtonEl={setFilterButtonEl}
         filteredResults={dataFiltered.length}
         onOpenConfirmDeleteRows={confirmRows.onTrue}
+        onExport={handleExport}
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filters.state, selectedRowIds]
+    [filters.state, selectedRowIds, dataFiltered]
   );
 
   const methods = useForm<CollectorSchemaType>({
@@ -498,6 +563,7 @@ interface CustomToolbarProps {
   filteredResults: number;
   selectedRowIds: GridRowSelectionModel;
   onOpenConfirmDeleteRows: () => void;
+  onExport: () => void;
   filters: UseSetStateReturn<Ifilter>;
   setFilterButtonEl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
 }
@@ -509,16 +575,24 @@ function CustomToolbar({
   filteredResults,
   setFilterButtonEl,
   onOpenConfirmDeleteRows,
+  onExport,
 }: CustomToolbarProps) {
+  const filterDialog = useBoolean();
+
   return (
     <>
       <GridToolbarContainer>
-        <CooperativeTableToolbar
-          filters={filters}
-          options={{ stocks: PRODUCT_STOCK_OPTIONS, publishs: PUBLISH_OPTIONS }}
-        />
-
         <GridToolbarQuickFilter />
+
+        {/* Add button for more filter that opens a dialog with status collector and route */}
+        <Button
+          size="small"
+          color="primary"
+          startIcon={<Iconify icon="solar:filter-bold" />}
+          onClick={filterDialog.onTrue}
+        >
+          More Filters
+        </Button>
 
         <Stack
           spacing={1}
@@ -540,9 +614,19 @@ function CustomToolbar({
 
           <GridToolbarColumnsButton />
           <GridToolbarFilterButton ref={setFilterButtonEl} />
-          <GridToolbarExport />
+
+          <Button
+            size="small"
+            color="primary"
+            startIcon={<Iconify icon="solar:export-bold" />}
+            onClick={onExport}
+          >
+            Export
+          </Button>
         </Stack>
       </GridToolbarContainer>
+
+      <FilterDialog open={filterDialog.value} onClose={filterDialog.onFalse} filters={filters} />
 
       {canReset && (
         <CooperativeTableFiltersResult
@@ -559,15 +643,61 @@ function CustomToolbar({
 
 type ApplyFilterProps = {
   inputData: RouteItem[];
-  filters: IProductTableFilters;
+  filters: Ifilter;
 };
 
 function applyFilter({ inputData, filters }: ApplyFilterProps) {
-  const { stock, publish } = filters;
+  let filteredData: any = inputData;
 
-  if (stock.length) {
-    inputData = inputData.filter((product) => stock.includes(product.name));
+  // Filter by collector
+  if (filters.collector) {
+    filteredData = filteredData.filter((item: any) => item.collectorId === filters.collector);
   }
 
-  return inputData;
+  // Filter by shift
+  if (filters.shift) {
+    filteredData = filteredData.filter((item: any) => item.shiftId === filters.shift);
+  }
+
+  // Filter by route
+  if (filters.route) {
+    filteredData = filteredData.filter((item: any) => item.routeId === filters.route);
+  }
+
+  // Filter by status
+  if (filters.status) {
+    filteredData = filteredData.filter((item: any) => item.status === filters.status);
+  }
+
+  // Filter by start date
+  if (filters.startDate) {
+    const startDate = new Date(filters.startDate);
+    filteredData = filteredData.filter((item: any) => {
+      const itemDate = new Date(item.createdAt || item.creationDate);
+      return itemDate >= startDate;
+    });
+  }
+
+  // Filter by end date
+  if (filters.endDate) {
+    const endDate = new Date(filters.endDate);
+    filteredData = filteredData.filter((item: any) => {
+      const itemDate = new Date(item.createdAt || item.creationDate);
+      return itemDate <= endDate;
+    });
+  }
+
+  // Filter by stock (if applicable)
+  if (filters.stock && filters.stock.length > 0) {
+    filteredData = filteredData.filter((item: any) =>
+      filters.stock.includes(item.name || item.batchNumber)
+    );
+  }
+
+  // Filter by publish status (if applicable)
+  if (filters.publish && filters.publish.length > 0) {
+    filteredData = filteredData.filter((item: any) => filters.publish.includes(item.status));
+  }
+
+  return filteredData;
 }

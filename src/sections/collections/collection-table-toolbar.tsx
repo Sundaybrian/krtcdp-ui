@@ -29,6 +29,10 @@ export interface Ifilter {
   endDate: any;
   stock: string[];
   publish: string[];
+  collector?: number;
+  shift?: number;
+  route?: number;
+  status?: string;
 }
 
 type Props = {

@@ -144,6 +144,10 @@ export function CollectionsListView() {
     query.dateTo = new Date(filters.state.endDate).toISOString();
   }
 
+  if (filters.state.status) {
+    query.status = filters.state.status;
+  }
+
   const { searchResults, searchLoading } = useSearchMilkAggregation({
     cooperativeId: state.coopId,
     ...query,
