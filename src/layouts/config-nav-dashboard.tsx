@@ -180,6 +180,7 @@ export const navData = [
           { title: 'Collections', path: paths.dashboard.collections.root },
           { title: 'GRN', path: paths.dashboard.collections.grn },
           { title: 'Invoice', path: paths.dashboard.collections.invoice },
+          { title: 'Collections Report', path: paths.dashboard.collections.report },
         ],
       },
       // {

@@ -223,6 +223,7 @@ export const paths = {
     },
     collections: {
       root: `${ROOTS.DASHBOARD}/collections`,
+      report: `${ROOTS.DASHBOARD}/collections/report`,
       details: (id: string) => `${ROOTS.DASHBOARD}/collections/details/${id}`,
       allocations: (id: string) => `${ROOTS.DASHBOARD}/collections/allocations/${id}`,
       routes: {
