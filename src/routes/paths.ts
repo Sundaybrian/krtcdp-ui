@@ -244,6 +244,11 @@ export const paths = {
       grn: `${ROOTS.DASHBOARD}/collections/grn`,
       invoice: `${ROOTS.DASHBOARD}/collections/invoice`,
     },
+    priceConfig: {
+      root: `${ROOTS.DASHBOARD}/price-config`,
+      new: `${ROOTS.DASHBOARD}/price-config/new`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/price-config/${id}/edit`,
+    },
     post: {
       root: `${ROOTS.DASHBOARD}/post`,
       new: `${ROOTS.DASHBOARD}/post/new`,

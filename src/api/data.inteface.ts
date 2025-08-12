@@ -87,3 +87,13 @@ export interface Otp {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface IPriceConfig {
+  id: number;
+  price: number;
+  effectiveDate: string;
+  cooperativeId: number;
+  productName: string;
+  createdAt: string;
+  updatedAt: string;
+}

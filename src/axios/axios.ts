@@ -220,6 +220,11 @@ export const endpoints = {
     approval: (id: number) => `/milk-collections-aggregations/${id}/head-clerk-approval`,
     milkAllocationApproval: (id: number) => `/milk-collections-allocations/${id}/approve`,
   },
+  pricing: {
+    searchPriceConfig: '/priceconfig/search',
+    newPriceConfig: '/priceconfig',
+    updatePriceConfig: (id: number) => `/priceconfig/${id}`,
+  },
 };
 
 export const pageLimit = 1000;

@@ -34,7 +34,7 @@ import type {
 
 import axios, { endpoints, pageLimit } from 'src/axios/axios';
 
-import type { Otp, Page, Ward, County } from './data.inteface';
+import type { Otp, Page, Ward, County, IPriceConfig } from './data.inteface';
 
 // auth - sign in with mobile phone
 export const signInWithMobilePhone = async (data: any): Promise<Otp> => {
@@ -1323,6 +1323,54 @@ export const approveMilkAllocation = async (id: number, data: any) => {
     return response.data;
   } catch (error) {
     console.error('Error updating user:', error);
+    throw error;
+  }
+};
+
+// create price config
+export const createPriceConfig = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.pricing.newPriceConfig, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding price config:', error);
+    throw error;
+  }
+};
+
+// update price config
+export const updatePriceConfig = async (id: number, data: any) => {
+  try {
+    const response = await axios.patch(`${endpoints.pricing.updatePriceConfig(id)}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating price config:', error);
+    throw error;
+  }
+};
+
+// search price config
+export const searchPriceConfig = async (query = {}): Promise<Page<IPriceConfig[]>> => {
+  try {
+    const response = await axios.post(endpoints.pricing.searchPriceConfig, {
+      page: 1,
+      limit: 1000,
+      ...query,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching price config:', error);
+    throw error;
+  }
+};
+
+// get price config by id
+export const getPriceConfigById = async (id: number): Promise<IPriceConfig> => {
+  try {
+    const response = await axios.get(`${endpoints.pricing.updatePriceConfig(id)}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching price config:', error);
     throw error;
   }
 };

@@ -183,18 +183,18 @@ export const navData = [
           { title: 'Collections Report', path: paths.dashboard.collections.report },
         ],
       },
-      // {
-      //   title: 'Product',
-      //   path: paths.dashboard.product.root,
-      //   permission: 'view:product',
-      //   icon: ICONS.product,
-      //   children: [
-      //     { title: 'List', path: paths.dashboard.product.root },
-      //     // { title: 'Details', path: paths.dashboard.product.demo.details },
-      //     { title: 'Create', path: paths.dashboard.product.new },
-      //     // { title: 'Edit', path: paths.dashboard.product.demo.edit },
-      //   ],
-      // },
+      {
+        title: 'Price Configuration',
+        path: paths.dashboard.priceConfig.root,
+        permission: requiredPermissions.general.viewApp,
+        icon: ICONS.product,
+        children: [
+          { title: 'List', path: paths.dashboard.priceConfig.root },
+          // { title: 'Details', path: paths.dashboard.product.demo.details },
+          { title: 'Add New', path: paths.dashboard.priceConfig.new },
+          // { title: 'Edit', path: paths.dashboard.product.demo.edit },
+        ],
+      },
       // {
       //   title: 'Order',
       //   path: paths.dashboard.order.root,

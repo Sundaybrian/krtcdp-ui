@@ -1,10 +1,11 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, MouseEventHandler } from 'react';
 
 import { isEqual } from 'src/utils/helper';
 
 // ----------------------------------------------------------------------
 
 export type UseSetStateReturn<T> = {
+  onReset?: MouseEventHandler<HTMLButtonElement> | undefined;
   state: T;
   canReset: boolean;
   onResetState: () => void;
