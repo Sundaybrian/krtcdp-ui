@@ -15,7 +15,9 @@ const swrOptions = {
 };
 
 export function useSearchCollections(query: any = {}) {
-  const url = query ? [endpoints.collections.search, { params: { limit: 100, ...query } }] : '';
+  const url = query
+    ? [endpoints.collections.search, { params: { limit: 1000, page: 1, ...query } }]
+    : '';
 
   const { data, isLoading, error, isValidating } = useSWR<Page<RouteItem[]>>(url, creator, {
     ...swrOptions,
@@ -142,7 +144,7 @@ export function useSearchMilkAggregationByDate(query: any = {}) {
 
 export function useSearchShifts(query: any = {}) {
   const url = query
-    ? [endpoints.collections.searchShifts, { params: { limit: 100, ...query } }]
+    ? [endpoints.collections.searchShifts, { params: { limit: 100, page: 1, ...query } }]
     : '';
 
   const { data, isLoading, error, isValidating } = useSWR<Page<RouteItem[]>>(url, fetcher, {
