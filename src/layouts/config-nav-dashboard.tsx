@@ -171,6 +171,7 @@ export const navData = [
       {
         title: 'Milk Collection',
         path: paths.dashboard.collections.routes.root,
+        open: true,
         icon: ICONS.route,
         permission: requiredPermissions.general.viewApp,
         children: [

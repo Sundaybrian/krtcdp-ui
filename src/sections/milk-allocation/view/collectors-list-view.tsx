@@ -118,7 +118,7 @@ export function CollectionsListView() {
   const routeParams = useParams();
 
   const { searchResults, searchLoading } = useSearchMilkAggregationByDate({
-    allocatedById: Number(routeParams.id),
+    routeAggregationId: Number(routeParams.id),
   });
 
   const filters = useSetState<Ifilter>({ publish: [], stock: [], startDate: null, endDate: null });

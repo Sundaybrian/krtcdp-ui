@@ -149,7 +149,7 @@ export function CollectionsListView() {
 
   const { searchResults, searchLoading } = useSearchCollections({
     cooperativeId: state.coopId,
-    collectorId: Number(routerParams.id) || 0,
+    routeAggregationId: Number(routerParams.id) || 0,
     ...query,
   });
 

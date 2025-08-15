@@ -343,7 +343,7 @@ export function CollectionsListView() {
           icon={<Iconify icon="solar:eye-bold" />}
           label="View collections"
           onClick={() => {
-            handleViewRow(params.row.collectorId);
+            handleViewRow(params.row.id);
           }}
         />,
         <GridActionsCellItem
@@ -402,9 +402,9 @@ export function CollectionsListView() {
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:checklist-minimalistic-bold" />}
-          label="View allocations"
+          label="Milk distribution"
           onClick={() => {
-            router.push(paths.dashboard.collections.allocations(params.row.collectorId));
+            router.push(paths.dashboard.collections.allocations(params.row.id));
           }}
         />,
       ],

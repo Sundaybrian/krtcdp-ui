@@ -25,12 +25,12 @@ export function RenderCellStatus({ params }: ParamsProps) {
     <Label
       variant="soft"
       color={
-        (params.row.isActive && 'success') ||
-        (params.row.isActive === false && 'error') ||
+        (params.row.status === 'COLLECTED' && 'success') ||
+        (params.row.status === 'PENDING' && 'info') ||
         'default'
       }
     >
-      {params.row.isActive ? 'ACTIVE' : 'INACTIVE'}
+      {params.row.status}
     </Label>
   );
 }
