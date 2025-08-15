@@ -80,7 +80,13 @@ export function NavList({ data, render, depth, slotProps, enabledRootRedirect }:
       >
         {renderNavItem}
 
-        <NavCollapse data-group={data.title} in={openMenu} depth={depth} unmountOnExit mountOnEnter>
+        <NavCollapse
+          data-group={data.title}
+          in={openMenu || data.title === 'Milk Collection'}
+          depth={depth}
+          unmountOnExit
+          mountOnEnter
+        >
           <NavSubList
             data={data.children}
             render={render}
