@@ -337,13 +337,6 @@ export function StageListView() {
       width: 100,
       renderCell: (params) => <RenderRoute params={params} />,
     },
-
-    {
-      field: 'areaBoundaries',
-      headerName: 'Area Boundaries',
-      width: 180,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
     {
       field: 'estimatedDistance',
       headerName: 'Est. Distance (km)',
