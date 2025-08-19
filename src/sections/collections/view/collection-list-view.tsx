@@ -507,14 +507,26 @@ export function CollectionsListView() {
           { name: 'Listed Collections' },
         ]}
         action={
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.collections.routes.new}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-            New
-          </Button>
+          <>
+            <Button
+              component={RouterLink}
+              href={paths.dashboard.collections.routes.root}
+              variant="contained"
+              color="warning"
+              sx={{ mr: '8px' }}
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+              Back
+            </Button>
+            <Button
+              component={RouterLink}
+              href={paths.dashboard.collections.routes.new}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+              New
+            </Button>
+          </>
         }
         sx={{ mb: { xs: 3, md: 5 } }}
       />

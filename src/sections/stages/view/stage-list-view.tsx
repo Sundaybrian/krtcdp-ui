@@ -337,18 +337,7 @@ export function StageListView() {
       width: 100,
       renderCell: (params) => <RenderRoute params={params} />,
     },
-    {
-      field: 'latitude',
-      headerName: 'Latitude',
-      width: 120,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
-    {
-      field: 'longitude',
-      headerName: 'Longitude',
-      width: 120,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
+
     {
       field: 'areaBoundaries',
       headerName: 'Area Boundaries',

@@ -208,6 +208,11 @@ export function CollectionsListView() {
     [router]
   );
 
+  const handleRefresh = () => {
+    // refetch data from api
+    setTableData((prev) => [...prev]);
+  };
+
   const CustomToolbarCallback = useCallback(
     () => (
       <CustomToolbar
@@ -270,11 +275,12 @@ export function CollectionsListView() {
       renderCell: (params) => <RenderGeneric params={params} />,
     },
     {
-      field: 'aggregationDate',
-      headerName: 'Aggregation Date',
-      width: 140,
-      renderCell: (params) => <RenderCollectionTime params={params} />,
+      field: 'status',
+      headerName: 'Status',
+      width: 160,
+      renderCell: (params) => <RenderCellStatus params={params} />,
     },
+
     {
       field: 'totalFarmers',
       headerName: 'Total Farmers',
@@ -305,12 +311,11 @@ export function CollectionsListView() {
       width: 160,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
-
     {
-      field: 'status',
-      headerName: 'Status',
-      width: 160,
-      renderCell: (params) => <RenderCellStatus params={params} />,
+      field: 'aggregationDate',
+      headerName: 'Aggregation Date',
+      width: 140,
+      renderCell: (params) => <RenderCollectionTime params={params} />,
     },
 
     {
@@ -473,7 +478,10 @@ export function CollectionsListView() {
       </Card>
 
       <AggregationVerifyDialog
-        onClose={verifyDialog.onFalse}
+        onClose={() => {
+          verifyDialog.onFalse();
+          handleRefresh();
+        }}
         open={verifyDialog.value}
         data={dialogData!}
       />
@@ -564,7 +572,7 @@ function CustomToolbar({
           alignItems="center"
           justifyContent="flex-end"
         >
-          {!!selectedRowIds.length && (
+          {/* {!!selectedRowIds.length && (
             <Button
               size="small"
               color="error"
@@ -573,7 +581,7 @@ function CustomToolbar({
             >
               Delete ({selectedRowIds.length})
             </Button>
-          )}
+          )} */}
 
           <GridToolbarColumnsButton />
           <GridToolbarFilterButton ref={setFilterButtonEl} />

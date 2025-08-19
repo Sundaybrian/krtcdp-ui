@@ -41,7 +41,7 @@ export function RenderCellLocation({ params }: ParamsProps) {
 }
 
 export function RenderGeneric({ params }: ParamsProps) {
-  return params.row[params.field];
+  return params.row[params.field] || '--';
 }
 
 export function RenderRoute({ params }: ParamsProps) {
@@ -55,6 +55,13 @@ export function RenderRoute({ params }: ParamsProps) {
 export function RenderAgent({ params }: ParamsProps) {
   return (
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>
+      <IconButton
+        href={`/dashboard/collections/details/${params.row.id}  `}
+        title="View collections"
+        size="small"
+      >
+        <Iconify icon="solar:eye-bold" width={16} />
+      </IconButton>
       <ListItemText primary={params.row?.collections?.length} />
     </Stack>
   );
@@ -83,8 +90,8 @@ export function RenderCreatedAt({ params }: ParamsProps) {
 export function RenderCollectionTime({ params }: ParamsProps) {
   return (
     <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-      {fDate(params.row.collectionTime)}
-      {fTime(params.row.collectionTime)}
+      {fDate(params.row.aggregationDate)}
+      {fTime(params.row.aggregationDate)}
     </Box>
   );
 }

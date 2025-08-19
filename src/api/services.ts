@@ -1304,6 +1304,17 @@ export const createShift = async (data: any) => {
   }
 };
 
+// delete shift
+export const deleteShift = async (id: number) => {
+  try {
+    const response = await axios.delete(endpoints.collections.deleteShift(id));
+    return response.data;
+  } catch (error) {
+    console.error('Error adding shift:', error);
+    throw error;
+  }
+};
+
 // milk aggregation approvals
 
 export const approveMilkAggregation = async (id: number, data: any) => {

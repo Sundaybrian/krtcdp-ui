@@ -58,6 +58,7 @@ import {
   assignCollectorToRoute,
   assignFarmerToRoute,
   createMilkTask,
+  deleteShift,
   searchCoopFarmers,
 } from 'src/api/services';
 import { CoopFarmerList } from 'src/types/user';
@@ -109,28 +110,17 @@ export const CollectorSchema = zod.object({
 export function CollectionsListView() {
   const confirmRows = useBoolean();
   const farmerAssign = useBoolean();
-  const quickView = useBoolean();
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
   const perms = getStorage('permissions');
 
   const router = useRouter();
-  const routerParams = useParams();
 
   // get route if from query params
 
   const { searchResults, searchLoading } = useSearchShifts({
     cooperativeId: state.coopId,
   });
-
-  const userSearch = {
-    userType: 'MILK_MAN',
-    coopId: state.coopId,
-  };
-
-  const { userResults } = useSearchAdmins({ ...userSearch });
-  const [selectedTicket, setSelectedTicket] = useState<RouteItem>();
-  const [farmers, setFarmers] = useState<CoopFarmerList[]>([]);
 
   const filters = useSetState<Ifilter>({ publish: [], stock: [], startDate: null, endDate: null });
 
@@ -147,36 +137,31 @@ export function CollectionsListView() {
     if (searchResults.length) {
       setTableData(searchResults);
     }
-
-    searchCoopFarmers(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
-      if (data.results.length) {
-        setFarmers(data.results);
-      }
-    });
   }, [searchResults, state.coopId]);
 
   const canReset = filters.state.publish.length > 0 || filters.state.stock.length > 0;
 
   const dataFiltered = applyFilter({ inputData: tableData, filters: filters.state });
 
-  const handleDeleteRow = useCallback(
-    (id: any) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+  const delShift = async (shiftId: number[]) => {
+    const promises = Promise.all(shiftId.map((id) => deleteShift(id)));
+    try {
+      await promises;
+      toast.success('Shift Deleted successfully!');
+      const deleteRows = tableData.filter((row) => !shiftId.includes(row.id!));
+      setTableData(deleteRows);
+      setSelectedRowIds([]);
+      confirmRows.onFalse();
+    } catch (error) {
+      toast.error(error.message || 'Failed deleting shift');
+    }
+  };
 
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id!));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
+  const handleDeleteShift = () => {
+    if (!selectedRowIds.length) return;
+    const shiftIds = selectedRowIds.map((id) => Number(id));
+    delShift(shiftIds);
+  };
 
   const handleEditRow = useCallback(
     (id: string) => {
@@ -217,15 +202,6 @@ export function CollectionsListView() {
     },
   });
 
-  const fMethods = useForm<CollectorSchemaType>({
-    mode: 'onChange',
-    resolver: zodResolver(CollectorSchema),
-    defaultValues: {
-      routeId: 0,
-      farmerId: 0,
-    },
-  });
-
   const handleAssignCollector = async () => {
     const { collectorId } = methods.getValues();
 
@@ -257,52 +233,6 @@ export function CollectionsListView() {
     }
   };
 
-  // handle farmer assign
-  const handleAssignFarmer = async () => {
-    const { farmerId } = fMethods.getValues();
-    if (!farmerId) {
-      toast.error('Please select a farmer');
-      return;
-    }
-    const selectedRows = tableData.filter((row) => selectedRowIds.includes(row.id!));
-    if (selectedRows.length === 0) {
-      toast.error('Please select at least one route');
-      return;
-    }
-    try {
-      await assignFarmerToRoute({
-        farmerId: Number(farmerId.id),
-        routeId: selectedRows.map((row) => row.id!)[0],
-      });
-      console.log('Assigning farmer:', farmerId, 'to routes:', selectedRows);
-      farmerAssign.onFalse();
-      // clear selected rows
-      setSelectedRowIds([]);
-      fMethods.reset();
-      toast.success('Farmer assigned successfully');
-    } catch (error) {
-      console.error('Error assigning farmer:', error);
-      toast.error(error.message || 'Failed to assign farmer:');
-    }
-  };
-
-  const handleMilkTask = async (routeId: number) => {
-    if (!routeId) {
-      toast.error('Please select a route');
-      return;
-    }
-
-    try {
-      await createMilkTask(routeId);
-      toast.success('Milk task created successfully');
-
-      // fetch task
-    } catch (error) {
-      console.error('Error creating milk task:', error);
-      toast.error(error.message || 'Failed to create milk task');
-    }
-  };
-
   //  handle permission
   const { permissions = [], isSuperAdmin = false } = perms;
 
@@ -313,7 +243,7 @@ export function CollectionsListView() {
   const columns: GridColDef[] = [
     {
       field: 'name',
-      headerName: 'Name',
+      headerName: 'Shift',
       // flex: 1,
       maxWidth: 180,
       width: 150,
@@ -361,31 +291,16 @@ export function CollectionsListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:eye-bold" />}
-        //   label=""
-        //   onClick={() => {}}
-        // />,
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:user-plus-bold" />}
-        //   label="Assign Farmer"
-        //   onClick={() => {
-        //     farmerAssign.onTrue();
-        //     setSelectedRowIds([params.row.id!]);
-        //   }}
-        //   sx={{ color: 'info.main' }}
-        // />,
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:cup-star-bold" />}
-        //   label="New Milk Task"
-        //   onClick={() => {
-        //     handleMilkTask(params.row.id!);
-        //   }}
-        // sx={{ color: 'i' }}
-        // />,
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="solar:trash-bin-2-bold" />}
+          label="Delete"
+          onClick={() => {
+            setSelectedRowIds([params.row.id!]);
+            confirmRows.onTrue();
+          }}
+          sx={{ color: 'info.error' }}
+        />,
       ],
     },
   ];
@@ -456,116 +371,21 @@ export function CollectionsListView() {
       <ConfirmDialog
         open={confirmRows.value}
         onClose={confirmRows.onFalse}
-        title="Assign Collector"
+        title="Delete Confirmation"
         content={
           <Stack spacing={2}>
-            <p>Select Collector?</p>
-            <Form methods={methods} onSubmit={methods.handleSubmit(() => {})}>
-              <Box
-                rowGap={3}
-                columnGap={2}
-                display="grid"
-                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
-              >
-                <Field.Autocomplete
-                  name="collectorId"
-                  label="Select Collector"
-                  placeholder="Collector"
-                  freeSolo
-                  options={userResults.map((user) => user)}
-                  getOptionLabel={(option) => option?.firstName || ''}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option.email || option.id}>
-                      {option.firstName}--{option.email}
-                    </li>
-                  )}
-                  renderTags={(selected, getTagProps) =>
-                    selected.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.email}
-                        label={option.email}
-                        size="small"
-                        color="info"
-                        variant="soft"
-                      />
-                    ))
-                  }
-                />
-              </Box>
-            </Form>
+            <p>Are you sure you want to delete the selected rows?</p>
           </Stack>
         }
         action={
           <Button
             variant="contained"
-            // color="error"
+            color="error"
             onClick={() => {
-              handleAssignCollector();
+              handleDeleteShift();
             }}
           >
-            Assign
-          </Button>
-        }
-      />
-
-      <ConfirmDialog
-        open={farmerAssign.value}
-        onClose={farmerAssign.onFalse}
-        title="Assign Farmer"
-        content={
-          <>
-            <Stack spacing={2}>
-              <p>Select Farmer</p>
-              <Form methods={fMethods} onSubmit={methods.handleSubmit(() => {})}>
-                <Box
-                  rowGap={3}
-                  columnGap={2}
-                  display="grid"
-                  gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' }}
-                >
-                  <Field.Autocomplete
-                    name="farmerId"
-                    label="Select farmer"
-                    placeholder="Farmer"
-                    freeSolo
-                    options={farmers.map((user) => user)}
-                    getOptionLabel={(option) =>
-                      `${option.firstName || ''} ${option.lastName || ''}`
-                    }
-                    renderOption={(props, option) => (
-                      <li {...props} key={option.id || option.id}>
-                        {option.firstName}--{option.lastName}--{option.mobilePhone}
-                      </li>
-                    )}
-                    renderTags={(selected, getTagProps) =>
-                      selected.map((option, index) => (
-                        <Chip
-                          {...getTagProps({ index })}
-                          key={option.email}
-                          label={option.email}
-                          size="small"
-                          color="info"
-                          variant="soft"
-                        />
-                      ))
-                    }
-                  />
-                </Box>
-              </Form>
-            </Stack>
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            // color="error"
-            onClick={() => {
-              handleAssignFarmer();
-              farmerAssign.onFalse();
-            }}
-          >
-            Assign
+            Delete
           </Button>
         }
       />
