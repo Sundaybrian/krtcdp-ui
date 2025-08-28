@@ -13,7 +13,7 @@ import type {
 } from '@mui/x-data-grid';
 import { RouterLink } from 'src/routes/components';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -57,6 +57,7 @@ import {
   assignCollectorToRoute,
   assignFarmerToRoute,
   createMilkTask,
+  searchCollections,
   searchCoopFarmers,
 } from 'src/api/services';
 import { CoopFarmerList } from 'src/types/user';
@@ -107,7 +108,7 @@ export const CollectorSchema = zod.object({
 
 export function CollectionsListView() {
   const confirmRows = useBoolean();
-  const farmerAssign = useBoolean();
+  const [searchLoading, setSearchLoading] = useState<boolean>(false);
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
   const perms = getStorage('permissions');
@@ -123,33 +124,45 @@ export function CollectionsListView() {
     shift: undefined,
     route: undefined,
     status: undefined,
+    farmer: undefined,
   });
 
-  const query: any = {};
-  if (filters.state.route) {
-    query.routeId = filters.state.route;
-  }
-  if (filters.state.shift) {
-    query.shiftId = filters.state.shift;
-  }
-  if (filters.state.startDate) {
-    query.collectionTimeFrom = new Date(filters.state.startDate).toISOString();
-  }
+  // Build query object with all filter parameters for API
+  const query: any = useMemo(() => {
+    const queryObj: any = {};
 
-  if (filters.state.endDate) {
-    query.collectionTimeTo = new Date(filters.state.endDate).toISOString();
-  }
+    if (filters.state.route) {
+      queryObj.routeId = filters.state.route;
+    }
+    if (filters.state.shift) {
+      queryObj.shiftId = filters.state.shift;
+    }
+    if (filters.state.collector) {
+      queryObj.collectorId = filters.state.collector;
+    }
+    if (filters.state.farmer) {
+      queryObj.farmerId = filters.state.farmer;
+    }
+    if (filters.state.startDate) {
+      queryObj.collectionTimeFrom = new Date(filters.state.startDate).toISOString();
+    }
+    if (filters.state.endDate) {
+      queryObj.collectionTimeTo = new Date(filters.state.endDate).toISOString();
+    }
+    if (filters.state.status) {
+      queryObj.status = filters.state.status;
+    }
 
-  if (filters.state.status) {
-    query.status = filters.state.status;
-  }
-
-  console.log(filters.state, 'Filters');
-
-  const { searchResults, searchLoading } = useSearchCollections({
-    cooperativeId: state.coopId,
-    ...query,
-  });
+    return queryObj;
+  }, [
+    filters.state.route,
+    filters.state.shift,
+    filters.state.collector,
+    filters.state.farmer,
+    filters.state.startDate,
+    filters.state.endDate,
+    filters.state.status,
+  ]);
 
   const [tableData, setTableData] = useState<RouteItem[]>([]);
 
@@ -160,16 +173,31 @@ export function CollectionsListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
-  const dataFiltered = useMemo(
-    () => applyFilter({ inputData: tableData, filters: filters.state }),
-    [tableData, filters.state]
-  );
+  // Since API returns filtered results, we don't need local filtering
+  const dataFiltered = tableData;
+
+  const getCollections = useCallback(() => {
+    setSearchLoading(true);
+    searchCollections({
+      cooperativeId: state.coopId,
+      ...query,
+    })
+      .then((response) => {
+        if (response.results) {
+          setTableData(response.results);
+        }
+      })
+      .catch((error) => {
+        toast.error(error.message || 'An error occured while fetching collections');
+      })
+      .finally(() => {
+        setSearchLoading(false);
+      });
+  }, [query, state.coopId]);
 
   useEffect(() => {
-    if (searchResults.length) {
-      setTableData(searchResults);
-    }
-  }, [searchResults, state.coopId, filters]);
+    getCollections();
+  }, [getCollections]);
 
   const canReset =
     filters.state.publish.length > 0 ||
@@ -178,10 +206,9 @@ export function CollectionsListView() {
     !!filters.state.shift ||
     !!filters.state.route ||
     !!filters.state.status ||
+    !!filters.state.farmer ||
     !!filters.state.startDate ||
     !!filters.state.endDate;
-
-  console.log(dataFiltered, 'dataFilter');
 
   const handleDeleteRow = useCallback(
     (id: any) => {
@@ -288,83 +315,6 @@ export function CollectionsListView() {
       farmerId: 0,
     },
   });
-
-  const handleAssignCollector = async () => {
-    const { collectorId } = methods.getValues();
-
-    if (!collectorId) {
-      toast.error('Please select a collector');
-      return;
-    }
-
-    const selectedRows = tableData.filter((row) => selectedRowIds.includes(row.id!));
-    if (selectedRows.length === 0) {
-      toast.error('Please select at least one route');
-      return;
-    }
-
-    try {
-      await assignCollectorToRoute({
-        collectorId: Number(collectorId.id),
-        routeId: selectedRows.map((row) => row.id!)[0],
-      });
-      console.log('Assigning collector:', collectorId, 'to routes:', selectedRows);
-      confirmRows.onFalse();
-      // clear selected rows
-      setSelectedRowIds([]);
-      methods.reset();
-      toast.success('Collector assigned successfully');
-    } catch (error) {
-      console.error('Error assigning collector:', error);
-      toast.error(error.message || 'Failed to assign collector:');
-    }
-  };
-
-  // handle farmer assign
-  const handleAssignFarmer = async () => {
-    const { farmerId } = fMethods.getValues();
-    if (!farmerId) {
-      toast.error('Please select a farmer');
-      return;
-    }
-    const selectedRows = tableData.filter((row) => selectedRowIds.includes(row.id!));
-    if (selectedRows.length === 0) {
-      toast.error('Please select at least one route');
-      return;
-    }
-    try {
-      await assignFarmerToRoute({
-        farmerId: Number(farmerId.id),
-        routeId: selectedRows.map((row) => row.id!)[0],
-      });
-      console.log('Assigning farmer:', farmerId, 'to routes:', selectedRows);
-      farmerAssign.onFalse();
-      // clear selected rows
-      setSelectedRowIds([]);
-      fMethods.reset();
-      toast.success('Farmer assigned successfully');
-    } catch (error) {
-      console.error('Error assigning farmer:', error);
-      toast.error(error.message || 'Failed to assign farmer:');
-    }
-  };
-
-  const handleMilkTask = async (routeId: number) => {
-    if (!routeId) {
-      toast.error('Please select a route');
-      return;
-    }
-
-    try {
-      await createMilkTask(routeId);
-      toast.success('Milk task created successfully');
-
-      // fetch task
-    } catch (error) {
-      console.error('Error creating milk task:', error);
-      toast.error(error.message || 'Failed to create milk task');
-    }
-  };
 
   //  handle permission
   const { permissions = [], isSuperAdmin = false } = perms;
@@ -570,7 +520,7 @@ function CustomToolbar({
   return (
     <>
       <GridToolbarContainer>
-        <GridToolbarQuickFilter />
+        {/* <GridToolbarQuickFilter /> */}
 
         {/* Add button for more filter that opens a dialog with status collector and route */}
         <Button
@@ -579,7 +529,7 @@ function CustomToolbar({
           startIcon={<Iconify icon="solar:filter-bold" />}
           onClick={filterDialog.onTrue}
         >
-          More Filters
+          Filters
         </Button>
 
         <Stack
@@ -625,67 +575,4 @@ function CustomToolbar({
       )}
     </>
   );
-}
-
-// ----------------------------------------------------------------------
-
-type ApplyFilterProps = {
-  inputData: RouteItem[];
-  filters: Ifilter;
-};
-
-function applyFilter({ inputData, filters }: ApplyFilterProps) {
-  let filteredData: any = inputData;
-
-  // Filter by collector
-  if (filters.collector) {
-    filteredData = filteredData.filter((item: any) => item.collectorId === filters.collector);
-  }
-
-  // Filter by shift
-  if (filters.shift) {
-    filteredData = filteredData.filter((item: any) => item.shiftId === filters.shift);
-  }
-
-  // Filter by route
-  if (filters.route) {
-    filteredData = filteredData.filter((item: any) => item.routeId === filters.route);
-  }
-
-  // Filter by status
-  if (filters.status) {
-    filteredData = filteredData.filter((item: any) => item.status === filters.status);
-  }
-
-  // Filter by start date
-  if (filters.startDate) {
-    const startDate = new Date(filters.startDate);
-    filteredData = filteredData.filter((item: any) => {
-      const itemDate = new Date(item.createdAt || item.creationDate);
-      return itemDate >= startDate;
-    });
-  }
-
-  // Filter by end date
-  if (filters.endDate) {
-    const endDate = new Date(filters.endDate);
-    filteredData = filteredData.filter((item: any) => {
-      const itemDate = new Date(item.createdAt || item.creationDate);
-      return itemDate <= endDate;
-    });
-  }
-
-  // Filter by stock (if applicable)
-  if (filters.stock && filters.stock.length > 0) {
-    filteredData = filteredData.filter((item: any) =>
-      filters.stock.includes(item.name || item.batchNumber)
-    );
-  }
-
-  // Filter by publish status (if applicable)
-  if (filters.publish && filters.publish.length > 0) {
-    filteredData = filteredData.filter((item: any) => filters.publish.includes(item.status));
-  }
-
-  return filteredData;
 }

@@ -1208,6 +1208,25 @@ export const createMilkTask = async (routeId: number) => {
   }
 };
 
+// search collections
+export const searchCollections = async (query = {}): Promise<Page<[]>> => {
+  console.log(query);
+
+  try {
+    const response = await axios.post(endpoints.collections.search, {
+      page: 1,
+      limit: 1000,
+      ...query,
+    });
+    console.log(response.data);
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching price config:', error);
+    throw error;
+  }
+};
+
 // stages
 export const getStages = async (query = {}): Promise<Page<StageItem[]>> => {
   try {

@@ -33,6 +33,7 @@ export interface Ifilter {
   shift?: number;
   route?: number;
   status?: string;
+  farmer?: number;
 }
 
 type Props = {

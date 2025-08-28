@@ -22,15 +22,8 @@ type ParamsProps = {
 
 export function RenderCellStatus({ params }: ParamsProps) {
   return (
-    <Label
-      variant="soft"
-      color={
-        (params.row.isActive && 'success') ||
-        (params.row.isActive === false && 'error') ||
-        'default'
-      }
-    >
-      {params.row.isActive ? 'ACTIVE' : 'INACTIVE'}
+    <Label variant="soft" color={(params.row.status === 'COLLECTED' && 'success') || 'default'}>
+      {params.row.status}
     </Label>
   );
 }
