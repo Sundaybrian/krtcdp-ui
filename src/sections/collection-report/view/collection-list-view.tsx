@@ -104,11 +104,22 @@ export const CollectorSchema = zod.object({
   farmerId: zod.any().optional(),
 });
 
+export type PageData = {
+  total: number;
+  limit: number;
+  page: number;
+};
+
 // ----------------------------------------------------------------------
 
 export function CollectionsListView() {
   const confirmRows = useBoolean();
   const [searchLoading, setSearchLoading] = useState<boolean>(false);
+  const [pageData, setPageData] = useState<PageData>({
+    limit: 20,
+    page: 1,
+    total: 0,
+  });
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
   const perms = getStorage('permissions');
@@ -181,10 +192,17 @@ export function CollectionsListView() {
     searchCollections({
       cooperativeId: state.coopId,
       ...query,
+      page: pageData.page,
+      limit: pageData.limit,
     })
       .then((response) => {
         if (response.results) {
           setTableData(response.results);
+          setPageData({
+            limit: pageData.limit,
+            page: pageData.page,
+            total: response.totalItems,
+          });
         }
       })
       .catch((error) => {
@@ -193,7 +211,7 @@ export function CollectionsListView() {
       .finally(() => {
         setSearchLoading(false);
       });
-  }, [query, state.coopId]);
+  }, [query, state.coopId, setPageData, pageData.limit, pageData.page]);
 
   useEffect(() => {
     getCollections();
@@ -325,6 +343,12 @@ export function CollectionsListView() {
 
   const columns: GridColDef[] = [
     {
+      field: 'farmer',
+      headerName: 'Farmer Name',
+      width: 160,
+      renderCell: (params) => <RenderTasks params={params} />,
+    },
+    {
       field: 'collector',
       headerName: 'Collector Name',
       // flex: 1,
@@ -336,12 +360,6 @@ export function CollectionsListView() {
       ),
     },
 
-    {
-      field: 'farmer',
-      headerName: 'Farmer Name',
-      width: 160,
-      renderCell: (params) => <RenderTasks params={params} />,
-    },
     {
       field: 'route',
       headerName: 'Route Name',
@@ -363,7 +381,7 @@ export function CollectionsListView() {
 
     {
       field: 'quantity',
-      headerName: 'Quantity (L)',
+      headerName: 'Quantity (KG)',
       width: 140,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
@@ -472,8 +490,10 @@ export function CollectionsListView() {
           columns={columns}
           loading={searchLoading}
           getRowHeight={() => 'auto'}
-          pageSizeOptions={[5, 10, 25]}
-          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+          pageSizeOptions={[10, 20, 40]}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 20 }, rowCount: pageData.total },
+          }}
           onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
           columnVisibilityModel={columnVisibilityModel}
           onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
@@ -486,6 +506,11 @@ export function CollectionsListView() {
             panel: { anchorEl: filterButtonEl },
             toolbar: { setFilterButtonEl },
             columnsManagement: { getTogglableColumns },
+          }}
+          paginationMode="server"
+          rowCount={pageData.total}
+          onPaginationModelChange={(newModel) => {
+            setPageData((prev) => ({ ...prev, page: newModel.page + 1, limit: newModel.pageSize }));
           }}
           sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
         />

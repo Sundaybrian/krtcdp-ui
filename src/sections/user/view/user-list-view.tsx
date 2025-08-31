@@ -49,6 +49,7 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
+import { type PageData } from 'src/sections/collection-report/view';
 import { PermissionDeniedView } from 'src/sections/permission/view';
 
 import { UserTableRow } from '../user-table-row';
@@ -85,7 +86,15 @@ export function UserListView() {
 
   const filters = useSetState<IUserTableFilters>({ name: '', role: [], status: 'all' });
 
+  const apiFilters = useSetState<any>({});
+
   const table = useTable({ defaultOrderBy: 'creationDate', defaultOrder: 'desc' });
+
+  const [pageData, setPageData] = useState<PageData>({
+    limit: 20,
+    page: 1,
+    total: 0,
+  });
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -180,9 +189,20 @@ export function UserListView() {
 
   // fetch users
   const fetchUsers = () => {
-    getUsers(state.coopId > 0 ? { coopId: state.coopId } : {})
+    getUsers(
+      state.coopId > 0
+        ? { coopId: state.coopId, page: pageData.page, limit: pageData.limit, ...apiFilters.state }
+        : { page: pageData.page, limit: pageData.limit, ...apiFilters.state }
+    )
       .then((data) => {
+        console.log(data);
+
         setTableData(data.results);
+        setPageData({
+          limit: pageData.limit,
+          page: pageData.page,
+          total: data.totalItems,
+        });
       })
       .catch(() => {
         toast.error('Failed to fetch users!');
@@ -206,9 +226,19 @@ export function UserListView() {
     fetchUsers();
     fetchUserTypes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.coopId]);
+  }, [state.coopId, pageData.limit, pageData.page, apiFilters.state]);
 
   const { permissions = [], isSuperAdmin = false } = perms;
+
+  const handlePagination = (pageSize: number) => {
+    console.log(pageSize);
+
+    setPageData((prev) => ({ ...prev, limit: pageSize }));
+  };
+
+  const handlePageChange = (e: any, newPage: any) => {
+    setPageData((prev) => ({ ...prev, page: newPage }));
+  };
 
   if (permissions.includes(requiredPermissions.users.viewUser) === false && !isSuperAdmin) {
     return <PermissionDeniedView />;
@@ -281,6 +311,7 @@ export function UserListView() {
 
           <UserTableToolbar
             filters={filters}
+            apiFilters={apiFilters}
             onResetPage={table.onResetPage}
             onExport={handleExport}
             options={{ roles: userTypes }}
@@ -334,26 +365,18 @@ export function UserListView() {
                 />
 
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <UserTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                      />
-                    ))}
+                  {dataFiltered.map((row) => (
+                    <UserTableRow
+                      key={row.id}
+                      row={row}
+                      selected={table.selected.includes(row.id)}
+                      onSelectRow={() => table.onSelectRow(row.id)}
+                      onDeleteRow={() => handleDeleteRow(row.id)}
+                      onEditRow={() => handleEditRow(row.id)}
+                    />
+                  ))}
 
-                  <TableEmptyRows
-                    height={table.dense ? 56 : 56 + 20}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
+                  <TableEmptyRows height={table.dense ? 56 : 56 + 20} emptyRows={0} />
 
                   <TableNoData notFound={notFound} />
                 </TableBody>
@@ -362,13 +385,19 @@ export function UserListView() {
           </Box>
 
           <TablePaginationCustom
-            page={table.page}
+            page={pageData.page}
             dense={table.dense}
-            count={dataFiltered.length}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
+            count={pageData.total}
+            rowsPerPage={pageData.limit}
+            onPageChange={(e, page) => {
+              table.onChangePage(e, page);
+              handlePageChange(e, page);
+            }}
             onChangeDense={table.onChangeDense}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
+            onRowsPerPageChange={(e: any) => {
+              table.onChangeRowsPerPage(e);
+              handlePagination(e.target.value);
+            }}
           />
         </Card>
       </DashboardContent>
@@ -409,10 +438,6 @@ type ApplyFilterProps = {
 
 function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
   const { name, status, role } = filters;
-  console.log('Role:', role);
-
-  console.log('Input data:', inputData);
-
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {

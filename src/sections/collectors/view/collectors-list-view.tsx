@@ -15,7 +15,7 @@ import type {
 import { RouterLink } from 'src/routes/components';
 import { Field, Form } from 'src/components/hook-form';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -59,10 +59,12 @@ import {
   assignCollectorToRoute,
   assignFarmerToRoute,
   createMilkTask,
+  getMilkAggregation,
   searchCoopFarmers,
 } from 'src/api/services';
 import { CoopFarmerList } from 'src/types/user';
 import { useSearchCollections, useSearchMilkAggregation } from 'src/actions/collections';
+import { PageData } from 'src/sections/collection-report/view';
 
 // import { TicketViewDialog } from './collection-view-dialog';
 import { CooperativeTableToolbar, Ifilter } from '../collectors-table-toolbar';
@@ -114,6 +116,13 @@ export function CollectionsListView() {
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
   const perms = getStorage('permissions');
+  const [searchLoading, setSearchLoading] = useState<boolean>(false);
+
+  const [pageData, setPageData] = useState<PageData>({
+    limit: 20,
+    page: 1,
+    total: 0,
+  });
 
   const router = useRouter();
 
@@ -126,32 +135,39 @@ export function CollectionsListView() {
     status: '',
   });
 
-  const query: any = {};
-  if (filters.state.route) {
-    query.routeId = filters.state.route;
-  }
-  if (filters.state.collector) {
-    query.collectorId = filters.state.collector;
-  }
-  if (filters.state.shift) {
-    query.shiftId = filters.state.shift;
-  }
-  if (filters.state.startDate) {
-    query.dateFrom = new Date(filters.state.startDate).toISOString();
-  }
+  // Build query object with all filter parameters for API
+  const query: any = useMemo(() => {
+    const queryObj: any = {};
 
-  if (filters.state.endDate) {
-    query.dateTo = new Date(filters.state.endDate).toISOString();
-  }
+    if (filters.state.route) {
+      queryObj.routeId = filters.state.route;
+    }
+    if (filters.state.shift) {
+      queryObj.shiftId = filters.state.shift;
+    }
+    if (filters.state.collector) {
+      queryObj.collectorId = filters.state.collector;
+    }
 
-  if (filters.state.status) {
-    query.status = filters.state.status;
-  }
+    if (filters.state.startDate) {
+      queryObj.collectionTimeFrom = new Date(filters.state.startDate).toISOString();
+    }
+    if (filters.state.endDate) {
+      queryObj.collectionTimeTo = new Date(filters.state.endDate).toISOString();
+    }
+    if (filters.state.status) {
+      queryObj.status = filters.state.status;
+    }
 
-  const { searchResults, searchLoading } = useSearchMilkAggregation({
-    cooperativeId: state.coopId,
-    ...query,
-  });
+    return queryObj;
+  }, [
+    filters.state.route,
+    filters.state.shift,
+    filters.state.collector,
+    filters.state.startDate,
+    filters.state.endDate,
+    filters.state.status,
+  ]);
 
   const [tableData, setTableData] = useState<RouteItem[]>([]);
 
@@ -164,15 +180,39 @@ export function CollectionsListView() {
 
   const [dialogData, setDialogData] = useState<{ item: any; status: string }>();
 
-  useEffect(() => {
-    if (searchResults.length) {
-      setTableData(searchResults);
-    }
-  }, [searchResults, filters]);
-
   const canReset = filters.state.endDate == null;
 
   const dataFiltered = applyFilter({ inputData: tableData, filters: filters.state });
+
+  const getAggregatedCollections = useCallback(() => {
+    setSearchLoading(true);
+    getMilkAggregation({
+      cooperativeId: state.coopId,
+      ...query,
+      page: pageData.page,
+      limit: pageData.limit,
+    })
+      .then((response) => {
+        if (response.results) {
+          setTableData(response.results);
+          setPageData({
+            limit: pageData.limit,
+            page: pageData.page,
+            total: response.totalItems,
+          });
+        }
+      })
+      .catch((error) => {
+        toast.error(error.message || 'An error occured while fetching collections');
+      })
+      .finally(() => {
+        setSearchLoading(false);
+      });
+  }, [query, state.coopId, setPageData, pageData.limit, pageData.page]);
+
+  useEffect(() => {
+    getAggregatedCollections();
+  }, [getAggregatedCollections]);
 
   const handleDeleteRow = useCallback(
     (id: any) => {
@@ -458,8 +498,8 @@ export function CollectionsListView() {
           columns={columns}
           loading={searchLoading}
           getRowHeight={() => 'auto'}
-          pageSizeOptions={[5, 10, 25]}
-          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+          pageSizeOptions={[10, 20, 40, 100]}
+          initialState={{ pagination: { paginationModel: { pageSize: 20 } } }}
           onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
           columnVisibilityModel={columnVisibilityModel}
           onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
@@ -472,6 +512,11 @@ export function CollectionsListView() {
             panel: { anchorEl: filterButtonEl },
             toolbar: { setFilterButtonEl },
             columnsManagement: { getTogglableColumns },
+          }}
+          paginationMode="server"
+          rowCount={pageData.total}
+          onPaginationModelChange={(newModel) => {
+            setPageData((prev) => ({ ...prev, page: newModel.page + 1, limit: newModel.pageSize }));
           }}
           sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
         />

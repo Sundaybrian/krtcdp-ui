@@ -96,7 +96,7 @@ export function FilterDialog({ filters, open, onClose }: Props) {
       try {
         // TODO: Replace with actual API call
         const response = await getUsers({
-          limit: 10,
+          limit: 20,
           coopId: state.coopId,
           firstName: searchTerm,
           // lastName: searchTerm,
@@ -125,7 +125,7 @@ export function FilterDialog({ filters, open, onClose }: Props) {
       try {
         // TODO: Replace with actual API call
         const response = await getUsers({
-          limit: 10,
+          limit: 20,
           coopId: state.coopId,
           firstName: searchTerm,
           // lastName: searchTerm,
@@ -310,10 +310,10 @@ export function FilterDialog({ filters, open, onClose }: Props) {
                     <Box component="li" {...props}>
                       <Box>
                         <Typography variant="body2">
-                          {option.firstName} {option.lastName}
+                          {option.firstName} {option.middleName || ''} {option.lastName}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          ID: {option.id} | Phone: {option.phoneNumber || 'N/A'}
+                          ID: {option.id} | Phone: {option.mobilePhone || 'N/A'}
                         </Typography>
                       </Box>
                     </Box>
@@ -355,10 +355,10 @@ export function FilterDialog({ filters, open, onClose }: Props) {
                     <Box component="li" {...props}>
                       <Box>
                         <Typography variant="body2">
-                          {option.firstName} {option.lastName}
+                          {option.firstName} {option.middleName || ''} {option.lastName}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          ID: {option.id} | Phone: {option.phoneNumber || 'N/A'}
+                          ID: {option.id} | Phone: {option.mobilePhone || 'N/A'}
                         </Typography>
                       </Box>
                     </Box>

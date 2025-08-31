@@ -17,7 +17,10 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { Iconify } from 'src/components/iconify';
+import { useBoolean } from 'src/hooks/use-boolean';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
+import { Button } from '@mui/material';
+import { UserFilterDialog } from './view/user-filter';
 
 // ----------------------------------------------------------------------
 
@@ -25,14 +28,23 @@ type Props = {
   onResetPage: () => void;
   onExport: () => void;
   filters: UseSetStateReturn<IUserTableFilters>;
+  apiFilters: UseSetStateReturn<any>;
   options: {
     roles: string[];
   };
   statusLabel?: string;
 };
 
-export function UserTableToolbar({ filters, options, onResetPage, onExport, statusLabel }: Props) {
+export function UserTableToolbar({
+  filters,
+  apiFilters,
+  options,
+  onResetPage,
+  onExport,
+  statusLabel,
+}: Props) {
   const popover = usePopover();
+  const filterDialog = useBoolean();
 
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,10 +114,25 @@ export function UserTableToolbar({ filters, options, onResetPage, onExport, stat
             }}
           />
 
+          <Button
+            size="small"
+            color="primary"
+            startIcon={<Iconify icon="solar:filter-bold" />}
+            onClick={filterDialog.onTrue}
+          >
+            Open Filters
+          </Button>
+
           <IconButton onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </Stack>
+
+        <UserFilterDialog
+          open={filterDialog.value}
+          onClose={filterDialog.onFalse}
+          filters={apiFilters}
+        />
       </Stack>
 
       <CustomPopover

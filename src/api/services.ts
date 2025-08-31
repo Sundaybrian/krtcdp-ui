@@ -60,12 +60,8 @@ export const validateOtp = async (data: any) => {
 
 // Function to fetch users
 export const getUsers = async (query = {}): Promise<Page<IUserItem[]>> => {
-  console.log('Fetching users with query:', query);
-
   try {
     const response = await axios.post(endpoints.users.search, {
-      // page: 0,
-      // limit: 10000,
       ...query,
     });
     return response.data;
@@ -1210,16 +1206,12 @@ export const createMilkTask = async (routeId: number) => {
 
 // search collections
 export const searchCollections = async (query = {}): Promise<Page<[]>> => {
-  console.log(query);
-
   try {
     const response = await axios.post(endpoints.collections.search, {
       page: 1,
-      limit: 1000,
+      limit: 20,
       ...query,
     });
-    console.log(response.data);
-
     return response.data;
   } catch (error) {
     console.error('Error fetching price config:', error);
@@ -1334,8 +1326,24 @@ export const deleteShift = async (id: number) => {
   }
 };
 
-// milk aggregation approvals
+// get aggregation
+export const getMilkAggregation = async (query = {}) => {
+  try {
+    const response = await axios.get(endpoints.collections.searchMilkAggregation, {
+      params: {
+        page: 1,
+        limit: 20,
+        ...query,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching price config:', error);
+    throw error;
+  }
+};
 
+// milk aggregation approvals
 export const approveMilkAggregation = async (id: number, data: any) => {
   try {
     const response = await axios.patch(`${endpoints.collections.approval(id)}`, data);
