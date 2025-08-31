@@ -48,6 +48,7 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+import { PageData } from 'src/sections/collection-report/view';
 
 import { OrderTableRow } from '../order-table-row';
 import { OrderTableToolbar } from '../order-table-toolbar';
@@ -89,6 +90,12 @@ export function GrnListView() {
   const [tableData, setTableData] = useState<Grn[]>([]);
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
+
+  const [pageData, setPageData] = useState<PageData>({
+    limit: 20,
+    page: 1,
+    total: 0,
+  });
 
   const filters = useSetState<IOrderTableFilters>({
     name: '',
@@ -187,25 +194,43 @@ export function GrnListView() {
 
   const handleExport = useCallback(() => {
     console.log('Exporting...');
-    const exportData = removeKeyFromArr(dataFiltered, [
-      'id',
-      'userId',
-      'lastModifiedDate',
-      'harvestId',
-      'autoInitiatedById',
-      'farmerId',
-      'cooperativeId',
-      'farmId',
-      'farmer',
-      'deleteAt',
-    ]);
+    const exportData = removeKeyFromArr(
+      dataFiltered.map((grn) => ({
+        ...grn,
+        farmerName: `${grn.farmer.firstName} ${grn.farmer.middleName || ''} ${grn.farmer.lastName}`,
+        farmerMobileNumber: grn.farmer.mobilePhone || 'N/A',
+      })),
+      [
+        'id',
+        'userId',
+        'lastModifiedDate',
+        'taskId',
+        'duplicateOfflineTaskId',
+        'harvestId',
+        'autoInitiatedById',
+        'farmerId',
+        'cooperativeId',
+        'farmId',
+        'farmer',
+        'deleteAt',
+      ]
+    );
     exportExcel(exportData, 'GRN');
   }, [dataFiltered]);
 
   const getGrn = () => {
-    searchGrn({ cooperativeId: state.coopId })
+    searchGrn({
+      cooperativeId: state.coopId,
+      page: pageData.page,
+      limit: pageData.limit,
+    })
       .then((data) => {
         setTableData(data.results);
+        setPageData({
+          limit: pageData.limit,
+          page: pageData.page,
+          total: data.totalItems,
+        });
       })
       .catch((error) => {
         toast.error(`Error fetching GRN: ${error.message}`);
@@ -215,7 +240,15 @@ export function GrnListView() {
   useEffect(() => {
     getGrn();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.coopId]);
+  }, [state.coopId, pageData.limit, pageData.page]);
+
+  const handlePagination = (pageSize: number) => {
+    setPageData((prev) => ({ ...prev, limit: pageSize }));
+  };
+
+  const handlePageChange = (e: any, newPage: any) => {
+    setPageData((prev) => ({ ...prev, page: newPage }));
+  };
 
   return (
     <>
@@ -322,27 +355,19 @@ export function GrnListView() {
                 />
 
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <OrderTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onApproveRow={(data) => handleApproveRow(row.id, data)}
-                        onViewRow={() => handleViewRow(row.id)}
-                      />
-                    ))}
+                  {dataFiltered.map((row) => (
+                    <OrderTableRow
+                      key={row.id}
+                      row={row}
+                      selected={table.selected.includes(row.id)}
+                      onSelectRow={() => table.onSelectRow(row.id)}
+                      onDeleteRow={() => handleDeleteRow(row.id)}
+                      onApproveRow={(data) => handleApproveRow(row.id, data)}
+                      onViewRow={() => handleViewRow(row.id)}
+                    />
+                  ))}
 
-                  <TableEmptyRows
-                    height={table.dense ? 56 : 56 + 20}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
+                  <TableEmptyRows height={table.dense ? 56 : 56 + 20} emptyRows={0} />
 
                   <TableNoData notFound={notFound} />
                 </TableBody>
@@ -351,13 +376,19 @@ export function GrnListView() {
           </Box>
 
           <TablePaginationCustom
-            page={table.page}
+            page={pageData.page}
             dense={table.dense}
-            count={dataFiltered.length}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
+            count={pageData.total}
+            rowsPerPage={pageData.limit}
+            onPageChange={(e, page) => {
+              table.onChangePage(e, page);
+              handlePageChange(e, page);
+            }}
             onChangeDense={table.onChangeDense}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
+            onRowsPerPageChange={(e: any) => {
+              table.onChangeRowsPerPage(e);
+              handlePagination(e.target.value);
+            }}
           />
         </Card>
       </DashboardContent>

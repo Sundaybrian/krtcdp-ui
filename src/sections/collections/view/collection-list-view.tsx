@@ -488,7 +488,41 @@ export function CollectionsListView() {
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
-      getActions: (params) => [],
+      getActions: (params) => [
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify color="green" icon="solar:check-circle-bold" />}
+          label="Adjust Quantity"
+          onClick={() => {
+            // verifyDialog.onTrue();
+            // setDialogData({
+            //   item: params.row,
+            //   status: 'VERIFIED',
+            // });
+          }}
+        />,
+
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="solar:pen-bold" />}
+          label="Transfer"
+          onClick={() => {
+            // verifyDialog.onTrue();
+            // setDialogData({
+            //   item: params.row,
+            //   status: 'VERIFIED_WITH_ADJUSTMENT',
+            // });
+          }}
+        />,
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="solar:checklist-minimalistic-bold" />}
+          label="Milk distribution"
+          onClick={() => {
+            router.push(paths.dashboard.collections.allocations(params.row.id));
+          }}
+        />,
+      ],
     },
   ];
 

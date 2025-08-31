@@ -206,8 +206,6 @@ export const getFarmers = async (query = {}): Promise<Page<IUserItem[]>> => {
   try {
     const response = await axios.get(endpoints.farmer.search, {
       params: {
-        page: 0,
-        limit: pageLimit,
         ...query,
       },
     });
@@ -372,14 +370,9 @@ export const searchCoopFarmers = async (query = {}): Promise<Page<CoopFarmerList
   try {
     const response = await axios.post(
       endpoints.cooperative.searchCoopFarmer,
-      {
-        page: 1,
-        limit: 1000,
-      },
+      {},
       {
         params: {
-          page: 1,
-          limit: 1000,
           ...query,
         },
       }
@@ -1215,6 +1208,28 @@ export const searchCollections = async (query = {}): Promise<Page<[]>> => {
     return response.data;
   } catch (error) {
     console.error('Error fetching price config:', error);
+    throw error;
+  }
+};
+
+// adjust milk collection quantity
+
+export const adjustMilkQuantity = async (id: number, data: any) => {
+  try {
+    const response = await axios.post(endpoints.collections.adjustMilkQuantity(id), data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding milk task:', error);
+    throw error;
+  }
+};
+
+export const transferMilkCollection = async (id: number, data: any) => {
+  try {
+    const response = await axios.post(endpoints.collections.transferCollection(id), data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding milk task:', error);
     throw error;
   }
 };

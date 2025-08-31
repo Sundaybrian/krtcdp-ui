@@ -10,7 +10,7 @@ import type {
   GridColumnVisibilityModel,
 } from '@mui/x-data-grid';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -45,6 +45,7 @@ import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { PageData } from 'src/sections/collection-report/view';
 
 import { BulkFarmerUploadDialog } from './bulk-upload-farmer';
 import { CooperativeTableFiltersResult } from '../cooperative-table-filters-result';
@@ -59,6 +60,7 @@ import {
   RenderCellCreatedAt,
   RenderInsuranceProvidere,
 } from '../coop-farmer-table-row';
+import { CoopFarmerFilterDialog } from './coop-farmer-filter';
 // ----------------------------------------------------------------------
 
 const PUBLISH_OPTIONS = [
@@ -83,7 +85,12 @@ export function CooperativeFarmerListView() {
 
   const router = useRouter();
 
-  const filters = useSetState<IProductTableFilters>({ publish: [], stock: [] });
+  const filters = useSetState<any>({
+    status: '',
+    name: '',
+    firstName: '',
+    lastName: '',
+  });
 
   const [tableData, setTableData] = useState<CoopFarmerList[]>([]);
 
@@ -91,22 +98,64 @@ export function CooperativeFarmerListView() {
 
   const [filterButtonEl, setFilterButtonEl] = useState<HTMLButtonElement | null>(null);
 
+  const [pageData, setPageData] = useState<PageData>({
+    limit: 20,
+    page: 1,
+    total: 0,
+  });
+
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
 
-  const [rowCount, setRowCount] = useState<number>(0);
+  // Build query object with all filter parameters for API
+  const query: any = useMemo(() => {
+    const queryObj: any = {};
+
+    if (filters.state.name) {
+      queryObj.name = filters.state.name;
+    }
+
+    if (filters.state.firstName) {
+      queryObj.firstName = filters.state.firstName;
+    }
+
+    if (filters.state.lastName) {
+      queryObj.lastName = filters.state.lastName;
+    }
+
+    if (filters.state.status) {
+      queryObj.status = filters.state.status;
+    }
+
+    return queryObj;
+  }, [filters.state.name, filters.state.firstName, filters.state.lastName, filters.state.status]);
 
   useEffect(() => {
-    searchCoopFarmers(state.coopId ? { cooperativeId: state.coopId } : {}).then((data) => {
-      console.log('Cooperative Farmers Data:', data);
+    searchCoopFarmers(
+      state.coopId
+        ? { cooperativeId: state.coopId, page: pageData.page, limit: pageData.limit, ...query }
+        : {
+            page: pageData.page,
+            limit: pageData.limit,
+            ...query,
+          }
+    ).then((data) => {
       if (data.results.length) {
         setTableData(data.results);
-        setRowCount(data.totalItems);
       }
-    });
-  }, [state.coopId]);
 
-  const canReset = filters.state.publish.length > 0 || filters.state.stock.length > 0;
+      setPageData({
+        limit: pageData.limit,
+        page: pageData.page,
+        total: data.totalItems,
+      });
+    });
+  }, [query, state.coopId, pageData.limit, pageData.page]);
+
+  const canReset =
+    filters.state?.status?.length > 0 ||
+    filters.state?.name?.length > 0 ||
+    filters.state?.firstName;
 
   const dataFiltered = applyFilter({ inputData: tableData, filters: filters.state });
 
@@ -445,9 +494,8 @@ export function CooperativeFarmerListView() {
             columns={columns}
             loading={false}
             getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 25]}
-            rowCount={rowCount}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+            pageSizeOptions={[10, 20, 40, 100]}
+            initialState={{ pagination: { paginationModel: { pageSize: 20 } } }}
             onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
             columnVisibilityModel={columnVisibilityModel}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
@@ -460,6 +508,15 @@ export function CooperativeFarmerListView() {
               panel: { anchorEl: filterButtonEl },
               toolbar: { setFilterButtonEl },
               columnsManagement: { getTogglableColumns },
+            }}
+            paginationMode="server"
+            rowCount={pageData.total}
+            onPaginationModelChange={(newModel) => {
+              setPageData((prev) => ({
+                ...prev,
+                page: newModel.page + 1,
+                limit: newModel.pageSize,
+              }));
             }}
             sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
           />
@@ -519,15 +576,21 @@ function CustomToolbar({
   onOpenConfirmDeleteRows,
   handleExport,
 }: CustomToolbarProps) {
+  const filterDialog = useBoolean();
+
   return (
     <>
       <GridToolbarContainer>
-        {/* <CooperativeTableToolbar
-          filters={filters}
-          options={{ stocks: PRODUCT_STOCK_OPTIONS, publishs: PUBLISH_OPTIONS }}
-        /> */}
+        {/* <GridToolbarQuickFilter /> */}
 
-        <GridToolbarQuickFilter />
+        <Button
+          size="small"
+          color="primary"
+          startIcon={<Iconify icon="solar:filter-bold" />}
+          onClick={filterDialog.onTrue}
+        >
+          Filters
+        </Button>
 
         <Stack
           spacing={1}
@@ -555,6 +618,12 @@ function CustomToolbar({
             Export
           </Button>
         </Stack>
+
+        <CoopFarmerFilterDialog
+          open={filterDialog.value}
+          onClose={filterDialog.onFalse}
+          filters={filters}
+        />
       </GridToolbarContainer>
 
       {canReset && (
@@ -576,15 +645,5 @@ type ApplyFilterProps = {
 };
 
 function applyFilter({ inputData, filters }: ApplyFilterProps) {
-  const { stock, publish } = filters;
-
-  if (stock.length) {
-    inputData = inputData.filter((product) => stock.includes(product.lastName));
-  }
-
-  if (publish.length) {
-    inputData = inputData.filter((product) => publish.includes(product.residence));
-  }
-
   return inputData;
 }

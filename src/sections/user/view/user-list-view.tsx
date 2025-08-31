@@ -195,8 +195,6 @@ export function UserListView() {
         : { page: pageData.page, limit: pageData.limit, ...apiFilters.state }
     )
       .then((data) => {
-        console.log(data);
-
         setTableData(data.results);
         setPageData({
           limit: pageData.limit,
@@ -231,8 +229,6 @@ export function UserListView() {
   const { permissions = [], isSuperAdmin = false } = perms;
 
   const handlePagination = (pageSize: number) => {
-    console.log(pageSize);
-
     setPageData((prev) => ({ ...prev, limit: pageSize }));
   };
 

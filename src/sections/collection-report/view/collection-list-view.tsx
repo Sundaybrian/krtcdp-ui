@@ -77,6 +77,8 @@ import {
   RenderCollectionTime,
 } from '../collection-table-row';
 import { FilterDialog } from './filter-dialog';
+import { AdjustQuantityDialog } from './adjust-quantity-dialog';
+import { TransferCollectionDialog } from './transfer-collection-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -114,12 +116,16 @@ export type PageData = {
 
 export function CollectionsListView() {
   const confirmRows = useBoolean();
+  const quantityDialog = useBoolean();
+  const tranferDialog = useBoolean();
   const [searchLoading, setSearchLoading] = useState<boolean>(false);
   const [pageData, setPageData] = useState<PageData>({
     limit: 20,
     page: 1,
     total: 0,
   });
+
+  const [dialogData, setDialogData] = useState<any>({ item: '' });
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
   const perms = getStorage('permissions');
@@ -454,7 +460,31 @@ export function CollectionsListView() {
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
-      getActions: (params) => [],
+      getActions: (params) => [
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify color="green" icon="solar:check-circle-bold" />}
+          label="Adjust Quantity"
+          onClick={() => {
+            quantityDialog.onTrue();
+            setDialogData({
+              item: params.row,
+            });
+          }}
+        />,
+
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="solar:pen-bold" />}
+          label="Transfer"
+          onClick={() => {
+            tranferDialog.onTrue();
+            setDialogData({
+              item: params.row,
+            });
+          }}
+        />,
+      ],
     },
   ];
 
@@ -515,6 +545,21 @@ export function CollectionsListView() {
           sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
         />
       </Card>
+      <AdjustQuantityDialog
+        data={dialogData}
+        open={quantityDialog.value}
+        onClose={() => {
+          quantityDialog.onFalse();
+        }}
+      />
+
+      <TransferCollectionDialog
+        data={dialogData}
+        open={tranferDialog.value}
+        onClose={() => {
+          tranferDialog.onFalse();
+        }}
+      />
     </DashboardContent>
   );
 }

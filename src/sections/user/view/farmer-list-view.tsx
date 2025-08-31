@@ -204,7 +204,7 @@ export function FarmerListView() {
   useEffect(() => {
     fetchFarmers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [pageData.page, pageData.limit]);
 
   const handlePagination = (pageSize: number) => {
     setPageData((prev) => ({ ...prev, limit: pageSize }));

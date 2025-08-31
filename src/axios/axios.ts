@@ -220,6 +220,8 @@ export const endpoints = {
     deleteShift: (id: number) => `/milk-collections-shifts/${id}`,
     approval: (id: number) => `/milk-collections-aggregations/${id}/head-clerk-approval`,
     milkAllocationApproval: (id: number) => `/milk-collections-allocations/${id}/approve`,
+    adjustMilkQuantity: (id: number) => `/milk-collections/${id}/adjust-quantity`,
+    transferCollection: (id: number) => `/milk-collections/${id}/transfer`,
   },
   pricing: {
     searchPriceConfig: '/priceconfig/search',
