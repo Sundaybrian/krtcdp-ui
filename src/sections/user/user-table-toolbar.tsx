@@ -28,7 +28,7 @@ type Props = {
   onResetPage: () => void;
   onExport: () => void;
   filters: UseSetStateReturn<IUserTableFilters>;
-  apiFilters: UseSetStateReturn<any>;
+  apiFilters: UseSetStateReturn<any[]>;
   options: {
     roles: string[];
   };

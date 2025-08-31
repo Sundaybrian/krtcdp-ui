@@ -46,6 +46,7 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+import { PageData } from 'src/sections/collection-report/view';
 
 import { UserTableRow } from '../user-table-row';
 import { UserTableToolbar } from '../user-table-toolbar';
@@ -79,6 +80,13 @@ export function FarmerListView() {
   // const [dataFiltered, setDataFiltered] = useState<IUserItem[]>([]);
 
   const filters = useSetState<IUserTableFilters>({ name: '', role: [], status: 'all' });
+  const apiFilters = useSetState<any>({});
+
+  const [pageData, setPageData] = useState<PageData>({
+    limit: 20,
+    page: 1,
+    total: 0,
+  });
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -174,12 +182,17 @@ export function FarmerListView() {
   // fetch users
 
   const fetchFarmers = () => {
-    getFarmers()
+    getFarmers({ page: pageData.page, limit: pageData.limit, ...apiFilters.state })
       .then((data) => {
         setTableData(data.results);
         console.log('Users:', data);
 
         // applyNewFilter(data.results);
+        setPageData({
+          limit: pageData.limit,
+          page: pageData.page,
+          total: data.totalItems,
+        });
       })
       .catch((error) => {
         toast.error('Failed to fetch users!');
@@ -192,6 +205,14 @@ export function FarmerListView() {
     fetchFarmers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handlePagination = (pageSize: number) => {
+    setPageData((prev) => ({ ...prev, limit: pageSize }));
+  };
+
+  const handlePageChange = (e: any, newPage: any) => {
+    setPageData((prev) => ({ ...prev, page: newPage }));
+  };
 
   return (
     <>
@@ -267,6 +288,7 @@ export function FarmerListView() {
 
           <UserTableToolbar
             filters={filters}
+            apiFilters={apiFilters}
             onExport={handleExport}
             onResetPage={table.onResetPage}
             options={{ roles: ['married', 'single'] }}
@@ -319,26 +341,18 @@ export function FarmerListView() {
                 />
 
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <UserTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                      />
-                    ))}
+                  {dataFiltered.map((row) => (
+                    <UserTableRow
+                      key={row.id}
+                      row={row}
+                      selected={table.selected.includes(row.id)}
+                      onSelectRow={() => table.onSelectRow(row.id)}
+                      onDeleteRow={() => handleDeleteRow(row.id)}
+                      onEditRow={() => handleEditRow(row.id)}
+                    />
+                  ))}
 
-                  <TableEmptyRows
-                    height={table.dense ? 56 : 56 + 20}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, dataFiltered.length)}
-                  />
+                  <TableEmptyRows height={table.dense ? 56 : 56 + 20} emptyRows={0} />
 
                   <TableNoData notFound={notFound} />
                 </TableBody>
@@ -347,13 +361,19 @@ export function FarmerListView() {
           </Box>
 
           <TablePaginationCustom
-            page={table.page}
+            page={pageData.page}
             dense={table.dense}
-            count={dataFiltered.length}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
+            count={pageData.total}
+            rowsPerPage={pageData.limit}
+            onPageChange={(e, page) => {
+              table.onChangePage(e, page);
+              handlePageChange(e, page);
+            }}
             onChangeDense={table.onChangeDense}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
+            onRowsPerPageChange={(e: any) => {
+              table.onChangeRowsPerPage(e);
+              handlePagination(e.target.value);
+            }}
           />
         </Card>
       </DashboardContent>
