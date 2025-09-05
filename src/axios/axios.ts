@@ -228,6 +228,11 @@ export const endpoints = {
     newPriceConfig: '/priceconfig',
     updatePriceConfig: (id: number) => `/priceconfig/${id}`,
   },
+  billing: {
+    newBillingPeriod: '/billing/periods',
+    getBillingPeriod: '/billing/periods',
+    generateInvoice: (id: number) => `/billing/periods/${id}/generate-invoices`,
+  },
 };
 
 export const pageLimit = 1000;

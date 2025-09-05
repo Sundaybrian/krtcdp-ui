@@ -34,7 +34,7 @@ import type {
 
 import axios, { endpoints, pageLimit } from 'src/axios/axios';
 
-import type { Otp, Page, Ward, County, IPriceConfig } from './data.inteface';
+import type { Otp, Page, Ward, County, IPriceConfig, IBillingPeriod } from './data.inteface';
 
 // auth - sign in with mobile phone
 export const signInWithMobilePhone = async (data: any): Promise<Otp> => {
@@ -1424,6 +1424,48 @@ export const getPriceConfigById = async (id: number): Promise<IPriceConfig> => {
     return response.data;
   } catch (error) {
     console.error('Error fetching price config:', error);
+    throw error;
+  }
+};
+
+// billing
+export const createBillingPeriod = async (data: any) => {
+  try {
+    const response = await axios.post(endpoints.billing.newBillingPeriod, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding billing period:', error);
+    throw error;
+  }
+};
+
+// fetch billing periods
+export const fetchBillingPeriods = async (query = {}): Promise<Page<IBillingPeriod[]>> => {
+  try {
+    const response = await axios.get(endpoints.billing.getBillingPeriod, {
+      params: {
+        page: 1,
+        limit: pageLimit,
+        ...query,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching billing periods:', error);
+    throw error;
+  }
+};
+
+// generate invoice
+
+export const generateInvoice = async (id: number) => {
+  try {
+    const response = await axios.post(endpoints.billing.generateInvoice(id), {
+      regenerate: 'true',
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error generating invoice:', error);
     throw error;
   }
 };

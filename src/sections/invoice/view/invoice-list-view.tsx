@@ -58,6 +58,8 @@ import { InvoiceAnalytic } from '../invoice-analytic';
 import { InvoiceTableRow } from '../invoice-table-row';
 import { InvoiceTableToolbar } from '../invoice-table-toolbar';
 import { InvoiceTableFiltersResult } from '../invoice-table-filters-result';
+import { BillingPeriodDialog } from './billing-period-dialog';
+import { BillingPeriodListDialog } from './billing-peiod-list-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -83,6 +85,10 @@ export function InvoiceListView() {
   const table = useTable({ defaultOrderBy: 'createDate' });
 
   const confirm = useBoolean();
+
+  const billingPeiod = useBoolean();
+
+  const billingPeiodList = useBoolean();
 
   const [tableData, setTableData] = useState<InvoiceItem[]>([]);
 
@@ -270,14 +276,23 @@ export function InvoiceListView() {
             { name: 'List' },
           ]}
           action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.invoice.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New invoice
-            </Button>
+            <>
+              <Button
+                onClick={() => billingPeiodList.onTrue()}
+                variant="contained"
+                startIcon={<Iconify icon="eva:file-text-outline" />}
+                sx={{ mr: '8px' }}
+              >
+                View Billing Period
+              </Button>
+              <Button
+                onClick={() => billingPeiod.onTrue()}
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+              >
+                Generate Billing Period
+              </Button>
+            </>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
@@ -472,6 +487,22 @@ export function InvoiceListView() {
             onRowsPerPageChange={table.onChangeRowsPerPage}
           />
         </Card>
+
+        <BillingPeriodDialog
+          coopId={state.coopId}
+          open={billingPeiod.value}
+          onClose={() => {
+            billingPeiod.onFalse();
+          }}
+        />
+
+        <BillingPeriodListDialog
+          coopId={state.coopId}
+          open={billingPeiodList.value}
+          onClose={() => {
+            billingPeiodList.onFalse();
+          }}
+        />
       </DashboardContent>
 
       <ConfirmDialog

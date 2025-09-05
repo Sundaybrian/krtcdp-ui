@@ -97,3 +97,13 @@ export interface IPriceConfig {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface IBillingPeriod {
+  id: number;
+  periodName: string;
+  startDate: string;
+  endDate: string;
+  cooperativeId: number;
+  createdAt: string;
+  updatedAt: string;
+}
