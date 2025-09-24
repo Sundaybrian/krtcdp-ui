@@ -106,4 +106,7 @@ export interface IBillingPeriod {
   cooperativeId: number;
   createdAt: string;
   updatedAt: string;
+  status: string;
+  totalValue: number;
+  invoiceCount: number;
 }

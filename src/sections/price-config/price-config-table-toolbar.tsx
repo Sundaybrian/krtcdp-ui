@@ -92,58 +92,6 @@ export function PriceConfigTableToolbar({ filters, onResetPage, options }: Props
         direction={{ xs: 'column', md: 'row' }}
         sx={{ p: 2.5, pr: { xs: 2.5, md: 1 } }}
       >
-        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 200 } }}>
-          <InputLabel htmlFor="price-config-filter-product-select-label">Product</InputLabel>
-          <Select
-            multiple
-            value={filters.state.productName}
-            input={<OutlinedInput label="Product" />}
-            renderValue={(selected) => selected.join(', ')}
-            inputProps={{ id: 'price-config-filter-product-select-label' }}
-            sx={{ textTransform: 'capitalize' }}
-          >
-            {options.products.map((option) => (
-              <MenuItem key={option} value={option}>
-                <Checkbox
-                  disableRipple
-                  size="small"
-                  checked={filters.state.productName.includes(option)}
-                  onChange={handleFilterProduct}
-                  inputProps={{ value: option }}
-                />
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 200 } }}>
-          <InputLabel htmlFor="price-config-filter-cooperative-select-label">Cooperative</InputLabel>
-          <Select
-            multiple
-            value={filters.state.cooperativeId}
-            input={<OutlinedInput label="Cooperative" />}
-            renderValue={(selected) => selected.map(id => 
-              options.cooperatives.find(coop => coop.id === id)?.name || id
-            ).join(', ')}
-            inputProps={{ id: 'price-config-filter-cooperative-select-label' }}
-            sx={{ textTransform: 'capitalize' }}
-          >
-            {options.cooperatives.map((option) => (
-              <MenuItem key={option.id} value={option.id}>
-                <Checkbox
-                  disableRipple
-                  size="small"
-                  checked={filters.state.cooperativeId.includes(option.id)}
-                  onChange={handleFilterCooperative}
-                  inputProps={{ value: option.id }}
-                />
-                {option.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
         <DatePicker
           label="Start date"
           value={filters.state.startDate}

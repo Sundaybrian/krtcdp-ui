@@ -152,14 +152,19 @@ export function PriceConfigListView() {
             { name: 'List' },
           ]}
           action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.priceConfig.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New Price Config
-            </Button>
+            <>
+              {' '}
+              {dataFiltered.length === 0 && (
+                <Button
+                  component={RouterLink}
+                  href={paths.dashboard.priceConfig.new}
+                  variant="contained"
+                  startIcon={<Iconify icon="mingcute:add-line" />}
+                >
+                  New Price Config
+                </Button>
+              )}
+            </>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
         />

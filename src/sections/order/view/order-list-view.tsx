@@ -34,6 +34,7 @@ import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
 import {
   useTable,
   emptyRows,
@@ -207,11 +208,17 @@ export function OrderListView() {
       <DashboardContent>
         <CustomBreadcrumbs
           heading="Orders"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Order', href: paths.dashboard.order.root },
-            { name: 'List' },
-          ]}
+          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Orders' }]}
+          action={
+            <Button
+              variant="contained"
+              href={paths.dashboard.order.new}
+              startIcon={<Iconify icon="mingcute:add-line" />}
+              sx={{ mr: '8px' }}
+            >
+              New Order
+            </Button>
+          }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 

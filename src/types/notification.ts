@@ -76,7 +76,17 @@ export interface RouteTask {
   id: string;
   title: string;
   description: string;
-  status: 'New' | 'Assigned' | 'Inprogress' | 'OnHold' | 'Resolved' | 'Closed';
+  status:
+    | 'New'
+    | 'Assigned'
+    | 'Inprogress'
+    | 'OnHold'
+    | 'Resolved'
+    | 'Closed'
+    | 'COLLECTED'
+    | 'VERIFIED'
+    | 'REJECTED'
+    | 'SPILLAGE_REPORTED ';
   priority: 'Low' | 'Medium' | 'High';
   dueDate: string;
   cowHealth: string;

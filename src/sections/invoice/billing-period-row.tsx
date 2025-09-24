@@ -96,12 +96,15 @@ export function BillingPeriodTableRow({
                 onClick={onViewRow}
                 sx={{ color: 'text.disabled', cursor: 'pointer' }}
               >
-                {row.id}
+                Total Invoices {row.invoiceCount}
               </Link>
             }
           />
         </Stack>
       </TableCell>
+
+      <TableCell>{row.status}</TableCell>
+      <TableCell>{fCurrency(row.totalValue)}</TableCell>
 
       <TableCell>
         <ListItemText

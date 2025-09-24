@@ -69,6 +69,8 @@ export function BillingPeriodListDialog({ coopId, open, onClose }: Props) {
 
   const TABLE_HEAD = [
     { id: 'periodName', label: 'Period Name', align: 'left' },
+    { id: 'status', label: 'Status', align: 'left' },
+    { id: 'totalValue', label: 'Total Value', align: 'left' },
     { id: 'startDate', label: 'Start Date', align: 'left' },
     { id: 'endDate', label: 'End Date', align: 'left' },
     { id: '' },

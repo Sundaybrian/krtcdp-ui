@@ -19,7 +19,7 @@ export function useSearchCollections(query: any = {}) {
     ? [endpoints.collections.search, { params: { limit: 1000, page: 1, ...query } }]
     : '';
 
-  const { data, isLoading, error, isValidating } = useSWR<Page<RouteItem[]>>(url, creator, {
+  const { data, isLoading, error, isValidating } = useSWR<Page<RouteTask[]>>(url, creator, {
     ...swrOptions,
     keepPreviousData: true,
   });

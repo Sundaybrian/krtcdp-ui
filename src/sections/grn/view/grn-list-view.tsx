@@ -254,11 +254,11 @@ export function GrnListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="GRN List"
+          heading="GRN"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'GRN', href: paths.dashboard.order.root },
-            { name: 'List' },
+            // { name: 'GRN', href: paths.dashboard..root },
+            { name: 'GRN' },
           ]}
           sx={{ mb: { xs: 3, md: 5 } }}
         />

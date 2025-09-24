@@ -1,6 +1,6 @@
 'use client';
 
-import type { RouteItem } from 'src/types/notification';
+import type { RouteItem, RouteTask } from 'src/types/notification';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
 import { z as zod } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -64,6 +64,7 @@ import { CoopFarmerList } from 'src/types/user';
 import { useSearchCollections } from 'src/actions/collections';
 
 // import { TicketViewDialog } from './collection-view-dialog';
+import { CollectionSummary } from '../summary';
 import { CooperativeTableToolbar, Ifilter } from '../collection-table-toolbar';
 import { CooperativeTableFiltersResult } from '../collection-table-filters-result';
 import {
@@ -181,7 +182,7 @@ export function CollectionsListView() {
     filters.state.status,
   ]);
 
-  const [tableData, setTableData] = useState<RouteItem[]>([]);
+  const [tableData, setTableData] = useState<RouteTask[]>([]);
 
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>([]);
 
@@ -339,6 +340,40 @@ export function CollectionsListView() {
       farmerId: 0,
     },
   });
+
+  // Calculate summary data from tableData
+  const summaryData = useMemo(() => {
+    if (!tableData || tableData.length === 0) {
+      return {
+        totalQuantity: 0,
+        milkDensityReading: 0,
+        addedWater: 0,
+        collectedCount: 0,
+        pendingCount: 0,
+      };
+    }
+
+    const totalQuantity = tableData.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    const totalDensity = tableData.reduce((sum, item) => sum + (item.densityReading || 0), 0);
+    const totalAddedWater = tableData.reduce(
+      (sum, item) => sum + (item.addedWaterPercentage || 0),
+      0
+    );
+    const collectedCount = tableData.filter(
+      (item) => item.status === 'COLLECTED' || item.status === 'VERIFIED'
+    ).length;
+    const pendingCount = tableData.filter(
+      (item) => item.status === 'REJECTED' || item.status === 'SPILLAGE_REPORTED '
+    ).length;
+
+    return {
+      totalQuantity,
+      milkDensityReading: tableData.length > 0 ? totalDensity / tableData.length : 0,
+      addedWater: tableData.length > 0 ? totalAddedWater / tableData.length : 0,
+      collectedCount,
+      pendingCount,
+    };
+  }, [tableData]);
 
   //  handle permission
   const { permissions = [], isSuperAdmin = false } = perms;
@@ -504,6 +539,8 @@ export function CollectionsListView() {
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
+
+      <CollectionSummary data={summaryData} />
 
       <Card
         sx={{

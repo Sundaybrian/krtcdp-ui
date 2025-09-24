@@ -1,6 +1,6 @@
 'use client';
 
-import type { RouteItem } from 'src/types/notification';
+import type { RouteItem, RouteTask } from 'src/types/notification';
 import type { UseSetStateReturn } from 'src/hooks/use-set-state';
 import { z as zod } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -57,12 +57,18 @@ import {
   assignCollectorToRoute,
   assignFarmerToRoute,
   createMilkTask,
+  searchCollections,
   searchCoopFarmers,
 } from 'src/api/services';
-import { CoopFarmerList } from 'src/types/user';
+
 import { useSearchCollections } from 'src/actions/collections';
 
+import { CoopFarmerList } from 'src/types/user';
+
+import { CollectionSummary } from 'src/sections/collection-report/summary';
+
 // import { TicketViewDialog } from './collection-view-dialog';
+// import { CollectionSummary } from '../summary';
 import { CooperativeTableToolbar, Ifilter } from '../collection-table-toolbar';
 import { CooperativeTableFiltersResult } from '../collection-table-filters-result';
 import {
@@ -76,6 +82,10 @@ import {
   RenderCollectionTime,
 } from '../collection-table-row';
 import { FilterDialog } from './filter-dialog';
+import { AdjustQuantityDialog } from './adjust-quantity-dialog';
+import { TransferCollectionDialog } from './transfer-collection-dialog';
+// import { AdjustQuantityDialog } from './adjust-quantity-dialog';
+// import { TransferCollectionDialog } from './transfer-collection-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -145,19 +155,22 @@ export function CollectionsListView() {
     query.status = filters.state.status;
   }
 
-  console.log(filters.state, 'Filters');
-
   const { searchResults, searchLoading } = useSearchCollections({
     cooperativeId: state.coopId,
     routeAggregationId: Number(routerParams.id) || 0,
     ...query,
   });
 
-  const [tableData, setTableData] = useState<RouteItem[]>([]);
+  const [tableData, setTableData] = useState<RouteTask[]>([]);
 
   const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>([]);
 
   const [filterButtonEl, setFilterButtonEl] = useState<HTMLButtonElement | null>(null);
+
+  // Dialog states
+  const quantityDialog = useBoolean();
+  const tranferDialog = useBoolean();
+  const [dialogData, setDialogData] = useState<{ item: any }>({ item: {} });
 
   const [columnVisibilityModel, setColumnVisibilityModel] =
     useState<GridColumnVisibilityModel>(HIDE_COLUMNS);
@@ -368,6 +381,40 @@ export function CollectionsListView() {
     }
   };
 
+  // Calculate summary data from tableData
+  const summaryData = useMemo(() => {
+    if (!tableData || tableData.length === 0) {
+      return {
+        totalQuantity: 0,
+        milkDensityReading: 0,
+        addedWater: 0,
+        collectedCount: 0,
+        pendingCount: 0,
+      };
+    }
+
+    const totalQuantity = tableData.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    const totalDensity = tableData.reduce((sum, item) => sum + (item.densityReading || 0), 0);
+    const totalAddedWater = tableData.reduce(
+      (sum, item) => sum + (item.addedWaterPercentage || 0),
+      0
+    );
+    const collectedCount = tableData.filter(
+      (item) => item.status === 'COLLECTED' || item.status === 'VERIFIED'
+    ).length;
+    const pendingCount = tableData.filter(
+      (item) => item.status === 'SPILLAGE_REPORTED ' || item.status === 'REJECTED'
+    ).length;
+
+    return {
+      totalQuantity,
+      milkDensityReading: tableData.length > 0 ? totalDensity / tableData.length : 0,
+      addedWater: tableData.length > 0 ? totalAddedWater / tableData.length : 0,
+      collectedCount,
+      pendingCount,
+    };
+  }, [tableData]);
+
   //  handle permission
   const { permissions = [], isSuperAdmin = false } = perms;
 
@@ -415,7 +462,7 @@ export function CollectionsListView() {
 
     {
       field: 'quantity',
-      headerName: 'Quantity (L)',
+      headerName: 'Quantity (KG)',
       width: 140,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
@@ -494,11 +541,10 @@ export function CollectionsListView() {
           icon={<Iconify color="green" icon="solar:check-circle-bold" />}
           label="Adjust Quantity"
           onClick={() => {
-            // verifyDialog.onTrue();
-            // setDialogData({
-            //   item: params.row,
-            //   status: 'VERIFIED',
-            // });
+            quantityDialog.onTrue();
+            setDialogData({
+              item: params.row,
+            });
           }}
         />,
 
@@ -507,19 +553,10 @@ export function CollectionsListView() {
           icon={<Iconify icon="solar:pen-bold" />}
           label="Transfer"
           onClick={() => {
-            // verifyDialog.onTrue();
-            // setDialogData({
-            //   item: params.row,
-            //   status: 'VERIFIED_WITH_ADJUSTMENT',
-            // });
-          }}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:checklist-minimalistic-bold" />}
-          label="Milk distribution"
-          onClick={() => {
-            router.push(paths.dashboard.collections.allocations(params.row.id));
+            tranferDialog.onTrue();
+            setDialogData({
+              item: params.row,
+            });
           }}
         />,
       ],
@@ -565,6 +602,8 @@ export function CollectionsListView() {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
+      <CollectionSummary data={summaryData} />
+
       <Card
         sx={{
           flexGrow: { md: 1 },
@@ -598,6 +637,21 @@ export function CollectionsListView() {
           sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
         />
       </Card>
+      <AdjustQuantityDialog
+        data={dialogData}
+        open={quantityDialog.value}
+        onClose={() => {
+          quantityDialog.onFalse();
+        }}
+      />
+
+      <TransferCollectionDialog
+        data={dialogData}
+        open={tranferDialog.value}
+        onClose={() => {
+          tranferDialog.onFalse();
+        }}
+      />
     </DashboardContent>
   );
 }
@@ -688,7 +742,7 @@ function CustomToolbar({
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: RouteItem[];
+  inputData: RouteTask[];
   filters: Ifilter;
 };
 

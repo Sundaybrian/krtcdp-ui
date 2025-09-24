@@ -19,7 +19,7 @@ export function PurchaseOrderCreateView() {
         heading="New purchase order"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Oders', href: paths.dashboard.county.root },
+          { name: 'Oders', href: paths.dashboard.order.root },
           { name: 'New order' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
