@@ -151,6 +151,8 @@ export type CoopFarmerList = {
     insuranceProvider: string;
     insuranceType: string;
     cooperativeId?: number;
+    memberNumber: number;
+    userId: number;
   };
   status: {
     status:

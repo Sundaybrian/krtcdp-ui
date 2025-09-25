@@ -34,7 +34,15 @@ import type {
 
 import axios, { endpoints, pageLimit } from 'src/axios/axios';
 
-import type { Otp, Page, Ward, County, IPriceConfig, IBillingPeriod } from './data.inteface';
+import type {
+  Otp,
+  Page,
+  Ward,
+  County,
+  IPriceConfig,
+  IBillingPeriod,
+  AdvaceLimit,
+} from './data.inteface';
 
 // auth - sign in with mobile phone
 export const signInWithMobilePhone = async (data: any): Promise<Otp> => {
@@ -1466,6 +1474,55 @@ export const generateInvoice = async (id: number) => {
     return response.data;
   } catch (error) {
     console.error('Error generating invoice:', error);
+    throw error;
+  }
+};
+
+// advace
+
+// get farmer available limit
+export const checkAdvanceAvailableLimit = async (
+  farmerId: number,
+  memberNumber: number,
+  cooperativeId: number
+): Promise<AdvaceLimit> => {
+  try {
+    const response = await axios.get(endpoints.advance.getLimit(farmerId), {
+      params: {
+        memberNumber,
+        cooperativeId,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching billing periods:', error);
+    throw error;
+  }
+};
+
+// generate advance OTP
+export const generateAdvanceOTP = async (memberNumber: number, data: any) => {
+  try {
+    const response = await axios.post(endpoints.advance.generateLimitOtp(memberNumber), {
+      ...data,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error generating advance OTP:', error);
+    throw error;
+  }
+};
+
+// verify advannce OTP
+
+export const verifyAdvanceOTP = async (memberNumber: number, data: any) => {
+  try {
+    const response = await axios.post(endpoints.advance.verifyOtp(memberNumber), {
+      ...data,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error generating advance OTP:', error);
     throw error;
   }
 };

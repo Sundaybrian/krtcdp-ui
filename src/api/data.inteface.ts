@@ -110,3 +110,16 @@ export interface IBillingPeriod {
   totalValue: number;
   invoiceCount: number;
 }
+
+export interface AdvaceLimit {
+  farmerId: number;
+  cooperativeId: number;
+  periodStart: string;
+  periodEnd: string;
+  unitPrice: number;
+  grnsCount: number;
+  totalQuantity: number;
+  totalValue: number;
+  totalOutstandingDebt: number;
+  availableAdvance: number;
+}

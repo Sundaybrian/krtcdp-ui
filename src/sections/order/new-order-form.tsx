@@ -1,107 +1,107 @@
-import type { IUserItem } from 'src/types/user';
+'use client';
 
-import { z as zod } from 'zod';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import type { IProductItem, IProductFilters } from 'src/types/product';
+
+import { useState, useCallback, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Grid from '@mui/material/Unstable_Grid2';
-import LoadingButton from '@mui/lab/LoadingButton';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
 
-// import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-
-import { toast } from 'src/components/snackbar';
-import { Form, Field } from 'src/components/hook-form';
-
-import {
-  createCategory,
-  createPurchaseOrder,
-  searchCoopFarmers,
-  searchGrn,
-} from 'src/api/services';
-import { Grn } from 'src/types/farm';
-import { Autocomplete, CircularProgress, TextField, Typography } from '@mui/material';
-import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
-import { useLocalStorage } from 'src/hooks/use-local-storage';
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
+import { useSetState } from 'src/hooks/use-set-state';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
+
+import { orderBy } from 'src/utils/helper';
+import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
+
+import { useSearchProducts } from 'src/actions/product';
+import { checkAdvanceAvailableLimit, searchCoopFarmers } from 'src/api/services';
+import {
+  PRODUCT_SORT_OPTIONS,
+  PRODUCT_COLOR_OPTIONS,
+  PRODUCT_GENDER_OPTIONS,
+  PRODUCT_RATING_OPTIONS,
+  PRODUCT_CATEGORY_OPTIONS,
+} from 'src/_mock';
+
+import { EmptyContent } from 'src/components/empty-content';
+import { Iconify } from 'src/components/iconify';
+import { AdvaceLimit } from 'src/api/data.inteface';
+import { CoopFarmerList } from 'src/types/user';
+
+import { ProductList } from '../product/product-list';
+import { ProductSort } from '../product/product-sort';
+import { ProductSearch } from '../product/product-search';
+import { CartIcon } from '../product/components/cart-icon';
+import { ProductFilters } from '../product/product-filters';
+import { useCheckoutContext } from '../checkout/context';
+import { ProductFiltersResult } from '../product/product-filters-result';
+import { CheckoutDialog } from './checkout-dialog';
 
 // ----------------------------------------------------------------------
-export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 
-export const NewUserSchema = zod.object({
-  amount: zod.string({ message: 'Amount name is required!' }),
-  terms: zod.string().optional(),
-  grnId: zod.any(),
-  farmerId: zod.any(),
-});
-
-// ----------------------------------------------------------------------
-
-type Props = {
-  currentUser?: IUserItem;
-};
-
-export function OrderNewForm({ currentUser }: Props) {
-  const [farmerSearchTerm, setFarmerSearchTerm] = useState('');
-
-  const [grn, setGrn] = useState<Grn[]>([]);
+export function OrderNewForm() {
+  const checkout = useCheckoutContext();
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
+
+  const openFilters = useBoolean();
+
+  const [sortBy, setSortBy] = useState('featured');
+  const { products } = useSearchProducts({ status: 'PUBLISHED' });
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedQuery = useDebounce(searchQuery);
+
+  // Farmer selection state
+  const [farmerSearchTerm, setFarmerSearchTerm] = useState('');
   const debouncedFarmerSearch = useDebounce(farmerSearchTerm, 300);
   const [farmerOptions, setFarmerOptions] = useState<any[]>([]);
   const [farmerLoading, setFarmerLoading] = useState(false);
-  const [farmerValue, setFarmerValue] = useState<number>();
-  const [grnId, setGrnId] = useState<number>();
-  const router = useRouter();
+  const [selectedFarmer, setSelectedFarmer] = useState<any>(null);
+  const [farmerAdvance, setFarmerAdvance] = useState<AdvaceLimit>();
 
-  const defaultValues = useMemo(
-    () => ({
-      amount: '',
-      terms: '',
-      grnId: '',
-      farmerId: '',
-      cooperativeId: state.coopId,
-    }),
-    [state.coopId]
-  );
+  // Checkout dialog state
+  const checkoutDialog = useBoolean();
 
-  const methods = useForm<NewUserSchemaType>({
-    mode: 'onSubmit',
-    resolver: zodResolver(NewUserSchema),
-    defaultValues,
+  const filters = useSetState<IProductFilters>({
+    gender: [],
+    colors: [],
+    rating: '',
+    category: 'all',
+    priceRange: [0, 200],
   });
 
-  const {
-    reset,
-    watch,
-    control,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  const productSearch = useSearchProducts(debouncedQuery);
 
-  const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
+  const dataFiltered = applyFilter({ inputData: products, filters: filters.state, sortBy });
 
-    try {
-      await createPurchaseOrder({
-        orderDate: new Date().toISOString(),
-        amount: Number.parseFloat(data.amount),
-        terms: data.terms,
-        grnId: Number(grnId),
-        farmerId: Number(farmerValue),
-        cooperativeId: state.coopId,
-      });
-      toast.success(currentUser ? 'Update success!' : 'Category created successfully!');
-      // router.push(paths.dashboard.user.list);
-      reset();
-    } catch (error) {
-      console.error(error);
-      toast.error(`Error creating purchase order:   ${error.message}`);
-    }
-  });
+  const canReset =
+    filters.state.gender.length > 0 ||
+    filters.state.colors.length > 0 ||
+    filters.state.rating !== '' ||
+    filters.state.category !== 'all' ||
+    filters.state.priceRange[0] !== 0 ||
+    filters.state.priceRange[1] !== 200;
+
+  const notFound = !dataFiltered.length && canReset;
+
+  const handleSortBy = useCallback((newValue: string) => {
+    setSortBy(newValue);
+  }, []);
+
+  const handleSearch = useCallback((inputValue: string) => {
+    setSearchQuery(inputValue);
+  }, []);
+
+  const productsEmpty = !products.length;
 
   // Search functions
   const searchFarmers = useCallback(
@@ -132,16 +132,6 @@ export function OrderNewForm({ currentUser }: Props) {
     [state.coopId]
   );
 
-  useEffect(() => {
-    searchGrn({ cooperativeId: state.coopId, status: 'PENDING' })
-      .then((data) => {
-        setGrn(data.results);
-      })
-      .catch((error) => {
-        toast.error(`Error fetching GRN: ${error.message}`);
-      });
-  }, [state.coopId]);
-
   // Effect for debounced farmer search
   useEffect(() => {
     if (debouncedFarmerSearch) {
@@ -149,98 +139,239 @@ export function OrderNewForm({ currentUser }: Props) {
     }
   }, [debouncedFarmerSearch, searchFarmers]);
 
-  return (
-    <Form methods={methods} onSubmit={onSubmit}>
-      <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
-          <Card sx={{ p: 3 }}>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
-            >
-              <Field.Text name="amount" label="Amount" InputLabelProps={{ shrink: true }} />
-              <Autocomplete
-                options={grn}
-                getOptionLabel={(option) =>
-                  `${option.id} -- ${option.farmer.firstName} ${option.farmer.lastName}` || ''
-                }
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                onChange={(event, newValue) => {
-                  const grnIdNew = newValue ? newValue.id : 0;
-                  setGrnId(grnIdNew);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Search GRN"
-                    placeholder="Type to search GRN..."
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {farmerLoading ? <CircularProgress color="inherit" size={20} /> : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-              />
-              <Field.Text name="terms" label="Terms" InputLabelProps={{ shrink: true }} />
-              {/* Searchable Farmer Select */}
-              <Autocomplete
-                options={farmerOptions}
-                loading={farmerLoading}
-                getOptionLabel={(option) => `${option.firstName} ${option.lastName}` || ''}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                onInputChange={(event, newInputValue) => {
-                  setFarmerSearchTerm(newInputValue);
-                }}
-                onChange={(event, newValue) => {
-                  const farmerId = newValue ? newValue.id : 0;
-                  setFarmerValue(farmerId);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Search Farmer"
-                    placeholder="Type to search farmers..."
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {farmerLoading ? <CircularProgress color="inherit" size={20} /> : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-                renderOption={(props, option) => (
-                  <Box component="li" {...props}>
-                    <Box>
-                      <Typography variant="body2">
-                        {option.firstName} {option.middleName || ''} {option.lastName}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        ID: {option.id} | Phone: {option.mobilePhone || 'N/A'}
-                      </Typography>
-                    </Box>
-                  </Box>
-                )}
-              />
-            </Box>
+  const getFarmerAdvanceLimit = (farmer: CoopFarmerList) => {
+    checkAdvanceAvailableLimit(farmer.id, farmer.Farmer.memberNumber, state.coopId)
+      .then((response) => {
+        setFarmerAdvance(response);
+      })
+      .catch((er) => {
+        console.log(er);
+      });
+  };
 
-            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentUser ? 'Submit' : 'Submit'}
-              </LoadingButton>
-            </Stack>
-          </Card>
-        </Grid>
-      </Grid>
-    </Form>
+  const renderFarmerSelection = (
+    <Card sx={{ p: 3, mb: 3 }}>
+      <Typography variant="h6" sx={{ mb: 2 }}>
+        Select Farmer for Order
+      </Typography>
+      <Autocomplete
+        options={farmerOptions}
+        loading={farmerLoading}
+        getOptionLabel={(option) => `${option.firstName} ${option.lastName}` || ''}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
+        onInputChange={(event, newInputValue) => {
+          setFarmerSearchTerm(newInputValue);
+        }}
+        onChange={(event, newValue) => {
+          setSelectedFarmer(newValue);
+
+          // get farmer advance limit
+          if (newValue.id) {
+            getFarmerAdvanceLimit(newValue);
+          }
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Search Farmer"
+            placeholder="Type to search farmers..."
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {farmerLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
+            }}
+          />
+        )}
+        renderOption={(props, option) => (
+          <Box component="li" {...props}>
+            <Box>
+              <Typography variant="body2">
+                {option.firstName} {option.middleName || ''} {option.lastName}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                ID: {option.id} | Phone: {option.mobilePhone || 'N/A'}
+              </Typography>
+            </Box>
+          </Box>
+        )}
+      />
+      {selectedFarmer ? (
+        <Box sx={{ mt: 2, p: 2, bgcolor: 'success.lighter', borderRadius: 1 }}>
+          <Typography variant="subtitle2" color="success.dark">
+            ✓ Selected Farmer: {selectedFarmer.firstName} {selectedFarmer.lastName}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            ID: {selectedFarmer.id} | Phone: {selectedFarmer.mobilePhone || 'N/A'}
+          </Typography>
+          {farmerAdvance && (
+            <Typography
+              variant="caption"
+              color="primary.main"
+              sx={{ display: 'block', mt: 1, fontWeight: 'medium' }}
+            >
+              Available Advance: KES {farmerAdvance.availableAdvance?.toLocaleString() || 0}
+            </Typography>
+          )}
+        </Box>
+      ) : (
+        <Box sx={{ mt: 2, p: 2, bgcolor: 'warning.lighter', borderRadius: 1 }}>
+          <Typography variant="subtitle2" color="warning.dark">
+            ⚠️ Please select a farmer before adding products to cart
+          </Typography>
+        </Box>
+      )}
+    </Card>
   );
+
+  const renderFilters = (
+    <Stack
+      spacing={3}
+      justifyContent="space-between"
+      alignItems={{ xs: 'flex-end', sm: 'center' }}
+      direction={{ xs: 'column', sm: 'row' }}
+    >
+      <ProductSearch
+        query={debouncedQuery}
+        results={productSearch.products}
+        onSearch={handleSearch}
+        loading={productSearch.productsLoading}
+      />
+
+      <Stack direction="row" spacing={1} flexShrink={0}>
+        <ProductFilters
+          filters={filters}
+          canReset={canReset}
+          open={openFilters.value}
+          onOpen={openFilters.onTrue}
+          onClose={openFilters.onFalse}
+          options={{
+            colors: PRODUCT_COLOR_OPTIONS,
+            ratings: PRODUCT_RATING_OPTIONS,
+            genders: PRODUCT_GENDER_OPTIONS,
+            categories: ['all', ...PRODUCT_CATEGORY_OPTIONS],
+          }}
+        />
+
+        <ProductSort sort={sortBy} onSort={handleSortBy} sortOptions={PRODUCT_SORT_OPTIONS} />
+      </Stack>
+    </Stack>
+  );
+
+  const renderResults = (
+    <ProductFiltersResult filters={filters} totalResults={dataFiltered.length} />
+  );
+
+  const renderNotFound = <EmptyContent filled sx={{ py: 10 }} />;
+
+  return (
+    <Container sx={{ mb: 15 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+        <CartIcon totalItems={checkout.totalItems} />
+
+        {checkout.totalItems > 0 && selectedFarmer && (
+          <Button
+            variant="contained"
+            size="large"
+            onClick={checkoutDialog.onTrue}
+            startIcon={<Iconify icon="solar:cart-check-bold" />}
+          >
+            Checkout ({checkout.totalItems} items)
+          </Button>
+        )}
+      </Box>
+
+      <Typography variant="h4" sx={{ my: { xs: 3, md: 5 } }}>
+        Create Order for Farmer
+      </Typography>
+
+      {renderFarmerSelection}
+
+      <Stack spacing={2.5} sx={{ mb: { xs: 3, md: 5 } }}>
+        {renderFilters}
+
+        {canReset && renderResults}
+      </Stack>
+
+      {(notFound || productsEmpty) && renderNotFound}
+
+      <ProductList products={dataFiltered} />
+
+      <CheckoutDialog
+        open={checkoutDialog.value}
+        selectedFarmer={selectedFarmer}
+        farmerAdvance={farmerAdvance}
+        onClose={checkoutDialog.onFalse}
+      />
+    </Container>
+  );
+}
+
+// ----------------------------------------------------------------------
+
+type ApplyFilterProps = {
+  sortBy: string;
+  filters: IProductFilters;
+  inputData: IProductItem[];
+};
+
+function applyFilter({ inputData, filters, sortBy }: ApplyFilterProps) {
+  const { gender, category, colors, priceRange, rating } = filters;
+
+  const min = priceRange[0];
+
+  const max = priceRange[1];
+
+  // Sort by
+  if (sortBy === 'featured') {
+    inputData = orderBy(inputData, ['totalSold'], ['desc']);
+  }
+
+  if (sortBy === 'newest') {
+    inputData = orderBy(inputData, ['createdAt'], ['desc']);
+  }
+
+  if (sortBy === 'priceDesc') {
+    inputData = orderBy(inputData, ['price'], ['desc']);
+  }
+
+  if (sortBy === 'priceAsc') {
+    inputData = orderBy(inputData, ['price'], ['asc']);
+  }
+
+  // filters
+  if (gender.length) {
+    inputData = inputData.filter((product) => product.gender.some((i) => gender.includes(i)));
+  }
+
+  if (category !== 'all') {
+    inputData = inputData.filter((product) => product.category === category);
+  }
+
+  if (colors.length) {
+    inputData = inputData.filter((product) =>
+      product.colors.some((color) => colors.includes(color))
+    );
+  }
+
+  if (min !== 0 || max !== 200) {
+    inputData = inputData.filter((product) => product.price >= min && product.price <= max);
+  }
+
+  if (rating) {
+    inputData = inputData.filter((product) => {
+      const convertRating = (value: string) => {
+        if (value === 'up4Star') return 4;
+        if (value === 'up3Star') return 3;
+        if (value === 'up2Star') return 2;
+        return 1;
+      };
+      return product.totalRatings > convertRating(rating);
+    });
+  }
+
+  return inputData;
 }

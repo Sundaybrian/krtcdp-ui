@@ -233,6 +233,14 @@ export const endpoints = {
     getBillingPeriod: '/billing/periods',
     generateInvoice: (id: number) => `/billing/periods/${id}/generate-invoices`,
   },
+
+  advance: {
+    getLimit: (farmerId: number) => `/advances/admin/farmers/${farmerId}/available-advance`,
+    generateLimitOtp: (memberNumber: number) =>
+      `/advances/admin/farmers/${memberNumber}/advance-otp`,
+    verifyOtp: (memberNumber: number) =>
+      `/advances/admin/farmers/${memberNumber}/advance-otp/verify`,
+  },
 };
 
 export const pageLimit = 1000;
