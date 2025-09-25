@@ -325,8 +325,6 @@ function CheckoutPaymentDialog({
     setIsProcessingPayment(true);
     try {
       // Get user cart
-      const userCart = await searchCart({ userId: selectedFarmer?.id!, status: 'ACTIVE' });
-
       if (paymentMethod === 'ADVANCE') {
         // Check if cart total exceeds available advance
         if (checkout.total > (farmerAdvance?.availableAdvance || 0)) {
@@ -355,7 +353,7 @@ function CheckoutPaymentDialog({
         // Then process advance payment checkout
         await cartCheckout({
           paymentMethod: 'ADVANCE',
-          cartId: userCart.id,
+          cartId: 0,
           farmerId: selectedFarmer?.id,
           advanceAmount: checkout.total,
           advanceId: farmerAdvance.id,
@@ -366,7 +364,7 @@ function CheckoutPaymentDialog({
         // Process cash payment without OTP
         await cartCheckout({
           paymentMethod: 'CASH',
-          cartId: userCart.id,
+          cartId: 0,
           farmerId: selectedFarmer?.id,
           advanceId: farmerAdvance.id,
           cashAmount: checkout.total,

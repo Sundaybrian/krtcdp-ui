@@ -21,7 +21,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { VALUE_CHAIN_TYPES, UNIT_OF_MEASUREMENT } from 'src/utils/default';
+import { VALUE_CHAIN_TYPES, UNIT_OF_MEASUREMENT, TENANT_LOCAL_STORAGE } from 'src/utils/default';
 
 import { _tags } from 'src/_mock';
 import {
@@ -33,6 +33,7 @@ import {
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
 
 // ----------------------------------------------------------------------
 
@@ -57,6 +58,7 @@ export const NewProductSchema = zod.object({
   saleStartDate: zod.any(),
   saleEndDate: zod.any(),
   sku: zod.string(),
+  cooperativeId: zod.any(),
 });
 
 // ----------------------------------------------------------------------
@@ -71,6 +73,7 @@ export function ProductNewEditForm({ currentProduct }: Props) {
   const [includeTaxes, setIncludeTaxes] = useState(false);
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [subCategories, setSubCategories] = useState<any[]>([]);
+  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
   console.log(currentProduct, '------------');
 
@@ -148,6 +151,10 @@ export function ProductNewEditForm({ currentProduct }: Props) {
       }
       if (data.saleEndDate) {
         data.saleEndDate = new Date(data.saleEndDate).toISOString();
+      }
+
+      if (state.coopId) {
+        data.cooperativeId = state.coopId;
       }
 
       if (currentProduct) {
