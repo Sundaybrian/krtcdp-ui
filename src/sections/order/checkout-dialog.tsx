@@ -39,8 +39,6 @@ import {
   verifyAdvanceOTP,
 } from 'src/api/services';
 
-import { PAYMENT_OPTIONS, CARDS_OPTIONS } from 'src/_mock';
-
 import { CheckoutSteps } from '../checkout/checkout-steps';
 import { CheckoutSummary } from '../checkout/checkout-summary';
 import { CheckoutCartProductList } from '../checkout/checkout-cart-product-list';
