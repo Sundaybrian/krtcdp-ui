@@ -181,7 +181,8 @@ function CheckoutCartDialog({
           {selectedFarmer?.firstName} {selectedFarmer?.lastName}
         </Typography>
         <Typography variant="caption" color="text.secondary">
-          ID: {selectedFarmer?.id} | Phone: {selectedFarmer?.mobilePhone || 'N/A'}
+          Member NO: {selectedFarmer?.Farmer?.memberNumber} | Phone:{' '}
+          {selectedFarmer?.mobilePhone || 'N/A'}
         </Typography>
         {farmerAdvance && (
           <Typography

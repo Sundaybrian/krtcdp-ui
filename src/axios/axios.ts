@@ -235,7 +235,7 @@ export const endpoints = {
   },
 
   advance: {
-    getLimit: (farmerId: number) => `/advances/admin/farmers/${farmerId}/available-advance`,
+    getLimit: (farmerId: number) => `/advances/admin/farmers/available-advance`,
     generateLimitOtp: (memberNumber: number) =>
       `/advances/admin/farmers/${memberNumber}/advance-otp`,
     verifyOtp: (memberNumber: number) =>
