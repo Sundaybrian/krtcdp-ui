@@ -6,6 +6,7 @@ import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -135,9 +136,12 @@ export function ProductItem({ product }: Props) {
 
   const renderContent = (
     <Stack spacing={2.5} sx={{ p: 3, pt: 2 }}>
-      <Link component={RouterLink} href={linkTo} color="inherit" variant="subtitle2" noWrap>
+      {/* <Link component={RouterLink} href={linkTo} color="inherit" variant="subtitle2" noWrap> */}
+      <Typography variant="subtitle2" noWrap>
         {name}
-      </Link>
+      </Typography>
+
+      {/* </Link> */}
 
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <CategoryView category={category} />

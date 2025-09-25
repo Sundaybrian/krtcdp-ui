@@ -37,13 +37,13 @@ import { Iconify } from 'src/components/iconify';
 import { AdvaceLimit } from 'src/api/data.inteface';
 import { CoopFarmerList } from 'src/types/user';
 
+import { useCheckoutContext } from '../checkout/context';
 import { ProductList } from '../product/product-list';
 import { ProductSort } from '../product/product-sort';
 import { ProductSearch } from '../product/product-search';
-import { CartIcon } from '../product/components/cart-icon';
 import { ProductFilters } from '../product/product-filters';
-import { useCheckoutContext } from '../checkout/context';
 import { ProductFiltersResult } from '../product/product-filters-result';
+
 import { CheckoutDialog } from './checkout-dialog';
 
 // ----------------------------------------------------------------------
@@ -104,40 +104,32 @@ export function OrderNewForm() {
   const productsEmpty = !products.length;
 
   // Search functions
-  const searchFarmers = useCallback(
-    async (searchTerm: string) => {
-      if (!searchTerm.trim()) {
-        setFarmerOptions([]);
-        return;
-      }
+  const searchFarmers = useCallback(async () => {
+    setFarmerLoading(true);
+    try {
+      const response = await searchCoopFarmers({
+        limit: 1000,
+        page: 1,
+        cooperativeId: state.coopId,
+        // name: searchTerm,
+      });
 
-      setFarmerLoading(true);
-      try {
-        const response = await searchCoopFarmers({
-          limit: 20,
-          page: 1,
-          cooperativeId: state.coopId,
-          name: searchTerm,
-        });
-
-        const dataRes = await response.results;
-        setFarmerOptions(dataRes || []);
-      } catch (error) {
-        console.error('Error searching farmers:', error);
-        setFarmerOptions([]);
-      } finally {
-        setFarmerLoading(false);
-      }
-    },
-    [state.coopId]
-  );
+      const dataRes = await response.results;
+      setFarmerOptions(dataRes || []);
+    } catch (error) {
+      console.error('Error searching farmers:', error);
+      setFarmerOptions([]);
+    } finally {
+      setFarmerLoading(false);
+    }
+  }, [state.coopId]);
 
   // Effect for debounced farmer search
   useEffect(() => {
-    if (debouncedFarmerSearch) {
-      searchFarmers(debouncedFarmerSearch);
-    }
-  }, [debouncedFarmerSearch, searchFarmers]);
+    // if (debouncedFarmerSearch) {
+    searchFarmers();
+    // }
+  }, [searchFarmers]);
 
   const getFarmerAdvanceLimit = (farmer: CoopFarmerList) => {
     checkAdvanceAvailableLimit(farmer.id, farmer.Farmer.memberNumber, state.coopId)
@@ -157,7 +149,9 @@ export function OrderNewForm() {
       <Autocomplete
         options={farmerOptions}
         loading={farmerLoading}
-        getOptionLabel={(option) => `${option.firstName} ${option.lastName}` || ''}
+        getOptionLabel={(option) =>
+          `${option.firstName} ${option.lastName} -- ${option?.Farmer?.memberNumber}` || ''
+        }
         isOptionEqualToValue={(option, value) => option.id === value.id}
         onInputChange={(event, newInputValue) => {
           setFarmerSearchTerm(newInputValue);
@@ -190,7 +184,8 @@ export function OrderNewForm() {
           <Box component="li" {...props}>
             <Box>
               <Typography variant="body2">
-                {option.firstName} {option.middleName || ''} {option.lastName}
+                {option.firstName} {option.middleName || ''} {option.lastName} --{' '}
+                {option?.Farmer?.memberNumber}
               </Typography>
               <Typography variant="caption" color="text.secondary">
                 ID: {option.id} | Phone: {option.mobilePhone || 'N/A'}
@@ -269,9 +264,7 @@ export function OrderNewForm() {
 
   return (
     <Container sx={{ mb: 15 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-        <CartIcon totalItems={checkout.totalItems} />
-
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mb: 3 }}>
         {checkout.totalItems > 0 && selectedFarmer && (
           <Button
             variant="contained"
