@@ -44,6 +44,16 @@ export function RenderGeneric({ params }: ParamsProps) {
   return params.row[params.field] || '--';
 }
 
+export function RenderVariance({ params }: ParamsProps) {
+  let total = params.row.totalQuantity - params.row.physicalQuantity;
+  const isNegative = total < 0;
+  if (isNegative) {
+    total *= total * -1;
+  }
+
+  return <Badge color={isNegative ? 'error' : 'success'} badgeContent={total} />;
+}
+
 export function RenderRoute({ params }: ParamsProps) {
   return (
     <Stack direction="row" alignItems="center" sx={{ py: 2, width: 1 }}>

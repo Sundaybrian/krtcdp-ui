@@ -78,6 +78,7 @@ import {
   RenderTasks,
   RenderRoute,
   RenderCollectionTime,
+  RenderVariance,
 } from '../collectors-table-row';
 import { AggregationVerifyDialog } from './collectors-view-dialog';
 import { Filter, FilterDialog } from './filter-dialog';
@@ -344,6 +345,18 @@ export function CollectionsListView() {
       headerName: 'Spillage Quantity',
       width: 140,
       renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'physicalQuantity',
+      headerName: 'Cooler',
+      width: 160,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'variance',
+      headerName: 'Variance',
+      width: 160,
+      renderCell: (params) => <RenderVariance params={params} />,
     },
     {
       field: 'finalApprovedQuantity',

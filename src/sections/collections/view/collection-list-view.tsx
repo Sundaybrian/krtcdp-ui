@@ -255,6 +255,7 @@ export function CollectionsListView() {
       'taskId',
       'stageId',
       'routeAggregationId',
+      'stage',
     ]);
 
     const finalExport = exportData.map((col) => ({
