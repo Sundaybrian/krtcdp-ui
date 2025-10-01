@@ -64,9 +64,7 @@ export function PriceConfigTableRow({ row, selected, onEditRow, onSelectRow, onD
           {row.effectiveDate ? new Date(row.effectiveDate).toLocaleDateString() : '-'}
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {row.cooperativeId || '-'}
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.cooperativeId || '-'}</TableCell>
 
         <TableCell>
           <Stack direction="row" alignItems="center">
@@ -99,7 +97,7 @@ export function PriceConfigTableRow({ row, selected, onEditRow, onSelectRow, onD
         slotProps={{ arrow: { placement: 'right-top' } }}
       >
         <MenuList>
-          <MenuItem
+          {/* <MenuItem
             onClick={() => {
               onEditRow();
               popover.onClose();
@@ -107,7 +105,7 @@ export function PriceConfigTableRow({ row, selected, onEditRow, onSelectRow, onD
           >
             <Iconify icon="solar:pen-bold" />
             Edit
-          </MenuItem>
+          </MenuItem> */}
 
           <MenuItem
             onClick={() => {
