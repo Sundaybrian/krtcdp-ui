@@ -316,6 +316,18 @@ export function CollectionsListView() {
       renderCell: (params) => <RenderGeneric params={params} />,
     },
     {
+      field: 'physicalQuantity',
+      headerName: 'Cooler',
+      width: 160,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+    {
+      field: 'variance',
+      headerName: 'Variance',
+      width: 160,
+      renderCell: (params) => <RenderVariance params={params} />,
+    },
+    {
       field: 'status',
       headerName: 'Status',
       width: 160,
@@ -346,18 +358,7 @@ export function CollectionsListView() {
       width: 140,
       renderCell: (params) => <RenderGeneric params={params} />,
     },
-    {
-      field: 'physicalQuantity',
-      headerName: 'Cooler',
-      width: 160,
-      renderCell: (params) => <RenderGeneric params={params} />,
-    },
-    {
-      field: 'variance',
-      headerName: 'Variance',
-      width: 160,
-      renderCell: (params) => <RenderVariance params={params} />,
-    },
+
     {
       field: 'finalApprovedQuantity',
       headerName: 'Final Approved Quantity',
@@ -599,6 +600,7 @@ function CustomToolbar({
       route: aggCol?.route?.name,
       cooperative: aggCol?.cooperative?.groupName,
       collections: aggCol?.collections?.length,
+      variance: aggCol.totalQuantity - aggCol.physicalQuantity,
     }));
 
     exportExcel(finalExportData, 'Collections');
