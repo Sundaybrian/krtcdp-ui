@@ -259,7 +259,8 @@ export function CollectionsListView() {
 
     const finalExport = exportData.map((col) => ({
       ...col,
-      farmer: `${col?.farmer?.firstName} ${col?.farmer?.lalstName}`,
+      farmer: `${col?.farmer?.firstName} ${col?.farmer?.lastName}`,
+      memberNumber: col?.farmer?.memberNumber,
       collector: `${col?.collector?.firstName} ${col?.collector?.lastName}`,
       container: col?.container?.containerNumber,
       stage: col?.stage?.name,

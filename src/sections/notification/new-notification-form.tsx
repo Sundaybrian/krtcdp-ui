@@ -118,7 +118,8 @@ export function NotificationForm({ selectedAdmin }: Props) {
                 getOptionLabel={(option) => option.email}
                 renderOption={(props, option) => (
                   <li {...props} key={option.email}>
-                    {option.firstName}--{option.email}
+                    {option.firstName} {option.lastName} ({option.email}) --{' '}
+                    {option.memberNumber || ''}
                   </li>
                 )}
                 renderTags={(selected, getTagProps) =>
