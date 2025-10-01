@@ -17,6 +17,7 @@ import DialogContent from '@mui/material/DialogContent';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
+import { updatePriceConfig } from 'src/api/services';
 
 // ----------------------------------------------------------------------
 
@@ -64,9 +65,7 @@ export function PriceConfigQuickEditForm({ currentUser, open, onClose }: Props) 
     try {
       // TODO: Implement API call to update price config
       console.log('Price config data:', data);
-
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
+      updatePriceConfig(currentUser?.id || 0, data);
       onClose();
       toast.success(currentUser ? 'Update success!' : 'Create success!');
     } catch (error) {

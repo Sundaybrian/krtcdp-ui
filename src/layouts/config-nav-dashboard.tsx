@@ -190,9 +190,9 @@ export const navData = [
         permission: requiredPermissions.general.viewApp,
         icon: ICONS.product,
         children: [
-          { title: 'List', path: paths.dashboard.priceConfig.root },
+          { title: 'Configuration', path: paths.dashboard.priceConfig.root },
           // { title: 'Details', path: paths.dashboard.product.demo.details },
-          { title: 'Add New', path: paths.dashboard.priceConfig.new },
+          // { title: 'Add New', path: paths.dashboard.priceConfig.new },
           // { title: 'Edit', path: paths.dashboard.product.demo.edit },
         ],
       },

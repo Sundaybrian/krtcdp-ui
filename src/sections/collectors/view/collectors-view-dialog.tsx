@@ -114,7 +114,7 @@ export function AggregationVerifyDialog({ data, open, onClose }: Props) {
           <Box gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}>
             <Card>
               <Stack spacing={3} sx={{ p: 3 }}>
-                {data?.status !== 'REJECTED' && (
+                {data?.status !== 'REJECTED' && data?.status !== 'VERIFIED' && (
                   <>
                     <Field.Text type="number" name="physicalQuantity" label="Physical Quantity" />
                     <Field.Text
