@@ -55,9 +55,9 @@ type Props = {
 export function BillingPeriodDialog({ coopId, open, onClose }: Props) {
   const defaultValues = useMemo(
     () => ({
-      periodName: 'January 2024',
-      startDate: '2024-01-01T00:00:00.000Z',
-      endDate: '2024-01-31T23:59:59.999Z',
+      periodName: '',
+      startDate: '',
+      endDate: '',
       cooperativeId: 1,
     }),
     []

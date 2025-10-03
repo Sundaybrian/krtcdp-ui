@@ -1464,6 +1464,19 @@ export const fetchBillingPeriods = async (query = {}): Promise<Page<IBillingPeri
   }
 };
 
+// close billing period
+export const closedBillingPeriod = async (id: number) => {
+  try {
+    const response = await axios.post(endpoints.billing.closePeriod(id), {
+      regenerate: 'true',
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error generating invoice:', error);
+    throw error;
+  }
+};
+
 // generate invoice
 
 export const generateInvoice = async (id: number) => {

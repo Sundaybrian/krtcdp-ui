@@ -67,6 +67,7 @@ const TABLE_HEAD = [
   { id: 'invoiceNumber', label: 'Farmer' },
   { id: 'createDate', label: 'Date created' },
   { id: 'dueDate', label: 'Due Date' },
+  { id: 'totalQuantity', label: 'Total Quantity' },
   { id: 'price', label: 'Amount Due' },
   { id: 'sent', label: 'Amount Paid', align: 'center' },
   { id: 'status', label: 'Status' },
@@ -557,12 +558,12 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
     inputData = inputData.filter(
       (invoice) =>
         invoice.id.indexOf(name.toLowerCase()) !== -1 ||
-        invoice.farmer.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        invoice?.farmer?.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
   if (status !== 'all') {
-    inputData = inputData.filter((invoice) => invoice.status === status);
+    inputData = inputData.filter((invoice) => invoice?.status === status);
   }
 
   // if (service.length) {

@@ -24,7 +24,7 @@ import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import { IBillingPeriod } from 'src/api/data.inteface';
-import { generateInvoice } from 'src/api/services';
+import { closedBillingPeriod, generateInvoice } from 'src/api/services';
 import { toast } from 'src/components/snackbar';
 import { Box } from '@mui/material';
 
@@ -52,13 +52,13 @@ export function BillingPeriodTableRow({
   const popover = usePopover();
 
   const handleGenerateInvoice = async () => {
-    const promise = generateInvoice(row.id);
+    const promise = closedBillingPeriod(row.id);
 
     try {
       toast.promise(promise, {
         loading: 'Loading...',
-        success: 'Invoice generated successfully',
-        error: 'Failed to generate invoice',
+        success: 'Billing period closed successfully',
+        error: 'Failed to close period',
       });
 
       await promise;
@@ -131,7 +131,7 @@ export function BillingPeriodTableRow({
           sx={{ mr: '8px' }}
           onClick={handleGenerateInvoice}
         >
-          Generate Invoice
+          Close Period
         </Button>
       </TableCell>
     </TableRow>

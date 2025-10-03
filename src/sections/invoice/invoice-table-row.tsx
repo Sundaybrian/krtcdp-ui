@@ -78,7 +78,7 @@ export function InvoiceTableRow({
                   onClick={onViewRow}
                   sx={{ color: 'text.disabled', cursor: 'pointer' }}
                 >
-                  {row.id}
+                  Mem No: {row.farmer?.Farmer?.memberNumber}
                 </Link>
               }
             />
@@ -102,6 +102,8 @@ export function InvoiceTableRow({
             secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
           />
         </TableCell>
+
+        <TableCell>{fCurrency(row.totalQuantity || '')}</TableCell>
 
         <TableCell>{fCurrency(row.amountDue)}</TableCell>
 

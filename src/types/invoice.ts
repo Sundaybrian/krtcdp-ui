@@ -54,4 +54,5 @@ export type InvoiceItem = {
   creationDate: string;
   lastModifiedDate: string;
   deleteAt: string;
+  totalQuantity?: string;
 };

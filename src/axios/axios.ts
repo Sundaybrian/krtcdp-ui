@@ -232,6 +232,7 @@ export const endpoints = {
     newBillingPeriod: '/billing/periods',
     getBillingPeriod: '/billing/periods',
     generateInvoice: (id: number) => `/billing/periods/${id}/generate-invoices`,
+    closePeriod: (id: number) => `/billing/periods/${id}/close`,
   },
 
   advance: {
