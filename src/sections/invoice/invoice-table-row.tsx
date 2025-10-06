@@ -13,6 +13,14 @@ import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
+import LoadingButton from '@mui/lab/LoadingButton';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import { Box, Card, Dialog } from '@mui/material';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z as zod } from 'zod';
+import { useMemo } from 'react';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -23,8 +31,19 @@ import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
+import { updateInvoiceAmount } from 'src/api/services';
+import { Field, Form } from 'src/components/hook-form';
+import { useForm } from 'react-hook-form';
+import { toast } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
+
+export type UserQuickEditSchemaType = zod.infer<typeof UserQuickEditSchema>;
+
+export const UserQuickEditSchema = zod.object({
+  amountDue: zod.any(),
+  reason: zod.string(),
+});
 
 type Props = {
   row: InvoiceItem;
@@ -33,6 +52,7 @@ type Props = {
   onEditRow: () => void;
   onSelectRow: () => void;
   onDeleteRow: () => void;
+  onRefreshData: () => void;
 };
 
 export function InvoiceTableRow({
@@ -42,10 +62,57 @@ export function InvoiceTableRow({
   onEditRow,
   onSelectRow,
   onDeleteRow,
+  onRefreshData,
 }: Props) {
   const confirm = useBoolean();
 
   const popover = usePopover();
+
+  const openInvoiceUpdate = useBoolean();
+
+  const defaultValues = useMemo(
+    () => ({
+      amountDue: '',
+      reason: '',
+    }),
+    []
+  );
+
+  const methods = useForm<UserQuickEditSchemaType>({
+    mode: 'all',
+    resolver: zodResolver(UserQuickEditSchema),
+    defaultValues,
+  });
+
+  const {
+    reset,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
+  const onSubmit = handleSubmit(async (d) => {
+    const promise = updateInvoiceAmount(row.id, {
+      amountDue: Number.parseFloat(d.amountDue),
+      reason: d.reason,
+    });
+
+    try {
+      // onClose();
+      toast.promise(promise, {
+        loading: 'Loading...',
+        success: 'Invoice amount updated',
+        error: 'You request could not be completed at the moment',
+      });
+
+      await promise;
+      reset();
+      openInvoiceUpdate.onFalse();
+      onRefreshData();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message);
+    }
+  });
 
   return (
     <>
@@ -103,7 +170,7 @@ export function InvoiceTableRow({
           />
         </TableCell>
 
-        <TableCell>{fCurrency(row.totalQuantity || '')}</TableCell>
+        <TableCell>{`${row.totalQuantity || 0} KG`}</TableCell>
 
         <TableCell>{fCurrency(row.amountDue)}</TableCell>
 
@@ -149,7 +216,7 @@ export function InvoiceTableRow({
 
           <MenuItem
             onClick={() => {
-              onEditRow();
+              openInvoiceUpdate.onTrue();
               popover.onClose();
             }}
           >
@@ -183,6 +250,40 @@ export function InvoiceTableRow({
           </Button>
         }
       />
+
+      <Dialog
+        open={openInvoiceUpdate.value}
+        onClose={openInvoiceUpdate.onFalse}
+        title="Update Invoice Amount"
+        fullWidth
+      >
+        <Form methods={methods} onSubmit={onSubmit}>
+          <DialogTitle>Adjust milk quantity</DialogTitle>
+          <Divider />
+          <Label sx={{ mr: 4, ml: 4 }}> Current Amount: {fCurrency(row.amountDue)} </Label>
+
+          <DialogContent>
+            <Box gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}>
+              <Card>
+                <Stack spacing={3} sx={{ p: 3 }}>
+                  <Field.Text label="Amount Due" name="amountDue" />
+                  <Field.Text rows={4} label="Reason" name="reason" />
+                </Stack>
+              </Card>
+            </Box>
+          </DialogContent>
+
+          <DialogActions>
+            <Button variant="outlined" onClick={openInvoiceUpdate.onFalse}>
+              Close
+            </Button>
+
+            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+              Submit
+            </LoadingButton>
+          </DialogActions>
+        </Form>
+      </Dialog>
     </>
   );
 }

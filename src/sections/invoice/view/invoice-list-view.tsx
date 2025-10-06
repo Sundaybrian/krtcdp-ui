@@ -266,6 +266,10 @@ export function InvoiceListView() {
     getInvoices({ cooperativeId: state.coopId });
   }, [state.coopId]);
 
+  const handleRefreshData = () => {
+    getInvoices({ cooperativeId: state.coopId });
+  };
+
   return (
     <>
       <DashboardContent>
@@ -464,6 +468,7 @@ export function InvoiceListView() {
                         onViewRow={() => handleViewRow(row.id)}
                         onEditRow={() => handleEditRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
+                        onRefreshData={() => handleRefreshData()}
                       />
                     ))}
 

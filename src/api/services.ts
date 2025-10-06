@@ -1467,9 +1467,7 @@ export const fetchBillingPeriods = async (query = {}): Promise<Page<IBillingPeri
 // close billing period
 export const closedBillingPeriod = async (id: number) => {
   try {
-    const response = await axios.post(endpoints.billing.closePeriod(id), {
-      regenerate: 'true',
-    });
+    const response = await axios.patch(endpoints.billing.closePeriod(id));
     return response.data;
   } catch (error) {
     console.error('Error generating invoice:', error);
@@ -1484,6 +1482,18 @@ export const generateInvoice = async (id: number) => {
     const response = await axios.post(endpoints.billing.generateInvoice(id), {
       regenerate: 'true',
     });
+    return response.data;
+  } catch (error) {
+    console.error('Error generating invoice:', error);
+    throw error;
+  }
+};
+
+// edit invoice
+
+export const updateInvoiceAmount = async (id: number, data: any) => {
+  try {
+    const response = await axios.patch(endpoints.invoice.update(id), data);
     return response.data;
   } catch (error) {
     console.error('Error generating invoice:', error);

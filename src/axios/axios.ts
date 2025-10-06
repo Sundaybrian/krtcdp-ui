@@ -166,6 +166,7 @@ export const endpoints = {
     search: '/invoice/search',
     template: '/invoice/download-template',
     applyCheckOffDeduction: '/invoice/apply-checkoff-deductions',
+    update: (id: number) => `/invoice/${id}/update-amount`,
     templateData: (coopId: number) =>
       `/invoice/pending-invoices-excel/download?cooperativeId=${coopId}`,
   },
