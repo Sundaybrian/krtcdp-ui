@@ -49,10 +49,11 @@ export const UserQuickEditSchema = zod.object({
 type Props = {
   open: boolean;
   onClose: () => void;
+  onRefreshData: () => void;
   coopId: number;
 };
 
-export function BillingPeriodDialog({ coopId, open, onClose }: Props) {
+export function BillingPeriodDialog({ coopId, open, onClose, onRefreshData }: Props) {
   const defaultValues = useMemo(
     () => ({
       periodName: '',
@@ -88,6 +89,7 @@ export function BillingPeriodDialog({ coopId, open, onClose }: Props) {
       await promise;
       reset();
 
+      onRefreshData();
       onClose();
     } catch (error) {
       console.error(error);

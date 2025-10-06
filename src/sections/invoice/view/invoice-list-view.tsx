@@ -497,6 +497,7 @@ export function InvoiceListView() {
         <BillingPeriodDialog
           coopId={state.coopId}
           open={billingPeiod.value}
+          onRefreshData={handleRefreshData}
           onClose={() => {
             billingPeiod.onFalse();
           }}
@@ -562,8 +563,9 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
   if (name) {
     inputData = inputData.filter(
       (invoice) =>
-        invoice.id.indexOf(name.toLowerCase()) !== -1 ||
-        invoice?.farmer?.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        invoice?.farmer?.Farmer?.memberNumber?.includes(name.toLowerCase()) ||
+        invoice?.farmer?.firstName?.toLowerCase().includes(name.toLowerCase()) ||
+        invoice?.farmer?.lastName?.toLowerCase().includes(name.toLowerCase())
     );
   }
 
