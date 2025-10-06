@@ -132,6 +132,7 @@ export function UserTableToolbar({
           open={filterDialog.value}
           onClose={filterDialog.onFalse}
           filters={apiFilters}
+          userTypes={options.roles}
         />
       </Stack>
 

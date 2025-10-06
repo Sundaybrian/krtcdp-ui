@@ -49,6 +49,7 @@ export const UserQuickEditSchema = zod.object({
   email: zod.string().optional(),
   firstName: zod.any(),
   lastName: zod.any(),
+  userType: zod.string().optional(),
 });
 
 // ----------------------------------------------------------------------
@@ -57,9 +58,10 @@ type Props = {
   open: boolean;
   onClose: () => void;
   filters: UseSetStateReturn<any>;
+  userTypes: any[];
 };
 
-export function UserFilterDialog({ filters, open, onClose }: Props) {
+export function UserFilterDialog({ filters, open, onClose, userTypes = [] }: Props) {
   const defaultValues = useMemo(
     () => ({
       accountState: '',
@@ -67,6 +69,7 @@ export function UserFilterDialog({ filters, open, onClose }: Props) {
       email: '',
       firstName: '',
       lastName: '',
+      userType: '',
     }),
     []
   );
@@ -93,6 +96,7 @@ export function UserFilterDialog({ filters, open, onClose }: Props) {
         email: data.email || undefined,
         firstName: data.firstName || undefined,
         lastName: data.lastName || undefined,
+        userType: [data.userType],
       });
 
       toast.success('Filters applied successfully');
@@ -127,7 +131,7 @@ export function UserFilterDialog({ filters, open, onClose }: Props) {
       PaperProps={{ sx: { maxWidth: 720 } }}
     >
       <Form methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>Filter Collections</DialogTitle>
+        <DialogTitle>Filter</DialogTitle>
 
         <DialogContent>
           <Box gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}>
@@ -147,6 +151,18 @@ export function UserFilterDialog({ filters, open, onClose }: Props) {
                     'exited',
                     'blacklisted',
                   ].map((status) => (
+                    <MenuItem key={status} value={status}>
+                      {status}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
+
+                <Field.Select name="userType" label="User Type">
+                  <MenuItem value="">
+                    <em>All User Types</em>
+                  </MenuItem>
+                  <Divider sx={{ borderStyle: 'dashed' }} />
+                  {userTypes.map((status) => (
                     <MenuItem key={status} value={status}>
                       {status}
                     </MenuItem>
