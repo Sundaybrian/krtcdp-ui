@@ -41,9 +41,7 @@ export function MyCooperativeListView() {
 
   useEffect(() => {
     // console.log('auth.coopId', auth.coopId);
-    console.log('auth.coopId', auth.coopUnionId);
-
-    getCooperativeByUnionId(auth.coopUnionId || 1).then((response) => {
+    getCooperativeByUnionId(auth.coopUnionId).then((response) => {
       setCooperative(response);
     });
   }, [auth.coopUnionId]);
