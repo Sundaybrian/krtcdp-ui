@@ -76,78 +76,7 @@ export function BankPaymentListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState<any[]>([
-    {
-      id: '1',
-      fileName: 'OCT 2024 Payment File',
-      createDate: '2021-10-10',
-      dueDate: '2021-10-10',
-      status: 'PROCESSED',
-    },
-    {
-      id: '2',
-      fileName: 'SEP 2024 Payment File',
-      createDate: '2021-10-10',
-      dueDate: '2021-10-10',
-      status: 'PROCESSED',
-    },
-    {
-      id: '3',
-      fileName: 'AUG 2024 Payment File',
-      createDate: '2021-10-10',
-      dueDate: '2021-10-10',
-      status: 'PROCESSED',
-    },
-    {
-      id: '4',
-      fileName: 'JUL 2024 Payment File',
-      createDate: '2021-10-10',
-      dueDate: '2021-10-10',
-      status: 'PROCESSED',
-    },
-    {
-      id: '5',
-      fileName: 'JUN 2024 Payment File',
-      createDate: '2021-10-10',
-      dueDate: '2021-10-10',
-      status: 'PENDING',
-    },
-    {
-      id: '6',
-      fileName: 'MAY 2024 Payment File',
-      createDate: '2021-10-10',
-      dueDate: '2021-10-10',
-      status: 'PENDING',
-    },
-    {
-      id: '7',
-      fileName: 'APR 2024 Payment File',
-      createDate: '2021-10-10',
-      dueDate: '2021-10-10',
-      status: 'PROCESSED',
-    },
-    {
-      id: '8',
-      fileName: 'MAR 2024 Payment File',
-      createDate: '2021-10-10',
-      dueDate: '2021-10-10',
-      status: 'PENDING',
-    },
-    {
-      id: '9',
-      fileName: 'FEB 2024 Payment File',
-      createDate: '2021-10-10',
-      dueDate: '2021-10-10',
-      status: 'PROCESSED',
-    },
-    {
-      id: '10',
-      fileName: 'JAN 2024 Payment File',
-      createDate: '2021-10-10',
-      dueDate: '2021-10-10',
-      status: 'PENDING',
-    },
-  ]);
+  const [tableData, setTableData] = useState<any[]>([]);
 
   const filters = useSetState<IInvoiceTableFilters>({
     name: '',
