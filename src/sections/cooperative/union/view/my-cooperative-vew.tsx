@@ -40,10 +40,12 @@ export function MyCooperativeListView() {
   const quickEdit = useBoolean();
 
   useEffect(() => {
-    // console.log('auth.coopId', auth.coopId);
-    getCooperativeByUnionId(auth.coopUnionId).then((response) => {
-      setCooperative(response);
-    });
+    if (auth.coopUnionId) {
+      // console.log('auth.coopId', auth.coopId);
+      getCooperativeByUnionId(auth.coopUnionId).then((response) => {
+        setCooperative(response);
+      });
+    }
   }, [auth.coopUnionId]);
 
   return (
