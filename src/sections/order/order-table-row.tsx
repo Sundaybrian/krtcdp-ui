@@ -10,7 +10,6 @@ import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -52,37 +51,41 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
 
       <TableCell>
         <Link color="inherit" onClick={onViewRow} underline="always" sx={{ cursor: 'pointer' }}>
-          {row.id}
+          {row.orderNumber}
         </Link>
       </TableCell>
 
       <TableCell>
         <Stack spacing={2} direction="row" alignItems="center">
-          <Avatar alt={row.farmer.firstName} src={row.farmer.lastName} />
+          <Avatar alt={row?.user?.firstName} src={row?.user?.lastName} />
 
           <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
             <Box component="span">
-              {row.farmer.firstName} {row.farmer.lastName}
+              {row?.user?.firstName} {row?.user?.lastName}
             </Box>
             <Box component="span" sx={{ color: 'text.disabled' }}>
-              {row.farmer.mobilePhone}
+              {row?.user?.email}
             </Box>
           </Stack>
         </Stack>
       </TableCell>
-      <TableCell> {row.cooperative.groupName} </TableCell>
       <TableCell>
         <ListItemText
-          primary={fDate(row.orderDate)}
-          secondary={fTime(row.orderDate)}
+          primary={fDate(row.createdAt)}
+          secondary={fTime(row.createdAt)}
           primaryTypographyProps={{ typography: 'body2', noWrap: true }}
           secondaryTypographyProps={{ mt: 0.5, component: 'span', typography: 'caption' }}
         />
       </TableCell>
 
-      <TableCell align="center"> {row.terms} </TableCell>
+      <TableCell align="center"> {fCurrency(row.taxAmount || 0)} </TableCell>
 
-      <TableCell> {fCurrency(row.amount)} </TableCell>
+      <TableCell align="center"> {fCurrency(row.advanceAmount)} </TableCell>
+
+      <TableCell>{fCurrency(row.subTotal)}</TableCell>
+
+      <TableCell> {fCurrency(row.totalAmount)} </TableCell>
+      <TableCell> {row?.items?.length} </TableCell>
 
       <TableCell>
         <Label
@@ -98,7 +101,7 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
         </Label>
       </TableCell>
 
-      <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+      {/* <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
         <IconButton
           color={collapse.value ? 'inherit' : 'default'}
           onClick={collapse.onToggle}
@@ -110,7 +113,7 @@ export function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteR
         <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
           <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
-      </TableCell>
+      </TableCell> */}
     </TableRow>
   );
 

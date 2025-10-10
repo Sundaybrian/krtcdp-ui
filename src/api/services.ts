@@ -615,19 +615,18 @@ export const createPurchaseOrder = async (data: any) => {
 };
 
 // search purchase order
-export const searchPurchaseOrder = async (query = {}): Promise<Page<PurchaseOrderItem[]>> => {
+export const searchPurchaseOrder = async (
+  cooperativeId: number,
+  query = {}
+): Promise<Page<PurchaseOrderItem[]>> => {
   try {
-    const response = await axios.post(
-      endpoints.purchaseOrder.search,
-      {
+    const response = await axios.get(endpoints.orders.coopOrders(cooperativeId), {
+      params: {
         page: 1,
-        limit: pageLimit,
+        limit: 20,
         ...query,
       },
-      {
-        params: {},
-      }
-    );
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching purchase order:', error);

@@ -46,6 +46,8 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+import { useLocalStorage } from 'src/hooks/use-local-storage';
+import { TENANT_LOCAL_STORAGE } from 'src/utils/default';
 
 import { OrderTableRow } from '../order-table-row';
 import { OrderTableToolbar } from '../order-table-toolbar';
@@ -66,17 +68,17 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...ORDER_STATUS_OPTIONS]
 const TABLE_HEAD = [
   { id: 'orderNumber', label: 'Order', width: 88 },
   { id: 'name', label: 'Farmer' },
-  { id: 'cooperative', label: 'Cooperative' },
   { id: 'createdAt', label: 'Order Date', width: 140 },
   {
-    id: 'totalQuantity',
-    label: 'Terms',
-    width: 120,
-    align: 'center',
+    id: 'taxAmount',
+    label: 'Tax',
   },
-  { id: 'totalAmount', label: 'Price', width: 140 },
+  { id: 'advanceAmount', label: 'Advance', width: 140 },
+  { id: 'subTotal', label: 'Sub Total', width: 140 },
+  { id: 'totalAmount', label: 'Total Amount', width: 140 },
+  { id: 'oderItems', label: 'Items', width: 110 },
   { id: 'status', label: 'Status', width: 110 },
-  { id: '', width: 88 },
+  // { id: '', width: 88 },
 ];
 
 // ----------------------------------------------------------------------
@@ -89,6 +91,8 @@ export function OrderListView() {
   const confirm = useBoolean();
 
   const [tableData, setTableData] = useState<PurchaseOrderItem[]>([]);
+
+  const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
 
   const filters = useSetState<IOrderTableFilters>({
     name: '',
@@ -190,18 +194,25 @@ export function OrderListView() {
   }, [dataFiltered]);
 
   // async functions
-  const getPurchaseOrders = async () => {
-    try {
-      const response = await searchPurchaseOrder();
-      setTableData(response.results);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const getPurchaseOrders = useCallback(
+    async (coopId: number) => {
+      try {
+        const response = await searchPurchaseOrder(coopId, {
+          cooperativeId: state.coopId,
+          page: 1,
+          limit: 1000,
+        });
+        setTableData(response.results);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [state.coopId]
+  );
 
   useEffect(() => {
-    getPurchaseOrders();
-  }, []);
+    getPurchaseOrders(state.coopId);
+  }, [state.coopId, getPurchaseOrders]);
 
   return (
     <>
@@ -412,9 +423,10 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
   if (name) {
     inputData = inputData.filter(
       (order) =>
-        order.farmer.firstName.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        order.farmer.lastName.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        order.farmer.mobilePhone.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        order?.user.firstName.toLowerCase().includes(name.toLowerCase()) ||
+        order?.user.lastName.toLowerCase().includes(name.toLowerCase()) ||
+        order?.user.email.toLowerCase().includes(name.toLowerCase()) ||
+        order?.orderNumber.toLowerCase().includes(name.toLowerCase())
     );
   }
 
@@ -424,7 +436,7 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
 
   if (!dateError) {
     if (startDate && endDate) {
-      inputData = inputData.filter((order) => fIsBetween(order.orderDate, startDate, endDate));
+      inputData = inputData.filter((order) => fIsBetween(order.createdAt, startDate, endDate));
     }
   }
 

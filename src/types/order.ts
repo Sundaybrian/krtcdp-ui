@@ -10,7 +10,11 @@ export type IOrderTableFilters = {
   startDate: IDatePickerControl;
   endDate: IDatePickerControl;
 };
-
+export interface User {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
 export type IOrderHistory = {
   orderTime: IDateValue;
   paymentTime: IDateValue;
@@ -86,6 +90,15 @@ export type PurchaseOrderItem = {
   creationDate: string;
   lastModifiedDate: string;
   deleteAt: string;
+  createdAt: string;
+  taxAmount: string;
+  advanceAmount: string;
+
+  subTotal: string;
+  totalAmount: string;
+  items: any[];
+  orderNumber: string;
+  user: User;
 };
 
 export type Order = {

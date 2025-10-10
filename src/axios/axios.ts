@@ -108,6 +108,7 @@ export const endpoints = {
   },
   orders: {
     myOrders: '/orders/user/my-orders',
+    coopOrders: (cooperativeId: number) => `/orders/cooperative/${cooperativeId}`,
   },
   purchaseOrder: {
     new: '/purchaseorder',
