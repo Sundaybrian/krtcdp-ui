@@ -26,6 +26,10 @@ export function RenderCoop({ params }: ParamsProps) {
   return params.row?.cooperative?.groupName || 'No Cooperative';
 }
 
+export function RenderFarmer({ params }: ParamsProps) {
+  return params.row?.Farmer[params.field] || 'No Farmer';
+}
+
 export function RenderGeneric({ params }: ParamsProps) {
   return params.row[params.field];
 }
@@ -85,7 +89,7 @@ export function RenderCellProduct({
             onClick={onViewRow}
             sx={{ cursor: 'pointer' }}
           >
-            {params.row.firstName} {params.row.lastName}
+            {params.row.firstName} {params?.row?.middleName || ''} {params.row.lastName}
           </Link>
         }
         secondary={

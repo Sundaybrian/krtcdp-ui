@@ -59,6 +59,7 @@ import {
   RenderHasInsurance,
   RenderCellCreatedAt,
   RenderInsuranceProvidere,
+  RenderFarmer,
 } from '../coop-farmer-table-row';
 import { CoopFarmerFilterDialog } from './coop-farmer-filter';
 // ----------------------------------------------------------------------
@@ -126,9 +127,18 @@ export function CooperativeFarmerListView() {
     if (filters.state.status) {
       queryObj.status = filters.state.status;
     }
+    if (filters.state.memberNumber) {
+      queryObj.memberNumber = filters.state.memberNumber;
+    }
 
     return queryObj;
-  }, [filters.state.name, filters.state.firstName, filters.state.lastName, filters.state.status]);
+  }, [
+    filters.state.name,
+    filters.state.firstName,
+    filters.state.lastName,
+    filters.state.status,
+    filters.state.memberNumber,
+  ]);
 
   useEffect(() => {
     searchCoopFarmers(
@@ -141,6 +151,8 @@ export function CooperativeFarmerListView() {
           }
     ).then((data) => {
       if (data.results.length) {
+        console.log(data.results);
+
         setTableData(data.results);
       }
 
@@ -155,7 +167,8 @@ export function CooperativeFarmerListView() {
   const canReset =
     filters.state?.status?.length > 0 ||
     filters.state?.name?.length > 0 ||
-    filters.state?.firstName;
+    filters.state?.firstName ||
+    filters.state?.memberNumber;
 
   const dataFiltered = applyFilter({ inputData: tableData, filters: filters.state });
 
@@ -320,27 +333,17 @@ export function CooperativeFarmerListView() {
       renderCell: (params) => <RenderCoop params={params} />,
     },
     {
-      field: 'insuranceType',
-      headerName: 'Insuarance Type',
+      field: 'memberNumber',
+      headerName: 'Member No',
       width: 160,
-      type: 'singleSelect',
-      valueOptions: INSURANCE_TYPE_OPTIONS,
-      renderCell: (params) => <RenderCellStock params={params} />,
+      renderCell: (params) => <RenderFarmer params={params} />,
     },
     {
       field: 'maritalStatus',
       headerName: 'Marital Status',
       width: 140,
       editable: true,
-      renderCell: (params) => <RenderCellPrice params={params} />,
-    },
-    {
-      field: 'residence',
-      headerName: 'Residence',
-      width: 110,
-      type: 'singleSelect',
-      editable: true,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderFarmer params={params} />,
     },
 
     {
@@ -357,23 +360,6 @@ export function CooperativeFarmerListView() {
       width: 110,
       editable: false,
       renderCell: (params) => <RenderGeneric params={params} key="subCounty" />,
-    },
-
-    {
-      field: 'hasInsurance',
-      headerName: 'Insured',
-      width: 110,
-      editable: false,
-      renderCell: (params) => <RenderHasInsurance params={params} />,
-    },
-
-    {
-      field: 'insuranceProvider',
-      headerName: 'Insurance Provider',
-      width: 110,
-      editable: false,
-      hideable: true,
-      renderCell: (params) => <RenderInsuranceProvidere params={params} />,
     },
 
     {

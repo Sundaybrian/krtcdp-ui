@@ -48,6 +48,7 @@ export const UserQuickEditSchema = zod.object({
   name: zod.string().optional(),
   firstName: zod.any(),
   lastName: zod.any(),
+  memberNumber: zod.any(),
 });
 
 // ----------------------------------------------------------------------
@@ -65,6 +66,7 @@ export function CoopFarmerFilterDialog({ filters, open, onClose }: Props) {
       name: '',
       firstName: '',
       lastName: '',
+      memberNumber: '',
     }),
     []
   );
@@ -90,6 +92,7 @@ export function CoopFarmerFilterDialog({ filters, open, onClose }: Props) {
         name: data.name || undefined,
         firstName: data.firstName || undefined,
         lastName: data.lastName || undefined,
+        memberNumber: data.memberNumber || '',
       });
 
       toast.success('Filters applied successfully');
@@ -106,6 +109,7 @@ export function CoopFarmerFilterDialog({ filters, open, onClose }: Props) {
       name: undefined,
       firstName: undefined,
       lastName: undefined,
+      memberNumber: undefined,
     });
     reset();
     toast.success('Filters cleared');
@@ -121,12 +125,13 @@ export function CoopFarmerFilterDialog({ filters, open, onClose }: Props) {
       PaperProps={{ sx: { maxWidth: 720 } }}
     >
       <Form methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>Filter Collections</DialogTitle>
+        <DialogTitle>Filter</DialogTitle>
 
         <DialogContent>
           <Box gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}>
             <Card>
               <Stack spacing={3} sx={{ p: 3 }}>
+                <Field.Text name="memberNumber" label="Member Number" />
                 <Field.Select name="status" label="Account Status">
                   <MenuItem value="">
                     <em>All Status</em>

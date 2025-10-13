@@ -3,9 +3,9 @@ import { HomeView } from 'src/sections/home/view';
 // ----------------------------------------------------------------------
 
 export const metadata = {
-  title: 'Minimals UI: The starting point for your next project',
+  title: 'Farmers CoopHub: The Ultimate Platform for Agricultural Collaboration',
   description:
-    'The starting point for your next project with Minimal UI Kit, built on the newest version of Material-UI ©, ready to be customized to your style',
+    "Farmers CoopHub is a comprehensive platform designed to empower farmers and agricultural cooperatives. Our mission is to foster collaboration, enhance productivity, and drive sustainable growth in the agricultural sector. Join us to connect, share resources, and access valuable tools that will help you thrive in today's competitive market.",
 };
 
 export default function Page() {
