@@ -153,6 +153,9 @@ export type CoopFarmerList = {
     cooperativeId?: number;
     memberNumber: any;
     userId: number;
+    accountNumber: string;
+    bankName: string;
+    branch: string;
   };
   status: {
     status:
@@ -253,6 +256,13 @@ export type IUserItem = {
   acceptTerms: boolean;
   avatarUrl: string;
   coopUnionId?: number;
+  insuranceProvider?: string;
+  insuranceType?: string;
+  hasInsurance?: boolean;
+  memberNumber?: any;
+  bankName?: string;
+  branch?: string;
+  accountNumber?: string;
 };
 
 export type IUserAccount = {

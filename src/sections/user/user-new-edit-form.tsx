@@ -26,7 +26,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useLocalStorage } from 'src/hooks/use-local-storage';
 
 import { fData } from 'src/utils/format-number';
-import { TENANT_LOCAL_STORAGE, MARITAL_STATUS_OPTIONS } from 'src/utils/default';
+import { TENANT_LOCAL_STORAGE, MARITAL_STATUS_OPTIONS, GENDER_OPTIONS } from 'src/utils/default';
 
 import { useSearchCooperative } from 'src/actions/cooperative';
 import { addUser, getWards, getCounties, getUserTypes, assignAdminToCoop } from 'src/api/services';
@@ -60,6 +60,7 @@ export const NewUserSchema = zod.object({
   ward: zod.string().min(1, { message: 'Ward is required!' }),
   residence: zod.string().min(1, { message: 'Residence is required!' }),
   county: zod.string().min(1, { message: 'County is required!' }),
+  gender: zod.string().min(1, { message: 'Gender is required!' }),
   maritalStatus: zod.string().min(1, { message: 'Marital Status is required!' }),
   subCounty: zod.string().min(1, { message: 'Sub county is required!' }),
   // Not required
@@ -99,6 +100,7 @@ export function UserNewEditForm({ currentUser }: Props) {
       lastName: '',
       middleName: '',
       userType: state.coopId ? 'COOPERATIVE_ADMIN' : 'SYSTEM_ADMIN',
+      gender: '',
       password: '',
       birthDate: '2024-07-17T08:14:18.190Z',
       maritalStatus: 'single',
@@ -382,6 +384,24 @@ export function UserNewEditForm({ currentUser }: Props) {
                 <Divider sx={{ borderStyle: 'dashed' }} />
 
                 {MARITAL_STATUS_OPTIONS.map((status) => (
+                  <MenuItem key={status} value={status} onClick={() => null}>
+                    {status}
+                  </MenuItem>
+                ))}
+              </Field.Select>
+
+              <Field.Select name="gender" label="Gender">
+                <MenuItem
+                  value=""
+                  onClick={() => null}
+                  sx={{ fontStyle: 'italic', color: 'text.secondary' }}
+                >
+                  None
+                </MenuItem>
+
+                <Divider sx={{ borderStyle: 'dashed' }} />
+
+                {GENDER_OPTIONS.map((status) => (
                   <MenuItem key={status} value={status} onClick={() => null}>
                     {status}
                   </MenuItem>

@@ -99,6 +99,7 @@ export const endpoints = {
       `/cooperative/${userId}/reject-join-cooperative/${coopId}`,
     approveLeaveCoop: (userId: number, coopId: number) =>
       `/cooperative/${userId}/approve-leave-cooperative/${coopId}`,
+    update: (id: number) => `/farmer/${id}`,
   },
   cart: {
     search: '/cart',

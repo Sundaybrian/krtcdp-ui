@@ -39,12 +39,15 @@ import {
   createNextOfKin,
   searchFarmValueChain,
   searchInsuranceProviders,
+  updateFarmer,
+  updateUser,
 } from 'src/api/services';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import PasswordMeter from 'src/components/password/password-meter';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import { paths } from 'src/routes/paths';
 
 import { Stepper } from '../_examples/extra/form-wizard-view/form-steps';
 
@@ -60,10 +63,7 @@ export const NewUserSchema = zod.object({
     .string()
     .min(1, { message: 'Email is required!' })
     .email({ message: 'Email must be a valid email address!' }),
-  password: zod
-    .string()
-    .min(1, { message: 'Password is required!' })
-    .min(8, { message: 'Password must be at least 6 characters!' }),
+  password: zod.string(),
   mobilePhone: schemaHelper.phoneNumber({ isValidPhoneNumber }),
   birthDate: zod.string().min(1, { message: 'DOB is required!' }),
   ward: zod.string().min(1, { message: 'Ward is required!' }),
@@ -86,6 +86,9 @@ export const NewUserSchema = zod.object({
   relationship: zod.string(),
   contactNumber: zod.string(),
   memberNumber: zod.string(),
+  bankName: zod.string(),
+  branch: zod.string(),
+  accountNumber: zod.string(),
 });
 
 // ----------------------------------------------------------------------
@@ -110,31 +113,34 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
   const defaultValues = useMemo(
     () => ({
       email: currentUser?.email || '',
-      mobilePhone: '',
-      firstName: '',
-      lastName: '',
-      middleName: '',
+      mobilePhone: currentUser?.mobilePhone || '',
+      firstName: currentUser?.firstName || '',
+      lastName: currentUser?.lastName || '',
+      middleName: currentUser?.middleName || '',
       userType: 'FARMER',
       password: '',
-      birthDate: '',
-      maritalStatus: 'single',
-      kraPin: Math.random().toString(36).substring(7),
+      birthDate: currentUser?.birthDate || '',
+      maritalStatus: currentUser?.maritalStatus || 'single',
+      kraPin: currentUser?.kraPin || '',
       userState: 'A',
-      residence: '',
-      county: '',
-      subCounty: '',
-      ward: '',
-      isAdministrator: true,
-      isSupport: true,
+      residence: currentUser?.residence || '',
+      county: currentUser?.county || '',
+      subCounty: currentUser?.subCounty || '',
+      ward: currentUser?.ward || '',
+      isAdministrator: false,
+      isSupport: false,
       acceptTerms: true,
       hasInsurance: false,
-      insuranceProvider: '',
-      insuranceType: '',
+      insuranceProvider: currentUser?.insuranceProvider || '',
+      insuranceType: currentUser?.insuranceType || '',
       relationship: '',
       contactNumber: '',
       nokFirstName: '',
       nokLastName: '',
-      memberNumber: '',
+      memberNumber: currentUser?.memberNumber || '',
+      bankName: currentUser?.bankName || '',
+      branch: currentUser?.branch || '',
+      accountNumber: currentUser?.accountNumber || '',
     }),
     [currentUser]
   );
@@ -156,7 +162,6 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
   const values = watch();
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log('DATA', data);
     const submitData = {
       user: {
         email: data.email,
@@ -184,6 +189,10 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
         insuranceProvider: data.insuranceProvider,
         insuranceType: data.insuranceType,
         memberNumber: data.memberNumber,
+        kraPin: data.kraPin,
+        bankName: data.bankName,
+        branch: data.branch,
+        accountNumber: data.accountNumber,
       },
     };
 
@@ -195,21 +204,40 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
     };
 
     try {
-      if (!state.coopId && !data.coopId) {
+      if (!state.coopId) {
         toast.error('Failed to create coop farmer');
       }
-      const response = await addCoopFarmer(state.coopId || data.coopId, submitData);
 
-      reset();
-      toast.success(currentUser ? 'Update success!' : 'User created successfully!');
-
-      // create nok
       if (!currentUser?.id) {
-        nextOfKin.userId = response.user.id;
-        createNextOfKin(nextOfKin);
+        if (!submitData.user.password) {
+          toast.error('Password is required!');
+          return;
+        }
+        const response = await addCoopFarmer(state.coopId || data.coopId, submitData);
+
+        reset();
+        toast.success(currentUser ? 'Update success!' : 'User created successfully!');
+
+        // create nok
+        if (!currentUser?.id) {
+          nextOfKin.userId = response.id;
+          createNextOfKin(nextOfKin);
+        }
+        setActiveStep(0);
+      } else {
+        // update user
+        await updateFarmer(currentUser.id, submitData.farmer);
+
+        // update farmer
+        // delete password
+        submitData.user.password = '';
+        await updateUser(currentUser.id, submitData.user);
+
+        toast.success('Update success!');
+
+        // navigate to list of farmers
+        router.push(paths.dashboard.farmer.root);
       }
-      console.info('DATA', data);
-      setActiveStep(0);
     } catch (error) {
       console.error(error);
       toast.error(error?.message || 'Failed to coop farmer');
@@ -283,7 +311,7 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
     <Form methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={8}>
-          <Stepper steps={['Farmer', 'Next of kin']} activeStep={activeStep} />
+          <Stepper steps={['Farmer', 'Next of kin', 'Bank Details']} activeStep={activeStep} />
 
           {!state.coopId && (
             <Card sx={{ p: 3 }}>
@@ -328,28 +356,30 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
                 <Field.Text name="lastName" label="Last name" InputLabelProps={{ shrink: true }} />
 
                 <Field.Text name="email" label="Email address" />
-                <Stack direction={{ xs: 'column', sm: 'column' }} spacing={2}>
-                  <Field.Text
-                    name="password"
-                    label="Password"
-                    placeholder="6+ characters"
-                    type={password.value ? 'text' : 'password'}
-                    InputLabelProps={{ shrink: true }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton onClick={password.onToggle} edge="end">
-                            <Iconify
-                              icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
-                            />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
+                {!currentUser?.id && (
+                  <Stack direction={{ xs: 'column', sm: 'column' }} spacing={2}>
+                    <Field.Text
+                      name="password"
+                      label="Password"
+                      placeholder="6+ characters"
+                      type={password.value ? 'text' : 'password'}
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton onClick={password.onToggle} edge="end">
+                              <Iconify
+                                icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
+                              />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
 
-                  <PasswordMeter userPassword={values.password} />
-                </Stack>
+                    <PasswordMeter userPassword={values.password} />
+                  </Stack>
+                )}
 
                 <Field.Phone name="mobilePhone" country="KE" label="Phone number" />
 
@@ -435,7 +465,8 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
                       <MenuItem
                         key={subCounty.code + subCounty.name}
                         value={subCounty.name}
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.preventDefault();
                           handleSubCountyChange(subCounty.id);
                         }}
                       >
@@ -573,6 +604,52 @@ export function CoopFarmerNewEditForm({ currentUser }: Props) {
                   variant="contained"
                   onClick={() => {
                     setActiveStep(0);
+                  }}
+                >
+                  Prev
+                </Button>
+
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setActiveStep(2);
+                  }}
+                >
+                  Next
+                </Button>
+              </Stack>
+            </Card>
+          )}
+
+          {activeStep === 2 && (
+            <Card sx={{ p: 3 }}>
+              <Box
+                rowGap={3}
+                columnGap={2}
+                display="grid"
+                gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' }}
+              >
+                <Field.Text name="bankName" label="Bank name" InputLabelProps={{ shrink: true }} />
+                <Field.Text name="branch" label="Branch Name" />
+
+                {/* <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                  
+
+                </Stack> */}
+
+                <Field.Text name="accountNumber" label="Account number" />
+
+                <Field.Text name="kraPin" label="KRA PIN" />
+              </Box>
+
+              <Stack
+                spacing={2}
+                sx={{ mt: 3, display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setActiveStep(1);
                   }}
                 >
                   Prev

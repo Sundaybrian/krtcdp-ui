@@ -27,7 +27,7 @@ export function RenderCoop({ params }: ParamsProps) {
 }
 
 export function RenderFarmer({ params }: ParamsProps) {
-  return params.row?.Farmer[params.field] || 'No Farmer';
+  return params.row?.Farmer[params.field] || '--';
 }
 
 export function RenderGeneric({ params }: ParamsProps) {

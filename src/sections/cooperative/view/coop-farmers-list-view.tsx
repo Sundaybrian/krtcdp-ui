@@ -236,7 +236,7 @@ export function CooperativeFarmerListView() {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.product.edit(id));
+      router.push(paths.dashboard.farmer.edit(id));
     },
     [router]
   );
@@ -249,39 +249,49 @@ export function CooperativeFarmerListView() {
   );
 
   const handleExport = () => {
-    const exportData = removeKeyFromArr(dataFiltered, [
-      'id',
-      'acceptTerms',
-      'lastUpdateDate',
-      'createbyId',
-      'password',
-      'coopUnionId',
-      'emailVerified',
-      'phoneVerified',
-      'accountState',
-      'userType',
-      'roleId',
-      'permissionsId',
-      'subCounty',
-      'ward',
-      'isAdministrator',
-      'isSupport',
-      'passwordReset',
-      'verificationToken',
-      'resetToken',
-      'resetTokenExpires',
-      'lastPasswordResetDate',
-      'refreshHashedToken',
-      'coopId',
-      'accessRights',
-      'verified',
-      'userState',
-      'deletedAt',
-      'lastLoginDate',
-      'lastModifiedDate',
-      'Farmer',
-      'cooperative',
-    ]);
+    const exportData = removeKeyFromArr(
+      dataFiltered.map((famer) => ({
+        ...famer,
+        cooperative: famer.cooperative?.groupName,
+        bankName: famer.Farmer?.bankName,
+        branch: famer.Farmer?.branch,
+        accountNumber: famer.Farmer?.accountNumber,
+        memberNumber: famer.Farmer?.memberNumber,
+      })),
+      [
+        'id',
+        'acceptTerms',
+        'lastUpdateDate',
+        'createbyId',
+        'password',
+        'coopUnionId',
+        'emailVerified',
+        'phoneVerified',
+        'accountState',
+        'userType',
+        'roleId',
+        'permissionsId',
+        'subCounty',
+        'ward',
+        'isAdministrator',
+        'isSupport',
+        'passwordReset',
+        'verificationToken',
+        'resetToken',
+        'resetTokenExpires',
+        'lastPasswordResetDate',
+        'refreshHashedToken',
+        'coopId',
+        'accessRights',
+        'verified',
+        'userState',
+        'deletedAt',
+        'lastLoginDate',
+        'lastModifiedDate',
+        'Farmer',
+        'cooperative',
+      ]
+    );
     exportExcel(exportData, 'Farmers');
   };
 
@@ -339,27 +349,27 @@ export function CooperativeFarmerListView() {
       renderCell: (params) => <RenderFarmer params={params} />,
     },
     {
-      field: 'maritalStatus',
-      headerName: 'Marital Status',
+      field: 'bankName',
+      headerName: 'Banke Name',
       width: 140,
       editable: true,
       renderCell: (params) => <RenderFarmer params={params} />,
     },
 
     {
-      field: 'county',
-      headerName: 'County',
+      field: 'branch',
+      headerName: 'Branch',
       width: 110,
       editable: false,
-      renderCell: (params) => <RenderGeneric params={params} key="county" />,
+      renderCell: (params) => <RenderFarmer params={params} />,
     },
 
     {
-      field: 'subCounty',
-      headerName: 'Sub County',
+      field: 'accountNumber',
+      headerName: 'Account Number',
       width: 110,
       editable: false,
-      renderCell: (params) => <RenderGeneric params={params} key="subCounty" />,
+      renderCell: (params) => <RenderFarmer params={params} />,
     },
 
     {
@@ -388,12 +398,12 @@ export function CooperativeFarmerListView() {
           label="View"
           onClick={() => handleViewRow(params.row.id)}
         />,
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:pen-bold" />}
-        //   label="Edit"
-        //   onClick={() => handleEditRow(params.row.id)}
-        // />,
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="solar:pen-bold" />}
+          label="Edit"
+          onClick={() => handleEditRow(params.row.id)}
+        />,
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:check-square-bold" />}

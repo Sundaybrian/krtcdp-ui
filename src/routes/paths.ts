@@ -136,6 +136,7 @@ export const paths = {
     farmer: {
       root: `${ROOTS.DASHBOARD}/farmer`,
       newCoopFarmer: `${ROOTS.DASHBOARD}/farmer/new-farmer`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/farmer/edit/${id}`,
       coopFarmers: `${ROOTS.DASHBOARD}/cooperative/coop-farmers`,
       grn: `${ROOTS.DASHBOARD}/farmer/grn`,
       invoice: `${ROOTS.DASHBOARD}/farmer/invoice`,

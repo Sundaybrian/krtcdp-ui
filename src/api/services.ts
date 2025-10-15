@@ -403,6 +403,17 @@ export const getFarmerById = async (id: number): Promise<CoopFarmerList> => {
   }
 };
 
+// update farmer
+export const updateFarmer = async (id: number, data: any) => {
+  try {
+    const response = await axios.patch(`${endpoints.farmer.update(id)}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating farmer:', error);
+    throw error;
+  }
+};
+
 // unlick coop admins
 export const unlinkCoopAdmin = async (coopId: number, userId: number) => {
   try {
