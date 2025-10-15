@@ -66,6 +66,7 @@ export const SignUpSchema = zod.object({
   isSupport: zod.boolean(),
   userType: zod.string(),
   kraPin: zod.string(),
+  gender: zod.string(),
 });
 
 // ----------------------------------------------------------------------
@@ -100,6 +101,7 @@ export function JwtSignUpView() {
     isAdministrator: false,
     isSupport: false,
     acceptTerms: true,
+    gender: 'Male',
   };
 
   const methods = useForm<SignUpSchemaType>({
@@ -135,6 +137,7 @@ export function JwtSignUpView() {
         isAdministrator: data.isAdministrator,
         isSupport: data.isSupport,
         acceptTerms: data.acceptTerms,
+        gender: data.gender || 'Not Specified',
       });
       await checkUserSession?.();
 

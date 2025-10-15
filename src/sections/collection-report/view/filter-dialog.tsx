@@ -25,7 +25,12 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-import { approveMilkAggregation, approveTicket, getUsers } from 'src/api/services';
+import {
+  approveMilkAggregation,
+  approveTicket,
+  getUsers,
+  searchCoopFarmers,
+} from 'src/api/services';
 import { useSearchAdmins } from 'src/actions/user';
 import { useSearchShifts } from 'src/actions/collections';
 import { useSearchRoutes } from 'src/actions/route';
@@ -95,11 +100,11 @@ export function FilterDialog({ filters, open, onClose }: Props) {
       setFarmerLoading(true);
       try {
         // TODO: Replace with actual API call
-        const response = await getUsers({
+        const response = await searchCoopFarmers({
           limit: 20,
-          coopId: state.coopId,
-          firstName: searchTerm,
-          // lastName: searchTerm,
+          page: 1,
+          cooperativeId: state.coopId,
+          memberNumber: searchTerm,
         });
 
         const data = await response.results;
@@ -281,7 +286,10 @@ export function FilterDialog({ filters, open, onClose }: Props) {
                 <Autocomplete
                   options={farmerOptions}
                   loading={farmerLoading}
-                  getOptionLabel={(option) => `${option.firstName} ${option.lastName}` || ''}
+                  getOptionLabel={(option) =>
+                    `${option.firstName} ${option.lastName} ${option?.Farmer?.memberNumber || ''}` ||
+                    ''
+                  }
                   isOptionEqualToValue={(option, value) => option.id === value.id}
                   onInputChange={(event, newInputValue) => {
                     setFarmerSearchTerm(newInputValue);

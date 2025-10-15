@@ -123,7 +123,7 @@ export function TransferCollectionDialog({ data, open, onClose }: Props) {
           limit: 20,
           page: 1,
           cooperativeId: state.coopId,
-          name: searchTerm,
+          memberNumber: searchTerm,
         });
 
         const dataRes = await response.results;
@@ -174,7 +174,9 @@ export function TransferCollectionDialog({ data, open, onClose }: Props) {
                 <Autocomplete
                   options={farmerOptions}
                   loading={farmerLoading}
-                  getOptionLabel={(option) => `${option.firstName} ${option.lastName}` || ''}
+                  getOptionLabel={(option) =>
+                    `${option.firstName} ${option.lastName} ${option?.Farmer?.memberNumber}` || ''
+                  }
                   isOptionEqualToValue={(option, value) => option.id === value.id}
                   onInputChange={(event, newInputValue) => {
                     setFarmerSearchTerm(newInputValue);
