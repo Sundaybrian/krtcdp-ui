@@ -173,6 +173,9 @@ export const endpoints = {
   },
   statistics: {
     get: '/stats/statistics',
+    people: '/stats/people-access',
+    financial: '/stats/financial-health',
+    milkLogistics: '/stats/milk-logistics',
   },
   notification: {
     search: '/brodcastmessage/search',

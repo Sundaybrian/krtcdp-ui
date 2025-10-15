@@ -37,7 +37,7 @@ export function RenderCellLocation({ params }: ParamsProps) {
 }
 
 export function RenderGeneric({ params }: ParamsProps) {
-  return params.row[params.field];
+  return params.row[params.field] || '--';
 }
 
 export function RenderRoute({ params }: ParamsProps) {

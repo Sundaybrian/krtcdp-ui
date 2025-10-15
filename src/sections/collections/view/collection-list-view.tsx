@@ -521,6 +521,13 @@ export function CollectionsListView() {
     },
 
     {
+      field: 'notes',
+      headerName: 'Notes',
+      width: 160,
+      renderCell: (params) => <RenderGeneric params={params} />,
+    },
+
+    {
       field: 'creationDate',
       headerName: 'Creation Date',
       width: 110,

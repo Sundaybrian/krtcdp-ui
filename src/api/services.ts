@@ -1548,3 +1548,5 @@ export const verifyAdvanceOTP = async (memberNumber: number, data: any) => {
     throw error;
   }
 };
+
+// get statics

@@ -11,6 +11,7 @@ import { Iconify } from 'src/components/iconify';
 import { Label } from 'src/components/label';
 import { Badge } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { fNumber } from 'src/utils/format-number';
 
 import { TaskViewDialog } from './collectors-view-dialog';
 
@@ -45,13 +46,17 @@ export function RenderGeneric({ params }: ParamsProps) {
 }
 
 export function RenderVariance({ params }: ParamsProps) {
+  if (!params.row.physicalQuantity) {
+    return <Badge color="default" badgeContent="--" />;
+  }
+
   let total = params.row.totalQuantity - params.row.physicalQuantity;
   const isNegative = total < 0;
   if (isNegative) {
     total *= total * -1;
   }
 
-  return <Badge color={isNegative ? 'error' : 'success'} badgeContent={total} />;
+  return <Badge color={isNegative ? 'error' : 'success'} badgeContent={fNumber(total)} />;
 }
 
 export function RenderRoute({ params }: ParamsProps) {

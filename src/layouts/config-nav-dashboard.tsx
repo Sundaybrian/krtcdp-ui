@@ -59,6 +59,12 @@ export const navData = [
         icon: ICONS.dashboard,
       },
       {
+        title: 'Analytics',
+        permission: 'view:dashboard',
+        path: paths.dashboard.general.analytics,
+        icon: ICONS.analytics,
+      },
+      {
         title: 'My Unions',
         permission: 'view:myUnions',
         path: paths.dashboard.general.coopUnions,

@@ -35,7 +35,7 @@ export function AnalyticsConversionRates({ title, subheader, chart, ...other }: 
 
   const chartOptions = useChart({
     colors: chartColors,
-    stroke: { width: 2, colors: ['transparent'] },
+    stroke: { width: 10, colors: ['transparent'] },
     tooltip: {
       shared: true,
       intersect: false,

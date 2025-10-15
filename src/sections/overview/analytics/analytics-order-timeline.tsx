@@ -13,6 +13,7 @@ import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 
 import { fDateTime } from 'src/utils/format-time';
+import { fCurrency, fNumber } from 'src/utils/format-number';
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +24,9 @@ type Props = CardProps & {
     id: string;
     type: string;
     title: string;
-    time: IDateValue;
+    time: any;
+    totalQuantity: any;
+    totalValue: number;
   }[];
 };
 
@@ -42,7 +45,7 @@ export function AnalyticsOrderTimeline({ title, subheader, list, ...other }: Pro
           },
         }}
       >
-        {list.map((item, index) => (
+        {(list || []).map((item, index) => (
           <Item key={item.id} item={item} lastItem={index === list.length - 1} />
         ))}
       </Timeline>
@@ -63,8 +66,8 @@ function Item({ item, lastItem, ...other }: ItemProps) {
       <TimelineSeparator>
         <TimelineDot
           color={
-            (item.type === 'order1' && 'primary') ||
-            (item.type === 'order2' && 'success') ||
+            (item.type === 'OPEN' && 'primary') ||
+            (item.type === 'CLOSED' && 'success') ||
             (item.type === 'order3' && 'info') ||
             (item.type === 'order4' && 'warning') ||
             'error'
@@ -75,6 +78,8 @@ function Item({ item, lastItem, ...other }: ItemProps) {
 
       <TimelineContent>
         <Typography variant="subtitle2">{item.title}</Typography>
+        <Typography variant="subtitle2">Quantity: {fNumber(item.totalQuantity)} KGS</Typography>
+        <Typography variant="subtitle2">Value: {fCurrency(item.totalValue)}</Typography>
 
         <Typography variant="caption" sx={{ color: 'text.disabled' }}>
           {fDateTime(item.time)}
