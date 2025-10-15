@@ -209,21 +209,31 @@ export function InvoiceListView() {
 
   const handleExport = useCallback(() => {
     console.log('Exporting...');
-    const exportData = removeKeyFromArr(dataFiltered, [
-      'id',
-      'userId',
-      'lastModifiedDate',
-      'taskId',
-      'autoInitiatedById',
-      'purchaseOrderId',
-      'checkOffTransactionId',
-      'deleteAt',
-      'purchaseOrder',
-      'cooperative',
-      'farmer',
-      'cooperativeId',
-      'farmerId',
-    ]);
+    const exportData = removeKeyFromArr(
+      dataFiltered.map((invoice) => ({
+        ...invoice,
+        FarmerName: `${invoice.farmer?.firstName} ${invoice.farmer?.middleName || ''} ${invoice.farmer?.lastName}`,
+        memberNumber: invoice.farmer?.Farmer?.memberNumber,
+        accountNumber: invoice.farmer?.Farmer?.accountNumber,
+        BankName: invoice.farmer?.Farmer?.bankName,
+        Branch: invoice.farmer?.Farmer?.branch,
+      })),
+      [
+        'id',
+        'userId',
+        'lastModifiedDate',
+        'taskId',
+        'autoInitiatedById',
+        'purchaseOrderId',
+        'checkOffTransactionId',
+        'deleteAt',
+        'purchaseOrder',
+        'cooperative',
+        'farmer',
+        'cooperativeId',
+        'farmerId',
+      ]
+    );
     exportExcel(exportData, 'Invoice');
   }, [dataFiltered]);
 
@@ -254,7 +264,6 @@ export function InvoiceListView() {
   const getInvoices = async (query = {}) => {
     try {
       const response = await searchInvoice(query);
-      console.log(response);
 
       setTableData(response.results);
     } catch (error) {
