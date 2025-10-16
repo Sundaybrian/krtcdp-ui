@@ -417,6 +417,11 @@ export function CollectionsListView() {
     };
   }, [tableData]);
 
+  const handleRefreshData = () => {
+    // reset data
+    window.location.reload();
+  };
+
   //  handle permission
   const { permissions = [], isSuperAdmin = false } = perms;
 
@@ -652,6 +657,7 @@ export function CollectionsListView() {
         onClose={() => {
           quantityDialog.onFalse();
         }}
+        onRefresh={handleRefreshData}
       />
 
       <TransferCollectionDialog
@@ -660,6 +666,7 @@ export function CollectionsListView() {
         onClose={() => {
           tranferDialog.onFalse();
         }}
+        onRefresh={handleRefreshData}
       />
     </DashboardContent>
   );

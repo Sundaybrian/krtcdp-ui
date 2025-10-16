@@ -150,11 +150,7 @@ export function CooperativeFarmerListView() {
             ...query,
           }
     ).then((data) => {
-      if (data.results.length) {
-        console.log(data.results);
-
-        setTableData(data.results);
-      }
+      setTableData(data.results);
 
       setPageData({
         limit: pageData.limit,

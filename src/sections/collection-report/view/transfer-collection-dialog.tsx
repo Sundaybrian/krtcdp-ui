@@ -54,9 +54,10 @@ type Props = {
   open: boolean;
   onClose: () => void;
   data: { item: any };
+  onRefresh: () => void;
 };
 
-export function TransferCollectionDialog({ data, open, onClose }: Props) {
+export function TransferCollectionDialog({ data, open, onClose, onRefresh }: Props) {
   const [farmerSearchTerm, setFarmerSearchTerm] = useState('');
 
   const { state } = useLocalStorage(TENANT_LOCAL_STORAGE, { coopId: 0 });
@@ -102,6 +103,7 @@ export function TransferCollectionDialog({ data, open, onClose }: Props) {
       reset();
 
       onClose();
+      onRefresh();
     } catch (error) {
       console.error(error);
       toast.error(error.message);

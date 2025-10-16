@@ -42,9 +42,10 @@ type Props = {
   open: boolean;
   onClose: () => void;
   data: { item: any };
+  onRefresh: () => void;
 };
 
-export function AdjustQuantityDialog({ data, open, onClose }: Props) {
+export function AdjustQuantityDialog({ data, open, onClose, onRefresh }: Props) {
   const defaultValues = useMemo(
     () => ({
       newQuantity: '',
@@ -81,6 +82,7 @@ export function AdjustQuantityDialog({ data, open, onClose }: Props) {
       reset();
 
       onClose();
+      onRefresh();
     } catch (error) {
       console.error(error);
       toast.error(error.message);
