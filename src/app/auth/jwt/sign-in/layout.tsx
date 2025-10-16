@@ -14,8 +14,8 @@ export default function Layout({ children }: Props) {
     <GuestGuard>
       <AuthSplitLayout
         section={{
-          title: 'Hi, Welcome Back to the CoopHub Portal',
-          subtitle: 'Supporting Farmers. Sustaining Kenya.',
+          title: 'Hi, Welcome Back to Farmers CoopHub!',
+          subtitle: 'Connecting Farmers Empowering Communities',
           imgUrl: `${CONFIG.site.basePath}/assets/illustrations/farm-one.png`,
         }}
       >
